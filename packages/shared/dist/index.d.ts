@@ -1,4 +1,4 @@
-declare const agentBackendIds: readonly ["codex", "claude", "opencode"];
+declare const agentBackendIds: readonly ["codex", "claude", "opencode", "elagente"];
 type AgentBackendIdDto = (typeof agentBackendIds)[number];
 declare const defaultAgentBackendId: AgentBackendIdDto;
 interface AgentBackendMetadata {
@@ -289,6 +289,7 @@ interface ThreadHistoryItemDto {
     transcriptOrder?: number | null;
     sourceTurnId?: string | null;
     createdAt?: string | null;
+    updatedAt?: string | null;
     status?: string | null;
     assetPath?: string | null;
     changedFiles?: number | null;

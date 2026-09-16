@@ -311,9 +311,15 @@
 
 .thread-ui-shell .thread-graph-molecule-control-row {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
   gap: 0.75rem;
+}
+
+.thread-ui-shell .thread-graph-molecule-control-row > .thread-graph-molecule-button-group {
+  max-width: 100%;
+  flex-wrap: wrap;
 }
 
 .thread-ui-shell .thread-graph-molecule-control-title {

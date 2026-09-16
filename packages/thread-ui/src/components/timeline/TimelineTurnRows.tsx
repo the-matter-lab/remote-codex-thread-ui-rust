@@ -676,8 +676,13 @@ export const ThreadTurnRow = memo(function ThreadTurnRow({
     [activeForRendering, mergedItems],
   );
   const groupedItems = useMemo(
-    () => groupTimelineHistoryItems(preparedItems),
+    // Published results belong below the reply, outside the work disclosure.
+    // Separate them before grouping so a tool/activity group cannot hide them.
+    () => groupTimelineHistoryItems(preparedItems.filter((item) => item.kind !== 'artifact')),
     [preparedItems],
+  );
+  const outputItems = preparedItems.filter(
+    (item): item is ThreadHistoryItemDto & { kind: 'artifact' } => item.kind === 'artifact',
   );
   const autoOpenLatestToolDetails =
     forceActive || isActiveTurnStatus(turn.status) || hasLiveActivity;
@@ -889,14 +894,33 @@ export const ThreadTurnRow = memo(function ThreadTurnRow({
       livePlan={displayedLivePlan}
     />
   );
+  const visibleBody = (
+    <>
+      {canToggleWorkedSummary ? collapsedSummaryNode : turnBody}
+      {outputItems.length > 0 ? (
+        <div className="thread-graph-turn-outputs mt-3 space-y-3" role="group" aria-label="Agent artifacts">
+          {outputItems.map((item) => (
+            <ArtifactHistoryItem
+              key={item.id}
+              item={item}
+              presentation="output"
+              {...(onSelectArtifact
+                ? { onSelect: (selectedItem, artifact) => onSelectArtifact({ item: selectedItem, artifact }) }
+                : {})}
+            />
+          ))}
+        </div>
+      ) : null}
+    </>
+  );
 
   return (
     <MessageExpansionScope key={`${threadId ?? ''}:${turn.id}`}>
     <GraphChatTurnFrame
       absoluteIndex={absoluteIndex}
-      body={canToggleWorkedSummary ? collapsedSummaryNode : turnBody}
+      body={visibleBody}
       collapsed={effectiveCollapsed}
-      collapsedBody={collapsedSummaryNode}
+      collapsedBody={visibleBody}
       error={turn.error}
       headerStatus={<TurnStatusBar turn={turn} />}
       isActive={activeForRendering}

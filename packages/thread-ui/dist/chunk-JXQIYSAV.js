@@ -312,9 +312,9 @@ import {
   writeUInt16LE,
   writeUInt32BE,
   writeUInt8
-} from "./chunk-NDPKTSNE.js";
+} from "./chunk-SSOM5P4O.js";
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/config/editorZoom.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/config/editorZoom.js
 var EditorZoom = new class {
   constructor() {
     this._zoomLevel = 0;
@@ -334,7 +334,7 @@ var EditorZoom = new class {
   }
 }();
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/config/fontInfo.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/config/fontInfo.js
 var GOLDEN_LINE_HEIGHT_RATIO = isMacintosh ? 1.5 : 1.35;
 var MINIMUM_LINE_HEIGHT = 8;
 var BareFontInfo = class _BareFontInfo {
@@ -454,7 +454,7 @@ var EDITOR_FONT_DEFAULTS = {
   letterSpacing: 0
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/misc/textModelDefaults.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/misc/textModelDefaults.js
 var EDITOR_MODEL_DEFAULTS = {
   tabSize: 4,
   indentSize: 4,
@@ -468,7 +468,7 @@ var EDITOR_MODEL_DEFAULTS = {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/config/editorOptions.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/config/editorOptions.js
 var MINIMAP_GUTTER_WIDTH = 8;
 var ConfigurationChangedEvent = class {
   /**
@@ -3837,7 +3837,7 @@ var EditorOptions = {
   effectiveAllowVariableFonts: register(new EffectiveAllowVariableFonts())
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/window.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/window.js
 function ensureCodeWindow(targetWindow, fallbackWindowId) {
   const codeWindow = targetWindow;
   if (typeof codeWindow.vscodeWindowId !== "number") {
@@ -3848,10 +3848,10 @@ function ensureCodeWindow(targetWindow, fallbackWindowId) {
 }
 var mainWindow = window;
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/standalone-tokens.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/standalone-tokens.css
 styleInject('.monaco-editor {\n  font-family:\n    -apple-system,\n    BlinkMacSystemFont,\n    "Segoe WPC",\n    "Segoe UI",\n    "HelveticaNeue-Light",\n    system-ui,\n    "Ubuntu",\n    "Droid Sans",\n    sans-serif;\n  --monaco-monospace-font:\n    "SF Mono",\n    Monaco,\n    Menlo,\n    Consolas,\n    "Ubuntu Mono",\n    "Liberation Mono",\n    "DejaVu Sans Mono",\n    "Courier New",\n    monospace;\n}\n.monaco-menu .monaco-action-bar.vertical .action-item .action-menu-item:focus .action-label {\n  stroke-width: 1.2px;\n}\n.monaco-editor.vs-dark .monaco-menu .monaco-action-bar.vertical .action-menu-item:focus .action-label,\n.monaco-editor.hc-black .monaco-menu .monaco-action-bar.vertical .action-menu-item:focus .action-label,\n.monaco-editor.hc-light .monaco-menu .monaco-action-bar.vertical .action-menu-item:focus .action-label {\n  stroke-width: 1.2px;\n}\n.monaco-hover p {\n  margin: 0;\n}\n.monaco-aria-container {\n  position: absolute !important;\n  top: 0;\n  height: 1px;\n  width: 1px;\n  margin: -1px;\n  overflow: hidden;\n  padding: 0;\n  clip: rect(1px, 1px, 1px, 1px);\n  clip-path: inset(50%);\n}\n.monaco-editor .synthetic-focus,\n.monaco-diff-editor .synthetic-focus,\n.monaco-editor [tabindex="0"]:focus,\n.monaco-diff-editor [tabindex="0"]:focus,\n.monaco-editor [tabindex="-1"]:focus,\n.monaco-diff-editor [tabindex="-1"]:focus,\n.monaco-editor button:focus,\n.monaco-diff-editor button:focus,\n.monaco-editor input[type=button]:focus,\n.monaco-diff-editor input[type=button]:focus,\n.monaco-editor input[type=checkbox]:focus,\n.monaco-diff-editor input[type=checkbox]:focus,\n.monaco-editor input[type=search]:focus,\n.monaco-diff-editor input[type=search]:focus,\n.monaco-editor input[type=text]:focus,\n.monaco-diff-editor input[type=text]:focus,\n.monaco-editor select:focus,\n.monaco-diff-editor select:focus,\n.monaco-editor textarea:focus,\n.monaco-diff-editor textarea:focus {\n  outline-width: 1px;\n  outline-style: solid;\n  outline-offset: -1px;\n  outline-color: var(--vscode-focusBorder);\n  opacity: 1;\n}\n');
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/browser.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/browser.js
 var WindowManager = class _WindowManager {
   constructor() {
     this.mapWindowIdToZoomFactor = /* @__PURE__ */ new Map();
@@ -3899,7 +3899,7 @@ function getMonacoEnvironment() {
   return globalThis.MonacoEnvironment;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/canIUse.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/canIUse.js
 var BrowserFeatures = {
   clipboard: {
     writeText: isNative || document.queryCommandSupported && document.queryCommandSupported("copy") || !!(navigator && navigator.clipboard && navigator.clipboard.writeText),
@@ -3908,7 +3908,7 @@ var BrowserFeatures = {
   pointerEvents: mainWindow.PointerEvent && ("ontouchstart" in mainWindow || navigator.maxTouchPoints > 0)
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/keybindings.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/keybindings.js
 function decodeKeybinding(keybinding, OS2) {
   if (typeof keybinding === "number") {
     if (keybinding === 0) {
@@ -3980,7 +3980,7 @@ var ResolvedChord = class {
 var ResolvedKeybinding = class {
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/keyboardEvent.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/keyboardEvent.js
 function extractKeyCode(e) {
   if (e.charCode) {
     const char = String.fromCharCode(e.charCode).toUpperCase();
@@ -4092,7 +4092,7 @@ var StandardKeyboardEvent = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/iframe.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/iframe.js
 var sameOriginWindowChainCache = /* @__PURE__ */ new WeakMap();
 function getParentWindowIfSameOrigin(w) {
   if (!w.parent || w.parent === w) {
@@ -4172,7 +4172,7 @@ var IframeUtils = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/mouseEvent.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/mouseEvent.js
 var StandardMouseEvent = class {
   constructor(targetWindow, e) {
     this.timestamp = Date.now();
@@ -4279,7 +4279,7 @@ var StandardWheelEvent = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/equals.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/equals.js
 function strictEquals(a, b) {
   return a === b;
 }
@@ -4371,7 +4371,7 @@ var equals4;
   equals5.ifDefinedC = equalsIfDefinedC;
 })(equals4 || (equals4 = {}));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/logging/logging.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/logging/logging.js
 var globalObservableLogger;
 function addLogger(logger) {
   if (!globalObservableLogger) {
@@ -4451,7 +4451,7 @@ var ComposedLogger = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/debugLocation.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/debugLocation.js
 var DebugLocation;
 (function(DebugLocation2) {
   let enabled = false;
@@ -4511,7 +4511,7 @@ function parseLine(stackLine) {
   return void 0;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/debugName.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/debugName.js
 var DebugNameData = class {
   constructor(owner, debugNameSource, referenceFn) {
     this.owner = owner;
@@ -4614,7 +4614,7 @@ function getFunctionName(fn) {
   return result?.trim();
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/observables/baseObservable.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/observables/baseObservable.js
 var _derived;
 function _setDerivedOpts(derived2) {
   _derived = derived2;
@@ -4710,7 +4710,7 @@ var BaseObservable = class extends ConvenientObservable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/observables/derivedImpl.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/observables/derivedImpl.js
 function derivedStateToString(state) {
   switch (state) {
     case 0:
@@ -5026,7 +5026,7 @@ var DerivedWithSetter = class extends Derived {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/observables/derived.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/observables/derived.js
 function derived(computeFnOrOwner, computeFn, debugLocation = DebugLocation.ofCaller()) {
   if (computeFn !== void 0) {
     return new Derived(new DebugNameData(computeFnOrOwner, void 0, computeFn), computeFn, void 0, void 0, strictEquals, debugLocation);
@@ -5079,7 +5079,7 @@ function derivedDisposable(computeFnOrOwner, computeFnOrUndefined, debugLocation
   }, strictEquals, debugLocation);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/reactions/autorunImpl.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/reactions/autorunImpl.js
 function autorunStateToString(state) {
   switch (state) {
     case 1:
@@ -5292,7 +5292,7 @@ var AutorunObserver = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/reactions/autorun.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/reactions/autorun.js
 function autorun(fn, debugLocation = DebugLocation.ofCaller()) {
   return new AutorunObserver(new DebugNameData(void 0, void 0, fn), fn, void 0, debugLocation);
 }
@@ -5334,14 +5334,14 @@ function autorunWithStore(fn) {
   });
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/base.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/base.js
 function handleBugIndicatingErrorRecovery(message) {
   const err = new Error("BugIndicatingErrorRecovery: " + message);
   onUnexpectedError(err);
   console.error("recovered from an error that indicates a bug", err);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/transaction.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/transaction.js
 function transaction(fn, getDebugName2) {
   const tx = new TransactionImpl(fn, getDebugName2);
   try {
@@ -5414,7 +5414,7 @@ var TransactionImpl = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/observables/observableValue.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/observables/observableValue.js
 function observableValue(nameOrOwner, initialValue, debugLocation = DebugLocation.ofCaller()) {
   let debugNameData;
   if (typeof nameOrOwner === "string") {
@@ -5500,7 +5500,7 @@ var DisposableObservableValue = class extends ObservableValue {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/observables/observableFromEvent.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/observables/observableFromEvent.js
 function observableFromEvent(...args) {
   let owner;
   let event;
@@ -5605,7 +5605,7 @@ var FromEventObservable = class extends BaseObservable {
   observableFromEvent2.batchEventsGlobally = batchEventsGlobally;
 })(observableFromEvent || (observableFromEvent = {}));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/observables/observableSignal.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/observables/observableSignal.js
 function observableSignal(debugNameOrOwner, debugLocation = DebugLocation.ofCaller()) {
   if (typeof debugNameOrOwner === "string") {
     return new ObservableSignal(debugNameOrOwner, void 0, debugLocation);
@@ -5641,7 +5641,7 @@ var ObservableSignal = class extends BaseObservable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/utils/utils.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/utils/utils.js
 function recomputeInitiallyAndOnChange(observable, handleValue) {
   const o = new KeepAliveObserver(true, handleValue);
   observable.addObserver(o);
@@ -5691,7 +5691,7 @@ function isObservable(obj) {
   return !!obj && obj.read !== void 0 && obj.reportChanges !== void 0;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/logging/consoleObservableLogger.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/logging/consoleObservableLogger.js
 function formatValue(value, availableLen) {
   switch (typeof value) {
     case "number":
@@ -5764,7 +5764,7 @@ function formatObject(value, availableLen) {
   return result;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/logging/debugger/rpc.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/logging/debugger/rpc.js
 var SimpleTypedRpcConnection = class _SimpleTypedRpcConnection {
   static createClient(channelFactory, getHandler) {
     return new _SimpleTypedRpcConnection(channelFactory, getHandler);
@@ -5814,7 +5814,7 @@ var SimpleTypedRpcConnection = class _SimpleTypedRpcConnection {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/logging/debugger/debuggerRpc.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/logging/debugger/debuggerRpc.js
 function registerDebugChannel(channelId, createClient) {
   const g = globalThis;
   let queuedNotifications = [];
@@ -5872,7 +5872,7 @@ function createChannelFactoryFromDebugChannel(host) {
   };
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/logging/debugger/utils.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/logging/debugger/utils.js
 var Throttler = class {
   constructor() {
     this._timeout = void 0;
@@ -5912,7 +5912,7 @@ function deepAssignDeleteNulls(target, source) {
   }
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/logging/debugger/devToolsLogger.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/logging/debugger/devToolsLogger.js
 var DevToolsLogger = class _DevToolsLogger {
   static {
     this._instance = void 0;
@@ -6331,12 +6331,12 @@ var DevToolsLogger = class _DevToolsLogger {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/index.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/index.js
 if (env && env["VSCODE_DEV_DEBUG_OBSERVABLES"]) {
   addLogger(DevToolsLogger.getInstance());
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/dom.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/dom.js
 var { getWindow, getDocument, getWindows, getWindowsCount, getWindowId, getWindowById, onDidRegisterWindow, onWillUnregisterWindow, onDidUnregisterWindow } = (function() {
   const windows = /* @__PURE__ */ new Map();
   ensureCodeWindow(mainWindow, 1);
@@ -7583,7 +7583,7 @@ if (!customElements.get("connection-observer")) {
   customElements.define("connection-observer", ConnectionObserverElement);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/pixelRatio.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/pixelRatio.js
 var DevicePixelRatioMonitor = class extends Disposable {
   constructor(targetWindow) {
     super();
@@ -7650,7 +7650,7 @@ var PixelRatioMonitorFacade = class {
 };
 var PixelRatio = new PixelRatioMonitorFacade();
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/fastDomNode.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/fastDomNode.js
 var FastDomNode = class {
   constructor(domNode) {
     this.domNode = domNode;
@@ -7901,7 +7901,7 @@ function createFastDomNode(domNode) {
   return new FastDomNode(domNode);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/config/domFontInfo.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/config/domFontInfo.js
 function applyFontInfo(domNode, fontInfo) {
   if (domNode instanceof FastDomNode) {
     domNode.setFontFamily(fontInfo.getMassagedFontFamily());
@@ -7922,7 +7922,7 @@ function applyFontInfo(domNode, fontInfo) {
   }
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/config/charWidthReader.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/config/charWidthReader.js
 var CharWidthRequest = class {
   constructor(chr, type) {
     this.chr = chr;
@@ -8013,7 +8013,7 @@ function readCharWidths(targetWindow, bareFontInfo, requests) {
   reader.read(targetWindow);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/config/fontMeasurements.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/config/fontMeasurements.js
 var FontMeasurementsImpl = class extends Disposable {
   constructor() {
     super(...arguments);
@@ -8199,7 +8199,7 @@ var FontMeasurementsCache = class {
 };
 var FontMeasurements = new FontMeasurementsImpl();
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/instantiation/common/instantiation.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/instantiation/common/instantiation.js
 var _util;
 (function(_util2) {
   _util2.serviceIds = /* @__PURE__ */ new Map();
@@ -8234,16 +8234,16 @@ function createDecorator(serviceId) {
   return id;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/services/codeEditorService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/services/codeEditorService.js
 var ICodeEditorService = createDecorator("codeEditorService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/model.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/model.js
 var IModelService = createDecorator("modelService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/resolverService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/resolverService.js
 var ITextModelService = createDecorator("textModelService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/actions.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/actions.js
 var Action = class extends Disposable {
   get onDidChange() {
     return this._onDidChange.event;
@@ -8439,7 +8439,7 @@ function toAction(props) {
   };
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/themables.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/themables.js
 var ThemeColor;
 (function(ThemeColor2) {
   function isThemeColor(obj) {
@@ -8527,7 +8527,7 @@ var ThemeIcon;
   ThemeIcon2.isFolder = isFolder;
 })(ThemeIcon || (ThemeIcon = {}));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/commands/common/commands.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/commands/common/commands.js
 var ICommandService = createDecorator("commandService");
 var CommandsRegistry = new class {
   constructor() {
@@ -8597,7 +8597,7 @@ var CommandsRegistry = new class {
 CommandsRegistry.registerCommand("noop", () => {
 });
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/contextkey/common/scanner.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/contextkey/common/scanner.js
 function hintDidYouMean(...meant) {
   switch (meant.length) {
     case 1:
@@ -8923,7 +8923,7 @@ var Scanner = class _Scanner {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/contextkey/common/contextkey.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/contextkey/common/contextkey.js
 var CONSTANT_VALUES = /* @__PURE__ */ new Map();
 CONSTANT_VALUES.set("false", false);
 CONSTANT_VALUES.set("true", true);
@@ -10408,7 +10408,7 @@ function getTerminals(node) {
   return [node];
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/registry/common/platform.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/registry/common/platform.js
 var RegistryImpl = class {
   constructor() {
     this.data = /* @__PURE__ */ new Map();
@@ -10433,7 +10433,7 @@ var RegistryImpl = class {
 };
 var Registry = new RegistryImpl();
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/keybinding/common/keybindingsRegistry.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/keybinding/common/keybindingsRegistry.js
 var KeybindingsRegistryImpl = class _KeybindingsRegistryImpl {
   constructor() {
     this._coreKeybindings = new LinkedList();
@@ -10535,7 +10535,7 @@ function sorter(a, b) {
   return a.weight2 - b.weight2;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/actions/common/actions.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/actions/common/actions.js
 var __decorate = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -11509,10 +11509,10 @@ var Action2 = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/telemetry/common/telemetry.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/telemetry/common/telemetry.js
 var ITelemetryService = createDecorator("telemetryService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/extpath.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/extpath.js
 function isPathSeparator(code) {
   return code === 47 || code === 92;
 }
@@ -11613,7 +11613,7 @@ function isWindowsDriveLetter(char0) {
   return char0 >= 65 && char0 <= 90 || char0 >= 97 && char0 <= 122;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/resources.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/resources.js
 function originalFSPath(uri) {
   return uriToFsPath(uri, true);
 }
@@ -11813,7 +11813,7 @@ var DataUri;
   DataUri2.parseMetaData = parseMetaData;
 })(DataUri || (DataUri = {}));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/log/common/log.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/log/common/log.js
 var ILogService = createDecorator("logService");
 var ILoggerService = createDecorator("loggerService");
 var LogLevel;
@@ -12103,7 +12103,7 @@ function LogLevelToString(logLevel) {
 }
 new RawContextKey("logLevel", LogLevelToString(LogLevel.Info));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/triggerInlineEditCommandsRegistry.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/triggerInlineEditCommandsRegistry.js
 var TriggerInlineEditCommandsRegistry = class _TriggerInlineEditCommandsRegistry {
   static {
     this.REGISTERED_COMMANDS = /* @__PURE__ */ new Set();
@@ -12116,7 +12116,7 @@ var TriggerInlineEditCommandsRegistry = class _TriggerInlineEditCommandsRegistry
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/editorExtensions.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/editorExtensions.js
 var Command = class {
   constructor(opts) {
     this.id = opts.id;
@@ -12429,7 +12429,7 @@ var SelectAllCommand = registerCommand(new MultiCommand({
   }]
 }));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/webWorker/browser/webWorkerDescriptor.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/webWorker/browser/webWorkerDescriptor.js
 var WebWorkerDescriptor = class {
   constructor(args) {
     this.esmModuleLocation = args.esmModuleLocation;
@@ -12438,10 +12438,10 @@ var WebWorkerDescriptor = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/webWorker/browser/webWorkerService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/webWorker/browser/webWorkerService.js
 var IWebWorkerService = createDecorator("IWebWorkerService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/languageConfiguration.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/languageConfiguration.js
 var IndentAction2;
 (function(IndentAction3) {
   IndentAction3[IndentAction3["None"] = 0] = "None";
@@ -12561,7 +12561,7 @@ function appendEntry(target, key, value) {
   }
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/supports/characterPair.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/supports/characterPair.js
 var CharacterPairSupport = class _CharacterPairSupport {
   static {
     this.DEFAULT_AUTOCLOSE_BEFORE_LANGUAGE_DEFINED_QUOTES = ";:.,=}])> \n	";
@@ -12596,7 +12596,7 @@ var CharacterPairSupport = class _CharacterPairSupport {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/supports.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/supports.js
 function createScopedLineTokens(context, offset) {
   const tokenCount = context.getCount();
   const tokenIndex = context.findTokenIndexAtOffset(offset);
@@ -12650,7 +12650,7 @@ function ignoreBracketsInToken(standardTokenType) {
   return (standardTokenType & 3) !== 0;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/stringBuilder.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/stringBuilder.js
 var _utf16LE_TextDecoder;
 function getUTF16LE_TextDecoder() {
   if (!_utf16LE_TextDecoder) {
@@ -12757,7 +12757,7 @@ var StringBuilder = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/supports/richEditBrackets.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/supports/richEditBrackets.js
 var RichEditBracket = class _RichEditBracket {
   constructor(languageId, index, open, close, forwardRegex, reversedRegex) {
     this._richEditBracketBrand = void 0;
@@ -13015,7 +13015,7 @@ var BracketsUtils = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/supports/electricCharacter.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/supports/electricCharacter.js
 var BracketElectricCharacterSupport = class {
   constructor(richEditBrackets) {
     this._richEditBrackets = richEditBrackets;
@@ -13061,7 +13061,7 @@ var BracketElectricCharacterSupport = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/supports/indentRules.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/supports/indentRules.js
 function resetGlobalRegex(reg) {
   if (reg.global) {
     reg.lastIndex = 0;
@@ -13116,7 +13116,7 @@ var IndentRulesSupport = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/supports/onEnter.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/supports/onEnter.js
 var OnEnterSupport = class _OnEnterSupport {
   constructor(opts) {
     opts = opts || {};
@@ -13213,7 +13213,7 @@ var OnEnterSupport = class _OnEnterSupport {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/configuration/common/configuration.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/configuration/common/configuration.js
 var IConfigurationService = createDecorator("configurationService");
 function toValuesTree(properties, conflictReporter) {
   const root = /* @__PURE__ */ Object.create(null);
@@ -13298,10 +13298,10 @@ function getLanguageTagSettingPlainKey(settingKey) {
   return settingKey.replace(/^\[/, "").replace(/]$/g, "").replace(/\]\[/g, ", ");
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/language.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/language.js
 var ILanguageService = createDecorator("languageService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/instantiation/common/descriptors.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/instantiation/common/descriptors.js
 var SyncDescriptor = class {
   constructor(ctor, staticArguments = [], supportsDelayedInstantiation = false) {
     this.ctor = ctor;
@@ -13310,7 +13310,7 @@ var SyncDescriptor = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/instantiation/common/extensions.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/instantiation/common/extensions.js
 var _registry = [];
 function registerSingleton(id, ctorOrDescriptor, supportsDelayedInstantiation) {
   if (!(ctorOrDescriptor instanceof SyncDescriptor)) {
@@ -13322,7 +13322,7 @@ function getSingletonServiceDescriptors() {
   return _registry;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/mime.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/mime.js
 var Mimes = Object.freeze({
   text: "text/plain",
   binary: "application/octet-stream",
@@ -13333,7 +13333,7 @@ var Mimes = Object.freeze({
   html: "text/html"
 });
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/jsonschemas/common/jsonContributionRegistry.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/jsonschemas/common/jsonContributionRegistry.js
 var Extensions3 = {
   JSONContribution: "base.contributions.json"
 };
@@ -13367,7 +13367,7 @@ var JSONContributionRegistry = class extends Disposable {
 var jsonContributionRegistry = new JSONContributionRegistry();
 Registry.add(Extensions3.JSONContribution, jsonContributionRegistry);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/product/common/product.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/product/common/product.js
 var product;
 var vscodeGlobal = globalThis.vscode;
 if (typeof vscodeGlobal !== "undefined" && typeof vscodeGlobal.context !== "undefined") {
@@ -13429,7 +13429,7 @@ if (typeof vscodeGlobal !== "undefined" && typeof vscodeGlobal.context !== "unde
 }
 var product$1 = product;
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/configuration/common/configurationRegistry.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/configuration/common/configurationRegistry.js
 var Extensions4 = {
   Configuration: "base.contributions.configuration"
 };
@@ -13812,7 +13812,7 @@ function validateProperty(property, schema, extensionId) {
 }
 var EXTENSION_UNIFICATION_EXTENSION_IDS = new Set(product$1.defaultChatAgent ? [product$1.defaultChatAgent.extensionId, product$1.defaultChatAgent.chatExtensionId].map((id) => id.toLowerCase()) : []);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/modesRegistry.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/modesRegistry.js
 var Extensions5 = {
   ModesRegistry: "editor.modesRegistry"
 };
@@ -13874,7 +13874,7 @@ Registry.as(Extensions4.Configuration).registerDefaultConfigurations([{
   }
 }]);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/supports/languageBracketsConfiguration.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/supports/languageBracketsConfiguration.js
 var LanguageBracketsConfiguration = class {
   constructor(languageId, config) {
     this.languageId = languageId;
@@ -13985,7 +13985,7 @@ var ClosingBracketKind = class extends BracketKindBase {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/languageConfigurationRegistry.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/languageConfigurationRegistry.js
 var __decorate2 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -14314,14 +14314,14 @@ registerSingleton(
   /* InstantiationType.Delayed */
 );
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/textResourceConfiguration.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/textResourceConfiguration.js
 var ITextResourceConfigurationService = createDecorator("textResourceConfigurationService");
 var ITextResourcePropertiesService = createDecorator("textResourcePropertiesService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/languageFeatures.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/languageFeatures.js
 var ILanguageFeaturesService = createDecorator("ILanguageFeaturesService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/completionsEnablement.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/completionsEnablement.js
 function getCompletionsEnablementSettingName() {
   return product$1.defaultChatAgent?.completionsEnablementSetting;
 }
@@ -14342,7 +14342,7 @@ function isCompletionsEnabledFromObject(completionsEnablementObject, modeId = "*
   return Boolean(completionsEnablementObject["*"]);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/services/editorWorkerService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/services/editorWorkerService.js
 var __decorate3 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -14692,7 +14692,7 @@ EditorWorkerClient = __decorate3([
   __param3(3, IWebWorkerService)
 ], EditorWorkerClient);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneWebWorker.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneWebWorker.js
 function createWebWorker(modelService, webWorkerService, opts) {
   return new MonacoWebWorkerImpl(modelService, webWorkerService, opts);
 }
@@ -14735,13 +14735,13 @@ var MonacoWebWorkerImpl = class extends EditorWorkerClient {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/editorCommon.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/editorCommon.js
 var EditorType = {
   ICodeEditor: "vs.editor.ICodeEditor",
   IDiffEditor: "vs.editor.IDiffEditor"
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/nullTokenize.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/nullTokenize.js
 var NullState = new class {
   clone() {
     return this;
@@ -14760,7 +14760,7 @@ function nullTokenizeEncoded(languageId, state) {
   return new EncodedTokenizationResult(tokens, [], state === null ? NullState : state);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/trustedTypes.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/trustedTypes.js
 function createTrustedTypesPolicy(policyName, policyOptions) {
   const monacoEnvironment2 = getMonacoEnvironment();
   if (monacoEnvironment2?.createTrustedTypesPolicy) {
@@ -14779,7 +14779,7 @@ function createTrustedTypesPolicy(policyName, policyOptions) {
   }
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/encodedTokenAttributes.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/encodedTokenAttributes.js
 var TokenMetadata = class {
   static getLanguageId(metadata) {
     return (metadata & 255) >>> 0;
@@ -14864,7 +14864,7 @@ var TokenMetadata = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/tokens/lineTokens.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/tokens/lineTokens.js
 var LineTokens = class _LineTokens {
   static createEmpty(lineContent, decoder) {
     const defaultMetadata = _LineTokens.defaultTokenMetadata;
@@ -15230,7 +15230,7 @@ var TokenArrayBuilder = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewLayout/lineDecorations.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewLayout/lineDecorations.js
 var LineDecoration = class _LineDecoration {
   constructor(startColumn, endColumn, className2, type) {
     this.startColumn = startColumn;
@@ -15416,7 +15416,7 @@ var LineDecorationsNormalizer = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewLayout/linePart.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewLayout/linePart.js
 var LinePart = class {
   constructor(endIndex, type, metadata, containsRTL2) {
     this.endIndex = endIndex;
@@ -15433,7 +15433,7 @@ var LinePart = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewLayout/viewLineRenderer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewLayout/viewLineRenderer.js
 var RenderLineInput = class {
   get isLTR() {
     return !this.containsRTL && this.textDirection !== TextDirection2.RTL;
@@ -16228,7 +16228,7 @@ function renderOverflowingCharCount(n2) {
   return `${(n2 / 1024 / 1024).toFixed(1)} MB`;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewModel.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewModel.js
 var Viewport = class {
   constructor(top, left, width2, height) {
     this._viewportBrand = void 0;
@@ -16310,7 +16310,7 @@ var OverviewRulerDecorationsGroup = class _OverviewRulerDecorationsGroup {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/common/monarch/monarchCommon.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/common/monarch/monarchCommon.js
 function isFuzzyActionArr(what) {
   return Array.isArray(what);
 }
@@ -16411,7 +16411,7 @@ function stateExists(lexer2, inState) {
   return false;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/common/monarch/monarchLexer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/common/monarch/monarchLexer.js
 var __decorate4 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -17103,7 +17103,7 @@ function findBracket(lexer2, matched) {
   return null;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/colorizer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/colorizer.js
 var ttPolicy = createTrustedTypesPolicy("standaloneColorizer", { createHTML: (value) => value });
 var Colorizer = class {
   static colorizeElement(themeService, languageService, domNode, options) {
@@ -17227,10 +17227,10 @@ function _actualColorize(lines, tabSize, tokenizationSupport, languageIdCodec) {
   return html3.join("");
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/aria/aria.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/aria/aria.css
 styleInject(".monaco-aria-container {\n  position: absolute;\n  left: -999em;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/aria/aria.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/aria/aria.js
 var MAX_MESSAGE_LENGTH = 2e4;
 var ariaContainer;
 var alertContainer;
@@ -17296,13 +17296,13 @@ function insertMessage(target, msg) {
   target.style.visibility = "visible";
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/editorWorker.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/editorWorker.js
 var IEditorWorkerService = createDecorator("editorWorkerService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/markerDecorations.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/markerDecorations.js
 var IMarkerDecorationsService = createDecorator("markerDecorationsService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/services/markerDecorations.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/services/markerDecorations.js
 var __decorate5 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -17327,7 +17327,7 @@ MarkerDecorationsContribution = __decorate5([
   __param5(1, IMarkerDecorationsService)
 ], MarkerDecorationsContribution);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/services/contribution.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/services/contribution.js
 registerSingleton(
   IEditorWorkerService,
   EditorWorkerService,
@@ -17341,10 +17341,10 @@ registerEditorContribution(
   /* EditorContributionInstantiation.Eager */
 );
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/codeEditor/editor.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/codeEditor/editor.css
 styleInject('::-ms-clear {\n  display: none;\n}\n.monaco-editor .editor-widget input {\n  color: inherit;\n}\n.monaco-editor {\n  position: relative;\n  overflow: visible;\n  -webkit-text-size-adjust: 100%;\n  text-spacing-trim: space-all;\n  color: var(--vscode-editor-foreground);\n  background-color: var(--vscode-editor-background);\n  overflow-wrap: initial;\n}\n.monaco-editor-background {\n  background-color: var(--vscode-editor-background);\n}\n.monaco-editor .rangeHighlight {\n  background-color: var(--vscode-editor-rangeHighlightBackground);\n  box-sizing: border-box;\n  border: 1px solid var(--vscode-editor-rangeHighlightBorder);\n}\n.monaco-editor.hc-black .rangeHighlight,\n.monaco-editor.hc-light .rangeHighlight {\n  border-style: dotted;\n}\n.monaco-editor .symbolHighlight {\n  background-color: var(--vscode-editor-symbolHighlightBackground);\n  box-sizing: border-box;\n  border: 1px solid var(--vscode-editor-symbolHighlightBorder);\n}\n.monaco-editor.hc-black .symbolHighlight,\n.monaco-editor.hc-light .symbolHighlight {\n  border-style: dotted;\n}\n.monaco-editor .editorCanvas {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  z-index: 0;\n  pointer-events: none;\n}\n.monaco-editor .overflow-guard {\n  position: relative;\n  overflow: hidden;\n}\n.monaco-editor .view-overlays {\n  position: absolute;\n  top: 0;\n}\n.monaco-editor .view-overlays > div,\n.monaco-editor .margin-view-overlays > div {\n  position: absolute;\n  width: 100%;\n}\n.monaco-editor .squiggly-error {\n  border-bottom: 4px double var(--vscode-editorError-border);\n}\n.monaco-editor .squiggly-error::before {\n  display: block;\n  content: "";\n  width: 100%;\n  height: 100%;\n  background: var(--vscode-editorError-background);\n}\n.monaco-editor .squiggly-warning {\n  border-bottom: 4px double var(--vscode-editorWarning-border);\n}\n.monaco-editor .squiggly-warning::before {\n  display: block;\n  content: "";\n  width: 100%;\n  height: 100%;\n  background: var(--vscode-editorWarning-background);\n}\n.monaco-editor .squiggly-info {\n  border-bottom: 4px double var(--vscode-editorInfo-border);\n}\n.monaco-editor .squiggly-info::before {\n  display: block;\n  content: "";\n  width: 100%;\n  height: 100%;\n  background: var(--vscode-editorInfo-background);\n}\n.monaco-editor .squiggly-hint {\n  border-bottom: 2px dotted var(--vscode-editorHint-border);\n}\n.monaco-editor.showUnused .squiggly-unnecessary {\n  border-bottom: 2px dashed var(--vscode-editorUnnecessaryCode-border);\n}\n.monaco-editor.showDeprecated .squiggly-inline-deprecated {\n  text-decoration: line-through;\n  text-decoration-color: var(--vscode-editor-foreground, inherit);\n}\n');
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/config/elementSizeObserver.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/config/elementSizeObserver.js
 var ElementSizeObserver = class extends Disposable {
   constructor(referenceDomElement, dimension) {
     super();
@@ -17435,7 +17435,7 @@ var ElementSizeObserver = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/config/migrateOptions.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/config/migrateOptions.js
 var EditorSettingMigration = class _EditorSettingMigration {
   static {
     this.items = [];
@@ -17648,7 +17648,7 @@ registerEditorSettingMigration("hover.enabled", (value, read, write) => {
   }
 });
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/config/tabFocus.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/config/tabFocus.js
 var TabFocusImpl = class extends Disposable {
   constructor() {
     super(...arguments);
@@ -17666,7 +17666,7 @@ var TabFocusImpl = class extends Disposable {
 };
 var TabFocus = new TabFocusImpl();
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/config/fontInfoFromSettings.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/config/fontInfoFromSettings.js
 function createBareFontInfoFromValidatedSettings(options, pixelRatio, ignoreEditorZoom) {
   const fontFamily = options.get(
     58
@@ -17709,11 +17709,11 @@ function createBareFontInfoFromRawSettings(opts, pixelRatio, ignoreEditorZoom = 
   return BareFontInfo._create(fontFamily, fontWeight, fontSize, fontFeatureSettings, fontVariationSettings, lineHeight, letterSpacing, pixelRatio, ignoreEditorZoom);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/accessibility/common/accessibility.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/accessibility/common/accessibility.js
 var IAccessibilityService = createDecorator("accessibilityService");
 var CONTEXT_ACCESSIBILITY_MODE_ENABLED = new RawContextKey("accessibilityModeEnabled", false);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/inputMode.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/inputMode.js
 var InputModeImpl = class {
   constructor() {
     this._inputMode = "insert";
@@ -17726,7 +17726,7 @@ var InputModeImpl = class {
 };
 var InputMode = new InputModeImpl();
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/config/editorConfiguration.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/config/editorConfiguration.js
 var __decorate6 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -17998,7 +17998,7 @@ function deepCloneAndMigrateOptions(_options) {
   return options;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/performance.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/performance.js
 var inputLatency;
 (function(inputLatency2) {
   const totalKeydownTime = { total: 0, min: Number.MAX_VALUE, max: 0 };
@@ -18143,7 +18143,7 @@ var inputLatency;
   }
 })(inputLatency || (inputLatency = {}));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/domStylesheets.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/domStylesheets.js
 var globalStylesheets = /* @__PURE__ */ new Map();
 function createStyleSheet(container = mainWindow.document.head, beforeAppend, disposableStore) {
   const style = document.createElement("style");
@@ -18202,7 +18202,7 @@ function createCSSRule(selector, cssText, style = getSharedStyleSheet()) {
   }
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/globalPointerMoveMonitor.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/globalPointerMoveMonitor.js
 var GlobalPointerMoveMonitor = class {
   constructor() {
     this._hooks = new DisposableStore();
@@ -18258,7 +18258,7 @@ var GlobalPointerMoveMonitor = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/colorUtils.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/colorUtils.js
 function asCssVariableName(colorIdent) {
   return `--vscode-${colorIdent.replace(/\./g, "-")}`;
 }
@@ -18426,7 +18426,7 @@ colorRegistry.onDidChangeSchema(() => {
   }
 });
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/colors/baseColors.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/colors/baseColors.js
 var foreground = registerColor("foreground", { dark: "#CCCCCC", light: "#616161", hcDark: "#FFFFFF", hcLight: "#292929" }, localize(1838, "Overall foreground color. This color is only used if not overridden by a component."));
 registerColor("strongForeground", { dark: "#FFFFFF", light: "#000000", hcDark: "#FFFFFF", hcLight: "#000000" }, localize(1839, "Highest-contrast foreground color, intended for text or icons that need maximum legibility across various backgrounds. This color is only used if not overridden by a component."));
 registerColor("disabledForeground", { dark: "#CCCCCC80", light: "#61616180", hcDark: "#A5A5A5", hcLight: "#7F7F7F" }, localize(1840, "Overall foreground for disabled elements. This color is only used if not overridden by a component."));
@@ -18447,7 +18447,7 @@ registerColor("textBlockQuote.background", { light: "#f2f2f2", dark: "#222222", 
 registerColor("textBlockQuote.border", { light: "#007acc80", dark: "#007acc80", hcDark: Color.white, hcLight: "#292929" }, localize(1855, "Border color for block quotes in text."));
 registerColor("textCodeBlock.background", { light: "#dcdcdc66", dark: "#0a0a0a66", hcDark: Color.black, hcLight: "#F2F2F2" }, localize(1856, "Background color for code blocks in text."));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/colors/miscColors.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/colors/miscColors.js
 registerColor("sash.hoverBorder", focusBorder, localize(2062, "Border color of active sashes."));
 var badgeBackground = registerColor("badge.background", { dark: "#4D4D4D", light: "#C4C4C4", hcDark: Color.black, hcLight: "#0F4A85" }, localize(2063, "Badge background color. Badges are small information labels, e.g. for search results count."));
 var badgeForeground = registerColor("badge.foreground", { dark: Color.white, light: "#333", hcDark: Color.white, hcLight: Color.white }, localize(2064, "Badge foreground color. Badges are small information labels, e.g. for search results count."));
@@ -18465,7 +18465,7 @@ registerColor("chart.line", { dark: "#236B8E", light: "#236B8E", hcDark: "#236B8
 registerColor("chart.axis", { dark: Color.fromHex("#BFBFBF").transparent(0.4), light: Color.fromHex("#000000").transparent(0.6), hcDark: contrastBorder, hcLight: contrastBorder }, localize(2076, "Axis color for the chart."));
 registerColor("chart.guide", { dark: Color.fromHex("#BFBFBF").transparent(0.2), light: Color.fromHex("#000000").transparent(0.2), hcDark: contrastBorder, hcLight: contrastBorder }, localize(2077, "Guide line for the chart."));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/colors/editorColors.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/colors/editorColors.js
 var editorBackground = registerColor("editor.background", { light: "#ffffff", dark: "#1E1E1E", hcDark: Color.black, hcLight: Color.white }, localize(1865, "Editor background color."));
 var editorForeground = registerColor("editor.foreground", { light: "#333333", dark: "#BBBBBB", hcDark: Color.white, hcLight: foreground }, localize(1866, "Editor default foreground color."));
 registerColor("editorStickyScroll.background", editorBackground, localize(1867, "Background color of sticky scroll in the editor"));
@@ -18570,7 +18570,7 @@ var problemsErrorIconForeground = registerColor("problemsErrorIcon.foreground", 
 var problemsWarningIconForeground = registerColor("problemsWarningIcon.foreground", editorWarningForeground, localize(1958, "The color used for the problems warning icon."));
 var problemsInfoIconForeground = registerColor("problemsInfoIcon.foreground", editorInfoForeground, localize(1959, "The color used for the problems info icon."));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/colors/minimapColors.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/colors/minimapColors.js
 var minimapFindMatch = registerColor("minimap.findMatchHighlight", editorFindMatchHighlight, localize(2051, "Minimap marker color for find matches."), true);
 var minimapSelectionOccurrenceHighlight = registerColor("minimap.selectionOccurrenceHighlight", editorSelectionHighlight, localize(2052, "Minimap marker color for repeating editor selections."), true);
 var minimapSelection = registerColor("minimap.selectionHighlight", editorSelectionBackground, localize(2053, "Minimap marker color for the editor selection."), true);
@@ -18583,7 +18583,7 @@ registerColor("minimapSlider.background", transparent(scrollbarSliderBackground,
 registerColor("minimapSlider.hoverBackground", transparent(scrollbarSliderHoverBackground, 0.5), localize(2060, "Minimap slider background color when hovering."));
 registerColor("minimapSlider.activeBackground", transparent(scrollbarSliderActiveBackground, 0.5), localize(2061, "Minimap slider background color when clicked on."));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/colors/chartsColors.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/colors/chartsColors.js
 registerColor("charts.foreground", foreground, localize(1857, "The foreground color used in charts."));
 registerColor("charts.lines", transparent(foreground, 0.5), localize(1858, "The color used for horizontal lines in charts."));
 registerColor("charts.red", editorErrorForeground, localize(1859, "The red color used in chart visualizations."));
@@ -18593,7 +18593,7 @@ registerColor("charts.orange", minimapFindMatch, localize(1862, "The orange colo
 registerColor("charts.green", { dark: "#89D185", light: "#388A34", hcDark: "#89D185", hcLight: "#374e06" }, localize(1863, "The green color used in chart visualizations."));
 registerColor("charts.purple", { dark: "#B180D7", light: "#652D90", hcDark: "#B180D7", hcLight: "#652D90" }, localize(1864, "The purple color used in chart visualizations."));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/colors/listColors.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/colors/listColors.js
 var listFocusBackground = registerColor("list.focusBackground", null, localize(2008, "List/Tree background color for the focused item when the list/tree is active. An active list/tree has keyboard focus, an inactive does not."));
 var listFocusForeground = registerColor("list.focusForeground", null, localize(2009, "List/Tree foreground color for the focused item when the list/tree is active. An active list/tree has keyboard focus, an inactive does not."));
 var listFocusOutline = registerColor("list.focusOutline", { dark: focusBorder, light: focusBorder, hcDark: activeContrastBorder, hcLight: activeContrastBorder }, localize(2010, "List/Tree outline color for the focused item when the list/tree is active. An active list/tree has keyboard focus, an inactive does not."));
@@ -18631,7 +18631,7 @@ var editorActionListForeground = registerColor("editorActionList.foreground", ed
 registerColor("editorActionList.focusForeground", listActiveSelectionForeground, localize(2042, "Action List foreground color for the focused item."));
 registerColor("editorActionList.focusBackground", listActiveSelectionBackground, localize(2043, "Action List background color for the focused item."));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/colors/inputColors.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/colors/inputColors.js
 var inputBackground = registerColor("input.background", { dark: "#3C3C3C", light: Color.white, hcDark: Color.black, hcLight: Color.white }, localize(1960, "Input box background."));
 var inputForeground = registerColor("input.foreground", foreground, localize(1961, "Input box foreground."));
 var inputBorder = registerColor("input.border", { dark: null, light: null, hcDark: contrastBorder, hcLight: contrastBorder }, localize(1962, "Input box border."));
@@ -18681,7 +18681,7 @@ var keybindingLabelForeground = registerColor("keybindingLabel.foreground", { da
 var keybindingLabelBorder = registerColor("keybindingLabel.border", { dark: new Color(new RGBA(51, 51, 51, 0.6)), light: new Color(new RGBA(204, 204, 204, 0.4)), hcDark: new Color(new RGBA(111, 195, 223)), hcLight: contrastBorder }, localize(2006, "Keybinding label border color. The keybinding label is used to represent a keyboard shortcut."));
 var keybindingLabelBottomBorder = registerColor("keybindingLabel.bottomBorder", { dark: new Color(new RGBA(68, 68, 68, 0.6)), light: new Color(new RGBA(187, 187, 187, 0.4)), hcDark: new Color(new RGBA(111, 195, 223)), hcLight: foreground }, localize(2007, "Keybinding label border bottom color. The keybinding label is used to represent a keyboard shortcut."));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/colors/menuColors.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/colors/menuColors.js
 var menuBorder = registerColor("menu.border", { dark: null, light: null, hcDark: contrastBorder, hcLight: contrastBorder }, localize(2044, "Border color of menus."));
 var menuForeground = registerColor("menu.foreground", selectForeground, localize(2045, "Foreground color of menu items."));
 var menuBackground = registerColor("menu.background", selectBackground, localize(2046, "Background color of menu items."));
@@ -18690,7 +18690,7 @@ registerColor("menu.selectionBackground", listActiveSelectionBackground, localiz
 var menuSelectionBorder = registerColor("menu.selectionBorder", { dark: null, light: null, hcDark: activeContrastBorder, hcLight: activeContrastBorder }, localize(2049, "Border color of the selected menu item in menus."));
 var menuSeparatorBackground = registerColor("menu.separatorBackground", { dark: transparent(foreground, 0.2), light: transparent(foreground, 0.2), hcDark: contrastBorder, hcLight: contrastBorder }, localize(2050, "Color of a separator menu item in menus."));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/colors/quickpickColors.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/colors/quickpickColors.js
 var quickInputBackground = registerColor("quickInput.background", editorWidgetBackground, localize(2078, "Quick picker background color. The quick picker widget is the container for pickers like the command palette."));
 var quickInputForeground = registerColor("quickInput.foreground", editorWidgetForeground, localize(2079, "Quick picker foreground color. The quick picker widget is the container for pickers like the command palette."));
 var quickInputTitleBackground = registerColor("quickInputTitle.background", { dark: new Color(new RGBA(255, 255, 255, 0.105)), light: new Color(new RGBA(0, 0, 0, 0.06)), hcDark: "#000000", hcLight: Color.white }, localize(2080, "Quick picker title background color. The quick picker widget is the container for pickers like the command palette."));
@@ -18702,12 +18702,12 @@ var quickInputListFocusIconForeground = registerColor("quickInputList.focusIconF
 var quickInputListFocusBackground = registerColor("quickInputList.focusBackground", { dark: oneOf(_deprecatedQuickInputListFocusBackground, listActiveSelectionBackground), light: oneOf(_deprecatedQuickInputListFocusBackground, listActiveSelectionBackground), hcDark: null, hcLight: null }, localize(2086, "Quick picker background color for the focused item."));
 registerColor("quickInputList.focusHighlightForeground", listFocusHighlightForeground, localize(2087, "Quick picker foreground color of the match highlights on the focused item."));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/colors/searchColors.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/colors/searchColors.js
 registerColor("search.resultsInfoForeground", { light: foreground, dark: transparent(foreground, 0.65), hcDark: foreground, hcLight: foreground }, localize(2088, "Color of the text in the search viewlet's completion message."));
 registerColor("searchEditor.findMatchBackground", { light: transparent(editorFindMatchHighlight, 0.66), dark: transparent(editorFindMatchHighlight, 0.66), hcDark: editorFindMatchHighlight, hcLight: editorFindMatchHighlight }, localize(2089, "Color of the Search Editor query matches."));
 registerColor("searchEditor.findMatchBorder", { light: transparent(editorFindMatchHighlightBorder, 0.66), dark: transparent(editorFindMatchHighlightBorder, 0.66), hcDark: editorFindMatchHighlightBorder, hcLight: editorFindMatchHighlightBorder }, localize(2090, "Border color of the Search Editor query matches."));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/editorDom.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/editorDom.js
 var PageCoordinates = class {
   constructor(x, y) {
     this.x = x;
@@ -18961,7 +18961,7 @@ function camelToDashes(str) {
   return str.replace(/(^[A-Z])/, ([first]) => first.toLowerCase()).replace(/([A-Z])/g, ([letter]) => `-${letter.toLowerCase()}`);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewEventHandler.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewEventHandler.js
 var ViewEventHandler = class extends Disposable {
   constructor() {
     super();
@@ -19141,7 +19141,7 @@ var ViewEventHandler = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/view/viewPart.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/view/viewPart.js
 var ViewPart = class extends ViewEventHandler {
   constructor(context) {
     super();
@@ -19186,7 +19186,7 @@ var PartFingerprints = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/view/renderingContext.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/view/renderingContext.js
 var RestrictedRenderingContext = class {
   constructor(viewLayout, viewportData) {
     this._restrictedRenderingContextBrand = void 0;
@@ -19296,7 +19296,7 @@ var VisibleRanges = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewLines/rangeUtil.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewLines/rangeUtil.js
 var RangeUtil = class {
   static _createRange() {
     if (!this._handyReadyRange) {
@@ -19392,7 +19392,7 @@ var RangeUtil = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/theme.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/theme.js
 var ColorScheme;
 (function(ColorScheme2) {
   ColorScheme2["DARK"] = "dark";
@@ -19414,7 +19414,7 @@ function isDark(scheme) {
   return scheme === ColorScheme.DARK || scheme === ColorScheme.HIGH_CONTRAST_DARK;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewLines/viewLine.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewLines/viewLine.js
 var canUseFastRenderedViewLine = (function() {
   if (isNative) {
     return true;
@@ -19924,7 +19924,7 @@ function getColumnOfNodeOffset(characterMapping, spanNode, offset) {
   return characterMapping.getColumn(new DomPosition(spanIndex, offset), spanNodeTextContentLength);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/cursorColumns.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/cursorColumns.js
 var CursorColumns = class _CursorColumns {
   static _nextVisibleColumn(codePoint, visibleColumn, tabSize) {
     if (codePoint === 9) {
@@ -20012,7 +20012,7 @@ var CursorColumns = class _CursorColumns {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorAtomicMoveOperations.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorAtomicMoveOperations.js
 var AtomicTabMoveOperations = class _AtomicTabMoveOperations {
   /**
    * Get the visible column at the position. If we get to a non-whitespace character first
@@ -20131,7 +20131,7 @@ var AtomicTabMoveOperations = class _AtomicTabMoveOperations {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/mouseTarget.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/mouseTarget.js
 var UnknownHitTestResult = class {
   constructor(hitTarget = null) {
     this.hitTarget = hitTarget;
@@ -21010,7 +21010,7 @@ var CharWidthReader = class _CharWidthReader {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/decorators.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/decorators.js
 function memoize(_target, key, descriptor) {
   let fnKey = null;
   let fn = null;
@@ -21041,7 +21041,7 @@ function memoize(_target, key, descriptor) {
   };
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/touch.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/touch.js
 var __decorate7 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -21304,7 +21304,7 @@ __decorate7([
   memoize
 ], Gesture, "isTouchDevice", null);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/widget.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/widget.js
 var Widget = class extends Disposable {
   onclick(domNode, listener) {
     this._register(addDisposableListener(domNode, EventType.CLICK, (e) => listener(new StandardMouseEvent(getWindow(domNode), e))));
@@ -21338,7 +21338,7 @@ var Widget = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/scrollbar/scrollbarArrow.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/scrollbar/scrollbarArrow.js
 var ARROW_IMG_SIZE = 11;
 var ScrollbarArrow = class extends Widget {
   constructor(opts) {
@@ -21404,7 +21404,7 @@ var ScrollbarArrow = class extends Widget {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/scrollbar/scrollbarVisibilityController.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/scrollbar/scrollbarVisibilityController.js
 var ScrollbarVisibilityController = class extends Disposable {
   constructor(visibility, visibleClassName, invisibleClassName) {
     super();
@@ -21486,7 +21486,7 @@ var ScrollbarVisibilityController = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/scrollbar/abstractScrollbar.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/scrollbar/abstractScrollbar.js
 var POINTER_DRAG_RESET_DISTANCE = 140;
 var AbstractScrollbar = class extends Widget {
   constructor(opts) {
@@ -21677,7 +21677,7 @@ var AbstractScrollbar = class extends Widget {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/scrollbar/scrollbarState.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/scrollbar/scrollbarState.js
 var MINIMUM_SLIDER_SIZE = 20;
 var ScrollbarState = class _ScrollbarState {
   constructor(arrowSize, scrollbarSize, oppositeScrollbarSize, visibleSize, scrollSize, scrollPosition) {
@@ -21825,7 +21825,7 @@ var ScrollbarState = class _ScrollbarState {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/scrollbar/horizontalScrollbar.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/scrollbar/horizontalScrollbar.js
 var HorizontalScrollbar = class extends AbstractScrollbar {
   constructor(scrollable, options, host) {
     const scrollDimensions = scrollable.getScrollDimensions();
@@ -21906,7 +21906,7 @@ var HorizontalScrollbar = class extends AbstractScrollbar {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/scrollbar/verticalScrollbar.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/scrollbar/verticalScrollbar.js
 var VerticalScrollbar = class extends AbstractScrollbar {
   constructor(scrollable, options, host) {
     const scrollDimensions = scrollable.getScrollDimensions();
@@ -21995,7 +21995,7 @@ var VerticalScrollbar = class extends AbstractScrollbar {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/scrollable.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/scrollable.js
 var ScrollState = class _ScrollState {
   constructor(_forceIntegerValues, width2, scrollWidth, scrollLeft, height, scrollHeight, scrollTop) {
     this._forceIntegerValues = _forceIntegerValues;
@@ -22286,10 +22286,10 @@ function easeOutCubic(t) {
   return 1 - easeInCubic(1 - t);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/scrollbar/media/scrollbars.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/scrollbar/media/scrollbars.css
 styleInject(".monaco-scrollable-element > .scrollbar > .scra {\n  cursor: pointer;\n  font-size: 11px !important;\n}\n.monaco-scrollable-element > .visible {\n  opacity: 1;\n  background: rgba(0, 0, 0, 0);\n  transition: opacity 100ms linear;\n  z-index: 11;\n}\n.monaco-scrollable-element > .invisible {\n  opacity: 0;\n  pointer-events: none;\n}\n.monaco-scrollable-element > .invisible.fade {\n  transition: opacity 800ms linear;\n}\n.disable-animations .monaco-scrollable-element > .visible,\n.disable-animations .monaco-scrollable-element > .invisible.fade {\n  transition: none;\n}\n.monaco-scrollable-element > .shadow {\n  position: absolute;\n  display: none;\n}\n.monaco-scrollable-element > .shadow.top {\n  display: block;\n  top: 0;\n  left: 3px;\n  height: 3px;\n  width: 100%;\n  box-shadow: var(--vscode-scrollbar-shadow) 0 6px 6px -6px inset;\n}\n.monaco-scrollable-element > .shadow.left {\n  display: block;\n  top: 3px;\n  left: 0;\n  height: 100%;\n  width: 3px;\n  box-shadow: var(--vscode-scrollbar-shadow) 6px 0 6px -6px inset;\n}\n.monaco-scrollable-element > .shadow.top-left-corner {\n  display: block;\n  top: 0;\n  left: 0;\n  height: 3px;\n  width: 3px;\n}\n.monaco-scrollable-element > .shadow.top.left {\n  box-shadow: var(--vscode-scrollbar-shadow) 6px 0 6px -6px inset;\n}\n.monaco-scrollable-element > .scrollbar {\n  background: var(--vscode-scrollbar-background);\n}\n.monaco-scrollable-element > .scrollbar > .slider {\n  background: var(--vscode-scrollbarSlider-background);\n}\n.monaco-scrollable-element > .scrollbar > .slider:hover {\n  background: var(--vscode-scrollbarSlider-hoverBackground);\n}\n.monaco-scrollable-element > .scrollbar > .slider.active {\n  background: var(--vscode-scrollbarSlider-activeBackground);\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/scrollbar/scrollableElement.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/scrollbar/scrollableElement.js
 var HIDE_TIMEOUT = 500;
 var SCROLL_WHEEL_SENSITIVITY = 50;
 var MouseWheelClassifierItem = class {
@@ -22841,7 +22841,7 @@ function resolveOptions(opts) {
   return result;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/dragScrolling.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/dragScrolling.js
 var DragScrolling = class extends Disposable {
   constructor(_context, _viewHelper, _mouseTargetFactory, _dispatchMouse) {
     super();
@@ -23035,7 +23035,7 @@ var LeftRightDragScrollingOperation = class extends DragScrollingOperation {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/mouseHandler.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/mouseHandler.js
 var MouseHandler = class extends ViewEventHandler {
   constructor(context, viewController, viewHelper) {
     super();
@@ -23556,7 +23556,7 @@ var MouseDownState = class _MouseDownState {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/event.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/event.js
 var DomEmitter = class {
   get event() {
     return this.emitter.event;
@@ -23573,7 +23573,7 @@ var DomEmitter = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/uuid.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/uuid.js
 var generateUuid = (function() {
   if (typeof crypto.randomUUID === "function") {
     return crypto.randomUUID.bind(crypto);
@@ -23616,7 +23616,7 @@ function prefixedUuid(namespace) {
   return `${namespace}-${generateUuid()}`;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/dnd.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/dnd.js
 var DataTransfers = {
   /**
    * Application specific resource transfer type
@@ -23634,7 +23634,7 @@ var DataTransfers = {
   INTERNAL_URI_LIST: "application/vnd.code.uri-list"
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/dataTransfer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/dataTransfer.js
 function createStringDataTransferItem(stringOrPromise, id) {
   return {
     id,
@@ -23752,7 +23752,7 @@ var UriList = Object.freeze({
   }
 });
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/dnd/browser/dnd.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/dnd/browser/dnd.js
 var CodeDataTransfers = {
   EDITORS: "CodeEditors",
   FILES: "CodeFiles"
@@ -23789,7 +23789,7 @@ function getPathForFile(file) {
   return void 0;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/dataTransfer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/dataTransfer.js
 function toVSDataTransfer(dataTransfer) {
   const vsDataTransfer = new VSDataTransfer();
   for (const item of dataTransfer.items) {
@@ -23852,7 +23852,7 @@ function toExternalVSDataTransfer(sourceDataTransfer, overwriteUriList = false) 
   return vsDataTransfer;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/clipboardUtils.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/clipboardUtils.js
 function storeMetadataInMemory(textToCopy, metadata, isFirefox3) {
   InMemoryClipboardMetadataManager.INSTANCE.set(
     // When writing "LINE\r\n" to the clipboard and then pasting,
@@ -24013,7 +24013,7 @@ function createReadableClipboardData(dataTransfer) {
   };
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/textArea/textAreaEditContextState.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/textArea/textAreaEditContextState.js
 var TextAreaState = class _TextAreaState {
   static {
     this.EMPTY = new _TextAreaState("", 0, 0, null, void 0);
@@ -24170,7 +24170,7 @@ var TextAreaState = class _TextAreaState {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/textArea/textAreaEditContextInput.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/textArea/textAreaEditContextInput.js
 var __decorate8 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -24651,7 +24651,7 @@ var TextAreaWrapper = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/pointerHandler.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/pointerHandler.js
 var PointerEventHandler = class extends MouseHandler {
   constructor(context, viewController, viewHelper) {
     super(context, viewController, viewHelper);
@@ -24772,7 +24772,7 @@ var PointerHandler = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/misc/indentation.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/misc/indentation.js
 function _normalizeIndentationFromWhitespace(str, indentSize, insertSpaces) {
   let spacesCnt = 0;
   for (let i = 0; i < str.length; i++) {
@@ -24803,7 +24803,7 @@ function normalizeIndentation(str, indentSize, insertSpaces) {
   return _normalizeIndentationFromWhitespace(str.substring(0, firstNonWhitespaceIndex$1), indentSize, insertSpaces) + str.substring(firstNonWhitespaceIndex$1);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/cursorCommon.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/cursorCommon.js
 var autoCloseAlways = () => true;
 var autoCloseNever = () => false;
 var autoCloseBeforeWhitespace = (chr) => chr === " " || chr === "	";
@@ -25130,7 +25130,7 @@ function isQuote(ch) {
   return ch === "'" || ch === '"' || ch === "`";
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorColumnSelection.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorColumnSelection.js
 var ColumnSelection = class _ColumnSelection {
   static columnSelect(config, model, fromLineNumber, fromVisibleColumn, toLineNumber, toVisibleColumn) {
     const lineCount = Math.abs(toLineNumber - fromLineNumber) + 1;
@@ -25212,7 +25212,7 @@ var ColumnSelection = class _ColumnSelection {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/commands/replaceCommand.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/commands/replaceCommand.js
 var ReplaceCommand = class {
   constructor(range2, text2, insertsAutoWhitespace = false) {
     this._range = range2;
@@ -25347,7 +25347,7 @@ function addPositiveOffsetToModelPosition(model, position, offset) {
   return endPosition;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorMoveOperations.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorMoveOperations.js
 var CursorPosition = class {
   constructor(lineNumber, column, leftoverVisibleColumns) {
     this._cursorPositionBrand = void 0;
@@ -25639,7 +25639,7 @@ var MoveOperations = class _MoveOperations {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorDeleteOperations.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorDeleteOperations.js
 var DeleteOperations = class _DeleteOperations {
   static deleteRight(prevEditOperationType, config, model, selections) {
     const commands = [];
@@ -25837,7 +25837,7 @@ var DeleteOperations = class _DeleteOperations {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorWordOperations.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorWordOperations.js
 var WordOperations = class _WordOperations {
   static _createWord(lineContent, wordType, nextCharClass, start, end) {
     return { start, end, wordType, nextCharClass };
@@ -26432,7 +26432,7 @@ var WordOperations = class _WordOperations {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorMoveCommands.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorMoveCommands.js
 var CursorMoveCommands = class _CursorMoveCommands {
   static addCursorDown(viewModel, cursors, useLogicalLine) {
     const result = [];
@@ -27131,7 +27131,7 @@ var CursorMove;
   CursorMove2.parse = parse4;
 })(CursorMove || (CursorMove = {}));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/supports/indentationLineProcessor.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/supports/indentationLineProcessor.js
 var ProcessedIndentRulesSupport = class {
   constructor(model, indentRulesSupport, languageConfigurationService) {
     this._indentRulesSupport = indentRulesSupport;
@@ -27297,7 +27297,7 @@ function isLanguageDifferentFromLineStart(model, position) {
   return languageIsDifferentFromLineStart;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/enterAction.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/enterAction.js
 function getEnterAction(autoIndent, model, range2, languageConfigurationService) {
   model.tokenization.forceTokenization(range2.startLineNumber);
   const languageId = model.getLanguageIdAtPosition(range2.startLineNumber, range2.startColumn);
@@ -27338,7 +27338,7 @@ function getEnterAction(autoIndent, model, range2, languageConfigurationService)
   };
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/commands/shiftCommand.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/commands/shiftCommand.js
 var __decorate9 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -27544,7 +27544,7 @@ ShiftCommand = ShiftCommand_1 = __decorate9([
   __param8(2, ILanguageConfigurationService)
 ], ShiftCommand);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/commands/surroundSelectionCommand.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/commands/surroundSelectionCommand.js
 var SurroundSelectionCommand = class {
   constructor(range2, charBeforeSelection, charAfterSelection) {
     this._range = range2;
@@ -27578,7 +27578,7 @@ var CompositionSurroundSelectionCommand = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/autoIndent.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/autoIndent.js
 function getPrecedingValidLine(model, lineNumber, processedIndentRulesSupport) {
   const languageId = model.tokenization.getLanguageIdAtPosition(lineNumber, 0);
   if (lineNumber > 1) {
@@ -27837,7 +27837,7 @@ function createVirtualModelWithModifiedTokensAtLine(model, modifiedLineNumber, m
   return virtualModel;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorTypeEditOperations.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorTypeEditOperations.js
 var AutoIndentOperation = class {
   static getEdits(config, model, selections, ch, isDoingComposition) {
     if (!isDoingComposition && this._isAutoIndentType(config, model, selections)) {
@@ -28715,7 +28715,7 @@ function shouldSurroundChar(config, ch) {
   }
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorTypeOperations.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorTypeOperations.js
 var TypeOperations = class {
   static indent(config, model, selections) {
     if (model === null || selections === null) {
@@ -28871,7 +28871,7 @@ var CompositionOutcome = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/editorContextKeys.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/editorContextKeys.js
 var EditorContextKeys;
 (function(EditorContextKeys2) {
   EditorContextKeys2.editorSimpleInput = new RawContextKey("editorSimpleInput", false, true);
@@ -28934,7 +28934,7 @@ var EditorContextKeys;
   EditorContextKeys2.selectionHasDiagnostics = new RawContextKey("editorSelectionHasDiagnostics", false, localize(762, "Whether any diagnostic is present in the current editor selection"));
 })(EditorContextKeys || (EditorContextKeys = {}));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/coreCommands.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/coreCommands.js
 var CORE_WEIGHT = 0;
 var CoreEditorCommand = class extends EditorCommand {
   runEditorCommand(accessor, editor2, args) {
@@ -30799,7 +30799,7 @@ registerOverwritableCommand(
   /* Handler.Cut */
 );
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/view/viewController.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/view/viewController.js
 var ViewController = class _ViewController {
   constructor(configuration, viewModel, userInputEvents, commandDelegate) {
     this.configuration = configuration;
@@ -31138,7 +31138,7 @@ var ViewController = class _ViewController {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/view/viewLayer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/view/viewLayer.js
 var RenderedLinesCollection = class {
   constructor(_lineFactory) {
     this._lineFactory = _lineFactory;
@@ -31573,7 +31573,7 @@ var ViewLayerRenderer = class _ViewLayerRenderer {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/view/viewOverlays.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/view/viewOverlays.js
 var ViewOverlays = class extends ViewPart {
   constructor(context) {
     super(context);
@@ -31788,7 +31788,7 @@ var MarginViewOverlays = class extends ViewOverlays {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/view/viewUserInputEvents.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/view/viewUserInputEvents.js
 var ViewUserInputEvents = class _ViewUserInputEvents {
   constructor(coordinatesConverter) {
     this.onKeyDown = null;
@@ -31873,10 +31873,10 @@ var ViewUserInputEvents = class _ViewUserInputEvents {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/blockDecorations/blockDecorations.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/blockDecorations/blockDecorations.css
 styleInject(".monaco-editor .blockDecorations-container {\n  position: absolute;\n  top: 0;\n  pointer-events: none;\n}\n.monaco-editor .blockDecorations-block {\n  position: absolute;\n  box-sizing: border-box;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/blockDecorations/blockDecorations.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/blockDecorations/blockDecorations.js
 var BlockDecorations = class extends ViewPart {
   constructor(context) {
     super(context);
@@ -31960,7 +31960,7 @@ var BlockDecorations = class extends ViewPart {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/contentWidgets/contentWidgets.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/contentWidgets/contentWidgets.js
 var ViewContentWidgets = class extends ViewPart {
   constructor(context, viewDomNode) {
     super(context);
@@ -32436,14 +32436,14 @@ function safeInvoke(fn, thisArg, ...args) {
   }
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/currentLineHighlight/currentLineHighlight.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/currentLineHighlight/currentLineHighlight.css
 styleInject(".monaco-editor .view-overlays .current-line {\n  display: block;\n  position: absolute;\n  left: 0;\n  top: 0;\n  box-sizing: border-box;\n  height: 100%;\n}\n.monaco-editor .margin-view-overlays .current-line {\n  display: block;\n  position: absolute;\n  left: 0;\n  top: 0;\n  box-sizing: border-box;\n  height: 100%;\n}\n.monaco-editor .margin-view-overlays .current-line.current-line-margin.current-line-margin-both {\n  border-right: 0;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/view/dynamicViewOverlay.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/view/dynamicViewOverlay.js
 var DynamicViewOverlay = class extends ViewEventHandler {
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/themeService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/themeService.js
 var IThemeService = createDecorator("themeService");
 function themeColorFromId(id) {
   return { id };
@@ -32502,7 +32502,7 @@ var Themable = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/editorColorRegistry.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/editorColorRegistry.js
 var editorLineHighlight = registerColor("editor.lineHighlightBackground", null, localize(641, "Background color for the highlight of line at the cursor position."));
 var editorInactiveLineHighlight = registerColor("editor.inactiveLineHighlightBackground", editorLineHighlight, localize(642, "Background color for the highlight of line at the cursor position when the editor is not focused."));
 var editorLineHighlightBorder = registerColor("editor.lineHighlightBorder", { dark: "#282828", light: "#eeeeee", hcDark: "#f38518", hcLight: contrastBorder }, localize(643, "Background color for the border around the line at the cursor position."));
@@ -32583,7 +32583,7 @@ registerThemingParticipant((theme, collector) => {
   }
 });
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/currentLineHighlight/currentLineHighlight.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/currentLineHighlight/currentLineHighlight.js
 var AbstractLineHighlightOverlay = class extends DynamicViewOverlay {
   constructor(context) {
     super();
@@ -32786,10 +32786,10 @@ registerThemingParticipant((theme, collector) => {
   }
 });
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/decorations/decorations.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/decorations/decorations.css
 styleInject(".monaco-editor .lines-content .cdr {\n  position: absolute;\n  height: 100%;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/decorations/decorations.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/decorations/decorations.js
 var DecorationsOverlay = class extends DynamicViewOverlay {
   constructor(context) {
     super();
@@ -32969,7 +32969,7 @@ var DecorationsOverlay = class extends DynamicViewOverlay {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/editorScrollbar/editorScrollbar.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/editorScrollbar/editorScrollbar.js
 var EditorScrollbar2 = class extends ViewPart {
   constructor(context, linesContent, viewDomNode, overflowGuardDomNode) {
     super(context);
@@ -33148,10 +33148,10 @@ var EditorScrollbar2 = class extends ViewPart {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/glyphMargin/glyphMargin.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/glyphMargin/glyphMargin.css
 styleInject(".monaco-editor .glyph-margin {\n  position: absolute;\n  top: 0;\n}\n.monaco-editor .glyph-margin-widgets .cgmr {\n  position: absolute;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n.monaco-editor .glyph-margin-widgets .cgmr.codicon-modifier-spin::before {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/glyphMargin/glyphMargin.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/glyphMargin/glyphMargin.js
 var DecorationToRender = class {
   constructor(startLineNumber, endLineNumber, className2, tooltip, zIndex) {
     this.startLineNumber = startLineNumber;
@@ -33520,10 +33520,10 @@ var DecorationBasedGlyph = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/indentGuides/indentGuides.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/indentGuides/indentGuides.css
 styleInject(".monaco-editor .lines-content .core-guide {\n  position: absolute;\n  box-sizing: border-box;\n  height: 100%;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/textModelPart.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/textModelPart.js
 var TextModelPart = class extends Disposable {
   constructor() {
     super(...arguments);
@@ -33540,7 +33540,7 @@ var TextModelPart = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/utils.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/utils.js
 function computeIndentLevel(line, tabSize) {
   let indent = 0;
   let i = 0;
@@ -33562,7 +33562,7 @@ function computeIndentLevel(line, tabSize) {
   return indent;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/textModelGuides.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/textModelGuides.js
 var HorizontalGuidesState;
 (function(HorizontalGuidesState2) {
   HorizontalGuidesState2[HorizontalGuidesState2["Disabled"] = 0] = "Disabled";
@@ -33589,7 +33589,7 @@ var IndentGuideHorizontalLine = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/guidesTextModelPart.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/guidesTextModelPart.js
 var GuidesTextModelPart = class extends TextModelPart {
   constructor(textModel, languageConfigurationService) {
     super();
@@ -33903,7 +33903,7 @@ var BracketPairGuidesClassNames = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/indentGuides/indentGuides.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/indentGuides/indentGuides.js
 var IndentGuidesOverlay = class extends DynamicViewOverlay {
   constructor(context) {
     super();
@@ -34138,10 +34138,10 @@ registerThemingParticipant((theme, collector) => {
   }
 });
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/lineNumbers/lineNumbers.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/lineNumbers/lineNumbers.css
 styleInject(".monaco-editor .margin-view-overlays .line-numbers {\n  bottom: 0;\n  font-variant-numeric: tabular-nums;\n  position: absolute;\n  text-align: right;\n  display: inline-block;\n  vertical-align: middle;\n  box-sizing: border-box;\n  cursor: default;\n}\n.monaco-editor .relative-current-line-number {\n  text-align: left;\n  display: inline-block;\n  width: 100%;\n}\n.monaco-editor .margin-view-overlays .line-numbers.lh-odd {\n  margin-top: 1px;\n}\n.monaco-editor .line-numbers {\n  color: var(--vscode-editorLineNumber-foreground);\n}\n.monaco-editor .line-numbers.active-line-number {\n  color: var(--vscode-editorLineNumber-activeForeground);\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/lineNumbers/lineNumbers.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/lineNumbers/lineNumbers.js
 var LineNumbersOverlay = class _LineNumbersOverlay extends DynamicViewOverlay {
   static {
     this.CLASS_NAME = "line-numbers";
@@ -34321,16 +34321,16 @@ registerThemingParticipant((theme, collector) => {
   }
 });
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/mouseCursor/mouseCursor.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/mouseCursor/mouseCursor.css
 styleInject(".monaco-mouse-cursor-text {\n  cursor: text;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/mouseCursor/mouseCursor.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/mouseCursor/mouseCursor.js
 var MOUSE_CURSOR_TEXT_CSS_CLASS_NAME = `monaco-mouse-cursor-text`;
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewLines/viewLines.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewLines/viewLines.css
 styleInject(".mtkcontrol {\n  color: rgb(255, 255, 255) !important;\n  background: rgb(150, 0, 0) !important;\n}\n.mtkoverflow {\n  background-color: var(--vscode-button-background, var(--vscode-editor-background));\n  color: var(--vscode-button-foreground, var(--vscode-editor-foreground));\n  border-width: 1px;\n  border-style: solid;\n  border-color: var(--vscode-contrastBorder);\n  border-radius: 2px;\n  padding: 4px;\n  cursor: pointer;\n}\n.mtkoverflow:hover {\n  background-color: var(--vscode-button-hoverBackground);\n}\n.monaco-editor.no-user-select .lines-content,\n.monaco-editor.no-user-select .view-line,\n.monaco-editor.no-user-select .view-lines {\n  user-select: none;\n  -webkit-user-select: none;\n}\n.monaco-editor.mac .lines-content:hover,\n.monaco-editor.mac .view-line:hover,\n.monaco-editor.mac .view-lines:hover {\n  user-select: text;\n  -webkit-user-select: text;\n  -ms-user-select: text;\n}\n.monaco-editor.enable-user-select {\n  user-select: initial;\n  -webkit-user-select: initial;\n}\n.monaco-editor .view-lines {\n  white-space: nowrap;\n}\n.monaco-editor .view-line {\n  box-sizing: border-box;\n  position: absolute;\n  width: 100%;\n}\n.monaco-editor .lines-content > .view-lines > .view-line > span {\n  top: 0;\n  bottom: 0;\n  position: absolute;\n}\n.monaco-editor .mtkw {\n  color: var(--vscode-editorWhitespace-foreground) !important;\n}\n.monaco-editor .mtkz {\n  display: inline-block;\n  color: var(--vscode-editorWhitespace-foreground) !important;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewLines/domReadingContext.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewLines/domReadingContext.js
 var DomReadingContext = class {
   get didDomLayout() {
     return this._didDomLayout;
@@ -34370,7 +34370,7 @@ var DomReadingContext = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewLines/viewLineOptions.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewLines/viewLineOptions.js
 var ViewLineOptions = class {
   constructor(config, themeType) {
     this.themeType = themeType;
@@ -34425,7 +34425,7 @@ var ViewLineOptions = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewLines/viewLines.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewLines/viewLines.js
 var LastRenderedData = class {
   constructor() {
     this._currentVisibleRange = new Range(1, 1, 1, 1);
@@ -35129,10 +35129,10 @@ var ViewLines = class _ViewLines extends ViewPart {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/linesDecorations/linesDecorations.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/linesDecorations/linesDecorations.css
 styleInject(".monaco-editor .lines-decorations {\n  position: absolute;\n  top: 0;\n  background: white;\n}\n.monaco-editor .margin-view-overlays .cldr {\n  position: absolute;\n  height: 100%;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/linesDecorations/linesDecorations.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/linesDecorations/linesDecorations.js
 var LinesDecorationsOverlay = class extends DedupOverlay {
   constructor(context) {
     super();
@@ -35235,10 +35235,10 @@ var LinesDecorationsOverlay = class extends DedupOverlay {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/margin/margin.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/margin/margin.css
 styleInject(".monaco-editor .margin {\n  background-color: var(--vscode-editorGutter-background);\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/margin/margin.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/margin/margin.js
 var Margin = class _Margin extends ViewPart {
   static {
     this.CLASS_NAME = "glyph-margin";
@@ -35308,10 +35308,10 @@ var Margin = class _Margin extends ViewPart {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/marginDecorations/marginDecorations.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/marginDecorations/marginDecorations.css
 styleInject(".monaco-editor .margin-view-overlays .cmdr {\n  position: absolute;\n  left: 0;\n  width: 100%;\n  height: 100%;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/marginDecorations/marginDecorations.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/marginDecorations/marginDecorations.js
 var MarginViewLineDecorationsOverlay = class extends DedupOverlay {
   constructor(context) {
     super();
@@ -35388,10 +35388,10 @@ var MarginViewLineDecorationsOverlay = class extends DedupOverlay {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/minimap/minimap.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/minimap/minimap.css
 styleInject(".monaco-editor .minimap.slider-mouseover .minimap-slider {\n  opacity: 0;\n  transition: opacity 100ms linear;\n}\n.monaco-editor .minimap.slider-mouseover:hover .minimap-slider {\n  opacity: 1;\n}\n.monaco-editor .minimap.slider-mouseover .minimap-slider.active {\n  opacity: 1;\n}\n.monaco-editor .minimap-slider .minimap-slider-horizontal {\n  background: var(--vscode-minimapSlider-background);\n}\n.monaco-editor .minimap-slider:hover .minimap-slider-horizontal {\n  background: var(--vscode-minimapSlider-hoverBackground);\n}\n.monaco-editor .minimap-slider.active .minimap-slider-horizontal {\n  background: var(--vscode-minimapSlider-activeBackground);\n}\n.monaco-editor .minimap-shadow-visible {\n  box-shadow: var(--vscode-shadow-md);\n}\n.monaco-editor .minimap-shadow-hidden {\n  position: absolute;\n  width: 0;\n}\n.monaco-editor .minimap-shadow-visible {\n  position: absolute;\n  left: -6px;\n  width: 6px;\n  pointer-events: none;\n}\n.monaco-editor.no-minimap-shadow .minimap-shadow-visible {\n  position: absolute;\n  left: -1px;\n  width: 1px;\n}\n.minimap.minimap-autohide-mouseover,\n.minimap.minimap-autohide-scroll {\n  opacity: 0;\n  transition: opacity 0.5s;\n}\n.minimap.minimap-autohide-scroll {\n  pointer-events: none;\n}\n.minimap.minimap-autohide-mouseover:hover,\n.minimap.minimap-autohide-scroll.active {\n  opacity: 1;\n  pointer-events: auto;\n}\n.monaco-editor .minimap {\n  z-index: 5;\n}\n.monaco-editor .minimap canvas {\n  opacity: 0.9;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/misc/rgba.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/misc/rgba.js
 var RGBA8 = class _RGBA8 {
   static {
     this.Empty = new _RGBA8(0, 0, 0, 0);
@@ -35417,7 +35417,7 @@ var RGBA8 = class _RGBA8 {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewModel/minimapTokensColorTracker.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewModel/minimapTokensColorTracker.js
 var MinimapTokensColorTracker = class _MinimapTokensColorTracker extends Disposable {
   static {
     this._INSTANCE = null;
@@ -35477,7 +35477,7 @@ var MinimapTokensColorTracker = class _MinimapTokensColorTracker extends Disposa
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/minimap/minimapCharSheet.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/minimap/minimapCharSheet.js
 var allCharCodes = (() => {
   const v = [];
   for (let i = 32; i <= 126; i++) {
@@ -35500,7 +35500,7 @@ var getCharIndex = (chCode, fontScale) => {
   return chCode;
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/minimap/minimapCharRenderer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/minimap/minimapCharRenderer.js
 var MinimapCharRenderer = class _MinimapCharRenderer {
   constructor(charData, scale) {
     this.scale = scale;
@@ -35583,7 +35583,7 @@ var MinimapCharRenderer = class _MinimapCharRenderer {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/minimap/minimapPreBaked.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/minimap/minimapPreBaked.js
 var charTable = {
   "0": 0,
   "1": 1,
@@ -35614,7 +35614,7 @@ var prebakedMiniMaps = {
   2: createSingleCallFunction(() => decodeData("000000000000000055394F383D2800008B8B1F210002000081B1CBCBCC820000847AAF6B9AAF2119BE08B8881AD60000A44FD07DCCF107015338130C00000000385972265F390B406E2437634B4B48031B12B8A0847000001E15B29A402F0000000000004B33460B00007A752C2A0000000000004D3900000084394B82013400ABA5CFC7AD9C0302A45A3E5A98AB000089A43382D97900008BA54AA087A70A0248A6A7AE6DBE0000BF6F94987EA40A01A06DCFA7A7A9030496C32F77891D0000A99FB1A0AFA80603B29AB9CA75930D010C0948354D3900000C0948354F37460D0028BE673D8400000000AF9D7B6E00002B007AA8933400007AA642675C2700007984CFB9C3985B768772A8A6B7B20000CAAECAAFC4B700009F94A6009F840009D09F9BA4CA9C0000CC8FC76DC87F0000C991C472A2000000A894A48CA7B501079BA2C9C69BA20000B19A5D3FA89000005CA6009DA2960901B0A7F0669FB200009D009E00B7890000DAD0F5D092820000D294D4C48BD10000B5A7A4A3B1A50402CAB6CBA6A2000000B5A7A4A3B1A8044FCDADD19D9CB00000B7778F7B8AAE0803C9AB5D3F5D3F00009EA09EA0BAB006039EA0989A8C7900009B9EF4D6B7C00000A9A7816CACA80000ABAC84705D3F000096DA635CDC8C00006F486F266F263D4784006124097B00374F6D2D6D2D6D4A3A95872322000000030000000000008D8939130000000000002E22A5C9CBC70600AB25C0B5C9B400061A2DB04CA67001082AA6BEBEBFC606002321DACBC19E03087AA08B6768380000282FBAC0B8CA7A88AD25BBA5A29900004C396C5894A6000040485A6E356E9442A32CD17EADA70000B4237923628600003E2DE9C1D7B500002F25BBA5A2990000231DB6AFB4A804023025C0B5CAB588062B2CBDBEC0C706882435A75CA20000002326BD6A82A908048B4B9A5A668000002423A09CB4BB060025259C9D8A7900001C1FCAB2C7C700002A2A9387ABA200002626A4A47D6E9D14333163A0C87500004B6F9C2D643A257049364936493647358A34438355497F1A0000A24C1D590000D38DFFBDD4CD3126"))
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/minimap/minimapCharRendererFactory.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/minimap/minimapCharRendererFactory.js
 var MinimapCharRendererFactory = class _MinimapCharRendererFactory {
   /**
    * Creates a new character renderer factory with the given scale.
@@ -35723,10 +35723,10 @@ var MinimapCharRendererFactory = class _MinimapCharRendererFactory {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/fonts.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/fonts.js
 var DEFAULT_FONT_FAMILY = isWindows ? '"Segoe WPC", "Segoe UI", sans-serif' : isMacintosh ? "-apple-system, BlinkMacSystemFont, sans-serif" : 'system-ui, "Ubuntu", "Droid Sans", sans-serif';
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewModel/viewModelDecoration.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewModel/viewModelDecoration.js
 var ViewModelDecoration = class {
   constructor(range2, options) {
     this._viewModelDecorationBrand = void 0;
@@ -35782,7 +35782,7 @@ function testTokensInRange(model, range2, callback) {
   return true;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/minimap/minimap.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/minimap/minimap.js
 var POINTER_DRAG_RESET_DISTANCE2 = 140;
 var GUTTER_DECORATION_WIDTH = 2;
 var MinimapOptions = class _MinimapOptions {
@@ -37266,10 +37266,10 @@ var ContiguousLineMap = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/overlayWidgets/overlayWidgets.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/overlayWidgets/overlayWidgets.css
 styleInject(".monaco-editor .overlayWidgets {\n  position: absolute;\n  top: 0;\n  left: 0;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/overlayWidgets/overlayWidgets.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/overlayWidgets/overlayWidgets.js
 var ViewOverlayWidgets = class extends ViewPart {
   constructor(context, viewDomNode) {
     super(context);
@@ -37453,7 +37453,7 @@ var ViewOverlayWidgets = class extends ViewPart {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/overviewRuler/decorationsOverviewRuler.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/overviewRuler/decorationsOverviewRuler.js
 var Settings = class {
   constructor(config, theme) {
     const options = config.options;
@@ -37887,7 +37887,7 @@ var DecorationsOverviewRuler = class extends ViewPart {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewModel/overviewZoneManager.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewModel/overviewZoneManager.js
 var ColorZone = class {
   constructor(from, to, colorId) {
     this._colorZoneBrand = void 0;
@@ -38054,7 +38054,7 @@ var OverviewZoneManager = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/overviewRuler/overviewRuler.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/overviewRuler/overviewRuler.js
 var OverviewRuler = class extends ViewEventHandler {
   constructor(context, cssClassName) {
     super();
@@ -38194,10 +38194,10 @@ var OverviewRuler = class extends ViewEventHandler {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/rulers/rulers.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/rulers/rulers.css
 styleInject(".monaco-editor .view-ruler {\n  position: absolute;\n  top: 0;\n  box-shadow: 1px 0 0 0 var(--vscode-editorRuler-foreground) inset;\n  pointer-events: none;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/rulers/rulers.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/rulers/rulers.js
 var Rulers = class extends ViewPart {
   constructor(context) {
     super(context);
@@ -38272,10 +38272,10 @@ var Rulers = class extends ViewPart {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/scrollDecoration/scrollDecoration.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/scrollDecoration/scrollDecoration.css
 styleInject(".monaco-editor .scroll-decoration {\n  position: absolute;\n  top: 0;\n  left: 0;\n  height: 6px;\n  box-shadow: var(--vscode-scrollbar-shadow) 0 6px 6px -6px inset;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/scrollDecoration/scrollDecoration.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/scrollDecoration/scrollDecoration.js
 var ScrollDecorationViewPart = class extends ViewPart {
   constructor(context) {
     super(context);
@@ -38341,10 +38341,10 @@ var ScrollDecorationViewPart = class extends ViewPart {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/selections/selections.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/selections/selections.css
 styleInject(".monaco-editor .lines-content .cslr {\n  position: absolute;\n}\n.monaco-editor .focused .selected-text {\n  background-color: var(--vscode-editor-selectionBackground);\n}\n.monaco-editor .selected-text {\n  background-color: var(--vscode-editor-inactiveSelectionBackground);\n}\n.monaco-editor .top-left-radius {\n  border-top-left-radius: 3px;\n}\n.monaco-editor .bottom-left-radius {\n  border-bottom-left-radius: 3px;\n}\n.monaco-editor .top-right-radius {\n  border-top-right-radius: 3px;\n}\n.monaco-editor .bottom-right-radius {\n  border-bottom-right-radius: 3px;\n}\n.monaco-editor.hc-black .top-left-radius {\n  border-top-left-radius: 0;\n}\n.monaco-editor.hc-black .bottom-left-radius {\n  border-bottom-left-radius: 0;\n}\n.monaco-editor.hc-black .top-right-radius {\n  border-top-right-radius: 0;\n}\n.monaco-editor.hc-black .bottom-right-radius {\n  border-bottom-right-radius: 0;\n}\n.monaco-editor.hc-light .top-left-radius {\n  border-top-left-radius: 0;\n}\n.monaco-editor.hc-light .bottom-left-radius {\n  border-bottom-left-radius: 0;\n}\n.monaco-editor.hc-light .top-right-radius {\n  border-top-right-radius: 0;\n}\n.monaco-editor.hc-light .bottom-right-radius {\n  border-bottom-right-radius: 0;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/selections/selections.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/selections/selections.js
 var HorizontalRangeWithStyle = class {
   constructor(other) {
     this.left = other.left;
@@ -38658,10 +38658,10 @@ function abs(n2) {
   return n2 < 0 ? -n2 : n2;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewCursors/viewCursors.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewCursors/viewCursors.css
 styleInject(".monaco-editor .cursors-layer {\n  position: absolute;\n  top: 0;\n}\n.monaco-editor .cursors-layer > .cursor {\n  position: absolute;\n  overflow: hidden;\n  box-sizing: border-box;\n}\n.monaco-editor .cursors-layer.cursor-smooth-caret-animation > .cursor {\n  transition: all 80ms;\n}\n.monaco-editor .cursors-layer.cursor-block-outline-style > .cursor {\n  background: transparent !important;\n  border-style: solid;\n  border-width: 1px;\n}\n.monaco-editor .cursors-layer.cursor-underline-style > .cursor {\n  border-bottom-width: 2px;\n  border-bottom-style: solid;\n  background: transparent !important;\n}\n.monaco-editor .cursors-layer.cursor-underline-thin-style > .cursor {\n  border-bottom-width: 1px;\n  border-bottom-style: solid;\n  background: transparent !important;\n}\n@keyframes monaco-cursor-smooth {\n  0%, 20% {\n    opacity: 1;\n  }\n  60%, 100% {\n    opacity: 0;\n  }\n}\n@keyframes monaco-cursor-phase {\n  0%, 20% {\n    opacity: 1;\n  }\n  90%, 100% {\n    opacity: 0;\n  }\n}\n@keyframes monaco-cursor-expand {\n  0%, 20% {\n    transform: scaleY(1);\n  }\n  80%, 100% {\n    transform: scaleY(0);\n  }\n}\n.cursor-smooth {\n  animation: monaco-cursor-smooth 0.5s ease-in-out 0s 20 alternate;\n}\n.cursor-phase {\n  animation: monaco-cursor-phase 0.5s ease-in-out 0s 20 alternate;\n}\n.cursor-expand > .cursor {\n  animation: monaco-cursor-expand 0.5s ease-in-out 0s 20 alternate;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewCursors/viewCursor.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewCursors/viewCursor.js
 var ViewCursorRenderData = class {
   constructor(top, left, paddingLeft, width2, height, textContent, textContentClassName) {
     this.top = top;
@@ -38876,7 +38876,7 @@ var ViewCursor = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewCursors/viewCursors.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewCursors/viewCursors.js
 var ViewCursors = class _ViewCursors extends ViewPart {
   static {
     this.BLINK_INTERVAL = 500;
@@ -39215,7 +39215,7 @@ registerThemingParticipant((theme, collector) => {
   }
 });
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewZones/viewZones.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewZones/viewZones.js
 var invalidFunc = () => {
   throw new Error(`Invalid change accessor`);
 };
@@ -39542,10 +39542,10 @@ function safeInvoke1Arg(func, arg1) {
   }
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/whitespace/whitespace.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/whitespace/whitespace.css
 styleInject(".monaco-editor .mwh {\n  position: absolute;\n  color: var(--vscode-editorWhitespace-foreground) !important;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/whitespace/whitespace.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/whitespace/whitespace.js
 var WhitespaceOverlay = class extends DynamicViewOverlay {
   constructor(context) {
     super();
@@ -39796,7 +39796,7 @@ var WhitespaceOptions = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewLayout/viewLinesViewportData.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewLayout/viewLinesViewportData.js
 var ViewportData = class {
   constructor(selections, partialData, whitespaceViewportData, model) {
     this.selections = selections;
@@ -39817,7 +39817,7 @@ var ViewportData = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/editorTheme.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/editorTheme.js
 var EditorTheme = class {
   get type() {
     return this._theme.type;
@@ -39836,7 +39836,7 @@ var EditorTheme = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewModel/viewContext.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewModel/viewContext.js
 var ViewContext = class {
   constructor(configuration, theme, model) {
     this.configuration = configuration;
@@ -39852,7 +39852,7 @@ var ViewContext = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/gpuUtils.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/gpuUtils.js
 var quadVertices = new Float32Array([
   1,
   0,
@@ -39900,7 +39900,7 @@ function observeDevicePixelDimensions(element, parentWindow, callback) {
   return toDisposable(() => observer?.disconnect());
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/raster/glyphRasterizer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/raster/glyphRasterizer.js
 var __decorate10 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -40120,7 +40120,7 @@ __decorate10([
   memoize
 ], GlyphRasterizer.prototype, "cacheKey", null);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/taskQueue.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/taskQueue.js
 var __decorate11 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -40210,7 +40210,7 @@ var IdleTaskQueueInternal = class extends TaskQueue2 {
 };
 var IdleTaskQueue = "requestIdleCallback" in getActiveWindow() ? IdleTaskQueueInternal : PriorityTaskQueue;
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/atlas/textureAtlasShelfAllocator.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/atlas/textureAtlasShelfAllocator.js
 var TextureAtlasShelfAllocator = class {
   constructor(_canvas, _textureIndex) {
     this._canvas = _canvas;
@@ -40328,7 +40328,7 @@ var TextureAtlasShelfAllocator = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/atlas/textureAtlasSlabAllocator.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/atlas/textureAtlasSlabAllocator.js
 var TextureAtlasSlabAllocator = class {
   constructor(_canvas, _textureIndex, options) {
     this._canvas = _canvas;
@@ -40620,7 +40620,7 @@ function addEntryToMapArray(map, key, entry) {
   list2.push(entry);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/atlas/textureAtlasPage.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/atlas/textureAtlasPage.js
 var __decorate12 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -40717,7 +40717,7 @@ TextureAtlasPage = TextureAtlasPage_1 = __decorate12([
   __param10(4, IThemeService)
 ], TextureAtlasPage);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/atlas/textureAtlas.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/atlas/textureAtlas.js
 var __decorate13 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -40851,7 +40851,7 @@ TextureAtlas = TextureAtlas_1 = __decorate13([
   __param11(4, IInstantiationService)
 ], TextureAtlas);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/severity.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/severity.js
 var Severity;
 (function(Severity3) {
   Severity3[Severity3["Ignore"] = 0] = "Ignore";
@@ -40897,13 +40897,13 @@ var Severity;
 })(Severity || (Severity = {}));
 var Severity$1 = Severity;
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/notification/common/notification.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/notification/common/notification.js
 var Severity2 = Severity$1;
 var INotificationService = createDecorator("notificationService");
 var NoOpNotification = class {
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/gpuDisposable.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/gpuDisposable.js
 var GPULifecycle;
 (function(GPULifecycle2) {
   async function requestDevice(fallback2) {
@@ -40944,7 +40944,7 @@ function wrapDestroyableInDisposable(value) {
   };
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/bufferDirtyTracker.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/bufferDirtyTracker.js
 var BufferDirtyTracker = class {
   get dataOffset() {
     return this._startIndex;
@@ -40984,7 +40984,7 @@ var BufferDirtyTracker = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/objectCollectionBuffer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/objectCollectionBuffer.js
 function createObjectCollectionBuffer(propertySpecs, capacity) {
   return new ObjectCollectionBuffer(propertySpecs, capacity);
 }
@@ -41077,7 +41077,7 @@ var ObjectCollectionBufferEntry = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/rectangleRenderer.wgsl.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/rectangleRenderer.wgsl.js
 var rectangleRendererWgsl = (
   /*wgsl*/
   `
@@ -41144,7 +41144,7 @@ struct VSOutput {
 `
 );
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/rectangleRenderer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/rectangleRenderer.js
 var RectangleRenderer = class extends ViewEventHandler {
   constructor(_context, _contentLeft, _devicePixelRatio, _canvas, _ctx, device) {
     super();
@@ -41369,10 +41369,10 @@ var RectangleRenderer = class extends ViewEventHandler {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/css/media/decorationCssRuleExtractor.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/css/media/decorationCssRuleExtractor.css
 styleInject(".monaco-editor .monaco-decoration-css-rule-extractor {\n  visibility: hidden;\n  pointer-events: none;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/css/decorationCssRuleExtractor.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/css/decorationCssRuleExtractor.js
 var DecorationCssRuleExtractor = class extends Disposable {
   constructor() {
     super();
@@ -41453,7 +41453,7 @@ var DecorationCssRuleExtractor = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/css/decorationStyleCache.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/css/decorationStyleCache.js
 var DecorationStyleCache = class {
   constructor() {
     this._nextId = 1;
@@ -41490,7 +41490,7 @@ var DecorationStyleCache = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/utils/runOnChange.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/utils/runOnChange.js
 function runOnChange(observable, cb) {
   let _previousValue;
   let _firstRun = true;
@@ -41522,7 +41522,7 @@ function runOnChange(observable, cb) {
   });
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/viewGpuContext.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/viewGpuContext.js
 var __decorate14 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -41767,7 +41767,7 @@ function supportsCssRule(rule, style) {
   }
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/contentSegmenter.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/contentSegmenter.js
 function createContentSegmenter(lineData, options) {
   if (lineData.isBasicASCII && options.useMonospaceOptimizations) {
     return new AsciiContentSegmenter(lineData);
@@ -41807,7 +41807,7 @@ var GraphemeContentSegmenter = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/renderStrategy/baseRenderStrategy.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/renderStrategy/baseRenderStrategy.js
 var BaseRenderStrategy = class extends ViewEventHandler {
   get glyphRasterizer() {
     return this._glyphRasterizer.value;
@@ -41822,7 +41822,7 @@ var BaseRenderStrategy = class extends ViewEventHandler {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/renderStrategy/fullFileRenderStrategy.wgsl.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/renderStrategy/fullFileRenderStrategy.wgsl.js
 var fullFileRenderStrategyWgsl = (
   /*wgsl*/
   `
@@ -41911,7 +41911,7 @@ struct VSOutput {
 `
 );
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/renderStrategy/viewportRenderStrategy.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/renderStrategy/viewportRenderStrategy.js
 var ViewportRenderStrategy = class _ViewportRenderStrategy extends BaseRenderStrategy {
   static {
     this.maxSupportedColumns = 2e3;
@@ -42250,7 +42250,7 @@ function parseCssOpacity(value) {
   return 1;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/renderStrategy/fullFileRenderStrategy.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/gpu/renderStrategy/fullFileRenderStrategy.js
 var FullFileRenderStrategy = class _FullFileRenderStrategy extends BaseRenderStrategy {
   static {
     this.maxSupportedLines = 3e3;
@@ -42659,7 +42659,7 @@ function parseCssOpacity2(value) {
   return 1;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewLinesGpu/viewLinesGpu.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/viewLinesGpu/viewLinesGpu.js
 var __decorate15 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -43313,10 +43313,10 @@ ViewLinesGpu = __decorate15([
   __param13(3, ILogService)
 ], ViewLinesGpu);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/textArea/textAreaEditContext.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/textArea/textAreaEditContext.css
 styleInject(".monaco-editor .inputarea {\n  min-width: 0;\n  min-height: 0;\n  margin: 0;\n  padding: 0;\n  position: absolute;\n  outline: none !important;\n  resize: none;\n  border: none;\n  overflow: hidden;\n  color: transparent;\n  background-color: transparent;\n  z-index: -10;\n}\n.monaco-editor .inputarea.ime-input {\n  z-index: 10;\n  caret-color: var(--vscode-editorCursor-foreground);\n  color: var(--vscode-editor-foreground);\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/ime.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/ime.js
 var IMEImpl = class {
   constructor() {
     this._onDidChange = new Emitter();
@@ -43343,10 +43343,10 @@ var IMEImpl = class {
 };
 var IME = new IMEImpl();
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/keybinding/common/keybinding.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/keybinding/common/keybinding.js
 var IKeybindingService = createDecorator("keybindingService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/editContext.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/editContext.js
 var AbstractEditContext = class extends ViewPart {
   constructor() {
     super(...arguments);
@@ -43359,7 +43359,7 @@ var AbstractEditContext = class extends ViewPart {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/screenReaderUtils.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/screenReaderUtils.js
 var SimplePagedScreenReaderStrategy = class {
   _getPageOfLine(lineNumber, linesPerPage) {
     return Math.floor((lineNumber - 1) / linesPerPage);
@@ -43486,7 +43486,7 @@ function newlinecount(text2) {
   return result;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/textArea/textAreaEditContextRegistry.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/textArea/textAreaEditContextRegistry.js
 var TextAreaEditContextRegistryImpl = class {
   constructor() {
     this._textAreaEditContextMapping = /* @__PURE__ */ new Map();
@@ -43502,7 +43502,7 @@ var TextAreaEditContextRegistryImpl = class {
 };
 var TextAreaEditContextRegistry = new TextAreaEditContextRegistryImpl();
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/textArea/textAreaEditContext.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/textArea/textAreaEditContext.js
 var __decorate16 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -44193,10 +44193,10 @@ function measureText(targetDocument, text2, fontInfo, tabSize) {
   return res;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/native/nativeEditContext.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/native/nativeEditContext.css
 styleInject(".monaco-editor .native-edit-context {\n  margin: 0;\n  padding: 0;\n  position: absolute;\n  overflow-y: scroll;\n  scrollbar-width: none;\n  z-index: -10;\n  white-space: pre-wrap;\n}\n.monaco-editor .ime-text-area {\n  min-width: 0;\n  min-height: 0;\n  margin: 0;\n  padding: 0;\n  position: absolute;\n  outline: none !important;\n  resize: none;\n  border: none;\n  overflow: hidden;\n  color: transparent;\n  background-color: transparent;\n  z-index: -10;\n}\n.monaco-editor .edit-context-composition-none {\n  background-color: transparent;\n  border-bottom: none;\n}\n.monaco-editor :not(.hc-black, .hc-light) .edit-context-composition-secondary {\n  border-bottom: 1px solid var(--vscode-editor-compositionBorder);\n}\n.monaco-editor :not(.hc-black, .hc-light) .edit-context-composition-primary {\n  border-bottom: 2px solid var(--vscode-editor-compositionBorder);\n}\n.monaco-editor :is(.hc-black, .hc-light) .edit-context-composition-secondary {\n  border: 1px solid var(--vscode-editor-compositionBorder);\n}\n.monaco-editor :is(.hc-black, .hc-light) .edit-context-composition-primary {\n  border: 2px solid var(--vscode-editor-compositionBorder);\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/native/nativeEditContextUtils.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/native/nativeEditContextUtils.js
 var __decorate17 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -44270,7 +44270,7 @@ function editContextAddDisposableListener(target, type, listener, options) {
   };
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/native/screenReaderContentRich.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/native/screenReaderContentRich.js
 var __decorate18 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -44604,7 +44604,7 @@ var RichPagedScreenReaderStrategy = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/native/screenReaderContentSimple.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/native/screenReaderContentSimple.js
 var __decorate19 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -44785,7 +44785,7 @@ SimpleScreenReaderContent = __decorate19([
   __param17(3, IAccessibilityService)
 ], SimpleScreenReaderContent);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/native/screenReaderSupport.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/native/screenReaderSupport.js
 var __decorate20 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -44968,7 +44968,7 @@ ScreenReaderSupport = __decorate20([
   __param18(4, IAccessibilityService)
 ], ScreenReaderSupport);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/native/editContextFactory.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/native/editContextFactory.js
 var EditContext;
 (function(EditContext2) {
   function create3(window2, options) {
@@ -44977,7 +44977,7 @@ var EditContext;
   EditContext2.create = create3;
 })(EditContext || (EditContext = {}));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/native/nativeEditContextRegistry.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/native/nativeEditContextRegistry.js
 var NativeEditContextRegistryImpl = class {
   constructor() {
     this._nativeEditContextMapping = /* @__PURE__ */ new Map();
@@ -44996,7 +44996,7 @@ var NativeEditContextRegistryImpl = class {
 };
 var NativeEditContextRegistry = new NativeEditContextRegistryImpl();
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/native/nativeEditContext.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/controller/editContext/native/nativeEditContext.js
 var __decorate21 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -45511,7 +45511,7 @@ NativeEditContext = __decorate21([
   __param19(6, ILogService)
 ], NativeEditContext);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/rulersGpu/rulersGpu.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/rulersGpu/rulersGpu.js
 var RulersGpu = class extends ViewPart {
   constructor(context, _viewGpuContext) {
     super(context);
@@ -45566,10 +45566,10 @@ var RulersGpu = class extends ViewPart {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/gpuMark/gpuMark.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/gpuMark/gpuMark.css
 styleInject(".monaco-editor .margin-view-overlays .gpu-mark {\n  position: absolute;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  width: 100%;\n  display: inline-block;\n  border-left: solid 2px var(--vscode-editorWarning-foreground);\n  opacity: 0.2;\n  transition: background-color 0.1s linear;\n}\n.monaco-editor .margin-view-overlays .gpu-mark:hover {\n  background-color: var(--vscode-editorWarning-foreground);\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/gpuMark/gpuMark.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/viewParts/gpuMark/gpuMark.js
 var GpuMarkOverlay = class _GpuMarkOverlay extends DynamicViewOverlay {
   static {
     this.CLASS_NAME = "gpu-mark";
@@ -45640,10 +45640,10 @@ var GpuMarkOverlay = class _GpuMarkOverlay extends DynamicViewOverlay {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/userInteraction/browser/userInteractionService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/userInteraction/browser/userInteractionService.js
 var IUserInteractionService = createDecorator("userInteractionService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/view.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/view.js
 var __decorate22 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -46357,7 +46357,7 @@ var CodeEditorWidgetFocusTracker = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/modelLineProjectionData.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/modelLineProjectionData.js
 var ModelLineProjectionData = class {
   constructor(injectionOffsets, injectionOptions, breakOffsets, breakOffsetsVisibleColumn, wrappedTextIndentLength) {
     this.injectionOffsets = injectionOffsets;
@@ -46588,7 +46588,7 @@ var OutputPosition = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/textModelEvents.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/textModelEvents.js
 var ModelRawFlush = class {
   constructor() {
     this.changeType = 1;
@@ -46764,7 +46764,7 @@ var InternalModelContentChangeEvent = class _InternalModelContentChangeEvent {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/view/domLineBreaksComputer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/view/domLineBreaksComputer.js
 var ttPolicy3 = createTrustedTypesPolicy("domLineBreaksComputer", { createHTML: (value) => value });
 var DOMLineBreaksComputerFactory = class _DOMLineBreaksComputerFactory {
   static create(targetWindow) {
@@ -47042,7 +47042,7 @@ function readClientRect(range2, spans, startOffset, endOffset) {
   return range2.getClientRects();
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/codeEditor/codeEditorContributions.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/codeEditor/codeEditorContributions.js
 var CodeEditorContributions = class extends Disposable {
   constructor() {
     super();
@@ -47175,7 +47175,7 @@ var CodeEditorContributions = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/editorAction.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/editorAction.js
 var InternalEditorAction = class {
   constructor(id, label, alias, metadata, _precondition, _run, _contextKeyService) {
     this.id = id;
@@ -47197,7 +47197,7 @@ var InternalEditorAction = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/collections.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/collections.js
 var _a;
 function diffSets(before, after2) {
   const removed = [];
@@ -47273,7 +47273,7 @@ var SetWithKey = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/undoRedo/common/undoRedo.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/undoRedo/common/undoRedo.js
 var IUndoRedoService = createDecorator("undoRedoService");
 var ResourceEditStackSnapshot = class {
   constructor(resource, elements) {
@@ -47318,7 +47318,7 @@ var UndoRedoSource = class _UndoRedoSource {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/misc/eolCounter.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/misc/eolCounter.js
 function countEOL(text2) {
   let eolCount = 0;
   let firstLineLength = 0;
@@ -47353,7 +47353,7 @@ function countEOL(text2) {
   return [eolCount, firstLineLength, text2.length - lastLineStart, eol];
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/textModelEditSource.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/textModelEditSource.js
 var privateSymbol = /* @__PURE__ */ Symbol("TextModelEditSource");
 var TextModelEditSource = class {
   constructor(metadata, _privateCtorGuard) {
@@ -47512,7 +47512,7 @@ function toEditIdentity(id) {
   return id;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/textModelBracketPairs.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/textModelBracketPairs.js
 var BracketInfo = class {
   constructor(range2, nestingLevel, nestingLevelOfEqualBracketType, isInvalid) {
     this.range = range2;
@@ -47541,7 +47541,7 @@ var BracketPairWithMinIndentationInfo = class extends BracketPairInfo {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/length.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/length.js
 function lengthDiff(startLineCount, startColumnCount, endLineCount, endColumnCount) {
   return startLineCount !== endLineCount ? toLength(endLineCount - startLineCount, endColumnCount) : toLength(0, endColumnCount - startColumnCount);
 }
@@ -47621,7 +47621,7 @@ function lengthOfString(str) {
   return toLength(lines.length - 1, lines[lines.length - 1].length);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/beforeEditPositionMapper.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/beforeEditPositionMapper.js
 var TextEditInfo = class _TextEditInfo {
   static fromModelContentChanges(changes) {
     const edits = changes.map((c) => {
@@ -47716,7 +47716,7 @@ var TextEditInfoCache = class _TextEditInfoCache {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/smallImmutableSet.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/smallImmutableSet.js
 var emptyArr = [];
 var SmallImmutableSet = class _SmallImmutableSet {
   static {
@@ -47811,7 +47811,7 @@ var DenseKeyProvider = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/ast.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/ast.js
 var BaseAstNode = class {
   /**
    * The length of the entire node, which should equal the sum of lengths of all children.
@@ -48256,7 +48256,7 @@ var InvalidBracketAstNode = class extends ImmutableLeafAstNode {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/tokenizer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/tokenizer.js
 var Token2 = class {
   constructor(length, kind, bracketId, bracketIds, astNode) {
     this.length = length;
@@ -48497,7 +48497,7 @@ var FastTokenizer = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/brackets.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/brackets.js
 var BracketTokens = class _BracketTokens {
   static createFromLanguage(configuration, denseKeyProvider) {
     function getId(bracketInfo) {
@@ -48591,7 +48591,7 @@ var LanguageAgnosticBracketTokens = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/concat23Trees.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/concat23Trees.js
 function concat23Trees(items) {
   if (items.length === 0) {
     return null;
@@ -48729,7 +48729,7 @@ function prepend2(list2, nodeToAppend) {
   }
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/nodeReader.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/nodeReader.js
 var NodeReader = class {
   constructor(node) {
     this.lastOffset = lengthZero;
@@ -48824,7 +48824,7 @@ function lastOrUndefined(arr) {
   return arr.length > 0 ? arr[arr.length - 1] : void 0;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/parser.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/parser.js
 function parseDocument(tokenizer, edits, oldNode, createImmutableLists) {
   const parser = new Parser2(tokenizer, edits, oldNode, createImmutableLists);
   return parser.parseDocument();
@@ -48917,7 +48917,7 @@ var Parser2 = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/combineTextEditInfos.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/combineTextEditInfos.js
 function combineTextEditInfos(textEditInfoFirst, textEditInfoSecond) {
   if (textEditInfoFirst.length === 0) {
     return textEditInfoSecond;
@@ -49019,7 +49019,7 @@ function toLengthMapping(textEditInfos) {
   return result;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/bracketPairsTree.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsTree/bracketPairsTree.js
 var BracketPairsTree = class extends Disposable {
   didLanguageChange(languageId) {
     return this.brackets.didLanguageChange(languageId);
@@ -49324,7 +49324,7 @@ function collectBracketPairs(node, nodeOffsetStart, nodeOffsetEnd, startOffset, 
   return shouldContinue;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsImpl.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/bracketPairsImpl.js
 var BracketPairsTextModelPart = class extends Disposable {
   get canBuildAST() {
     const maxSupportedDocumentLength = (
@@ -49972,7 +49972,7 @@ function stripBracketSearchCanceled(result) {
   return result;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/colorizedBracketPairsDecorationProvider.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/bracketPairsTextModelPart/colorizedBracketPairsDecorationProvider.js
 var ColorizedBracketPairsDecorationProvider = class extends Disposable {
   constructor(textModel) {
     super();
@@ -50053,7 +50053,7 @@ registerThemingParticipant((theme, collector) => {
   }
 });
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/textChange.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/textChange.js
 function escapeNewLine(str) {
   return str.replace(/\n/g, "\\n").replace(/\r/g, "\\r");
 }
@@ -50284,7 +50284,7 @@ var TextChangeCompressor = class _TextChangeCompressor {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/editStack.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/editStack.js
 function uriGetComparisonKey(resource) {
   return resource.toString();
 }
@@ -50622,7 +50622,7 @@ var EditStack = class _EditStack {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/indentationGuesser.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/indentationGuesser.js
 var SpacesDiffResult = class {
   constructor() {
     this.spacesDiff = 0;
@@ -50757,7 +50757,7 @@ function guessIndentation(source, defaultTabSize, defaultInsertSpaces) {
   };
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/intervalTree.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/intervalTree.js
 function getNodeColor(node) {
   return (node.metadata & 1) >>> 0;
 }
@@ -51757,7 +51757,7 @@ function intervalCompare(aStart, aEnd, bStart, bEnd) {
   return aStart - bStart;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/pieceTreeTextBuffer/rbTreeBase.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/pieceTreeTextBuffer/rbTreeBase.js
 var TreeNode = class {
   constructor(piece, color) {
     this.piece = piece;
@@ -52088,7 +52088,7 @@ function recomputeTreeMetadata(tree, x) {
   }
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/pieceTreeTextBuffer/pieceTreeBase.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/pieceTreeTextBuffer/pieceTreeBase.js
 var AverageBufferSize = 65535;
 function createUintArray(arr) {
   let r;
@@ -53455,7 +53455,7 @@ var PieceTreeBase = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/pieceTreeTextBuffer/pieceTreeTextBuffer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/pieceTreeTextBuffer/pieceTreeTextBuffer.js
 var PieceTreeTextBuffer = class _PieceTreeTextBuffer extends Disposable {
   constructor(chunks, BOM, eol, containsRTL2, containsUnusualLineTerminators2, isBasicASCII2, eolNormalized) {
     super();
@@ -53872,7 +53872,7 @@ var PieceTreeTextBuffer = class _PieceTreeTextBuffer extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/pieceTreeTextBuffer/pieceTreeTextBufferBuilder.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/pieceTreeTextBuffer/pieceTreeTextBufferBuilder.js
 var PieceTreeTextBufferFactory = class {
   constructor(_chunks, _bom, _cr, _lf, _crlf, _containsRTL, _containsUnusualLineTerminators, _isBasicASCII, _normalizeEOL) {
     this._chunks = _chunks;
@@ -53992,7 +53992,7 @@ var PieceTreeTextBufferBuilder = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/observables/lazyObservableValue.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/observables/lazyObservableValue.js
 var LazyObservableValue = class extends BaseObservable {
   get debugName() {
     return this._debugNameData.getDebugName(this) ?? "LazyObservableValue";
@@ -54104,7 +54104,7 @@ var LazyObservableValue = class extends BaseObservable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/observables/observableValueOpts.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/observables/observableValueOpts.js
 function observableValueOpts(options, initialValue, debugLocation = DebugLocation.ofCaller()) {
   if (options.lazy) {
     return new LazyObservableValue(new DebugNameData(options.owner, options.debugName, void 0), initialValue, options.equalsFn ?? strictEquals, debugLocation);
@@ -54112,7 +54112,7 @@ function observableValueOpts(options, initialValue, debugLocation = DebugLocatio
   return new ObservableValue(new DebugNameData(options.owner, options.debugName, void 0), initialValue, options.equalsFn ?? strictEquals, debugLocation);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/tokens/abstractSyntaxTokenBackend.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/tokens/abstractSyntaxTokenBackend.js
 var AttachedViews = class {
   constructor() {
     this._onDidChangeVisibleRanges = new Emitter();
@@ -54226,7 +54226,7 @@ var AbstractSyntaxTokenBackend = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/decorationProvider.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/decorationProvider.js
 var LineHeightChangingDecoration = class {
   static toKey(obj) {
     return `${obj.ownerId};${obj.decorationId};${obj.lineNumber}`;
@@ -54249,7 +54249,7 @@ var LineFontChangingDecoration = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/supports/tokenization.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/supports/tokenization.js
 var ParsedTokenThemeRule = class {
   constructor(token, index, fontStyle, foreground2, background) {
     this._parsedThemeRuleBrand = void 0;
@@ -54525,7 +54525,7 @@ function cleanClassName(className2) {
   return className2.replace(/[^a-z0-9_-]/gi, "-");
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/tokens/annotations.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/tokens/annotations.js
 var AnnotatedString = class {
   constructor(annotations = []) {
     this._annotations = [];
@@ -54685,7 +54685,7 @@ var AnnotationsUpdate = class _AnnotationsUpdate {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/textModelStringEdit.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/textModelStringEdit.js
 function offsetEditFromContentChanges(contentChanges) {
   const editsArr = contentChanges.map((c) => new StringReplacement(OffsetRange.ofStartAndLength(c.rangeOffset, c.rangeLength), c.text));
   editsArr.reverse();
@@ -54693,7 +54693,7 @@ function offsetEditFromContentChanges(contentChanges) {
   return edits;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/tokens/tokenizationFontDecorationsProvider.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/tokens/tokenizationFontDecorationsProvider.js
 var TokenizationFontDecorationProvider = class _TokenizationFontDecorationProvider extends Disposable {
   static {
     this.DECORATION_COUNT = 0;
@@ -54809,7 +54809,7 @@ var TokenizationFontDecorationProvider = class _TokenizationFontDecorationProvid
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/tokens/treeSitter/cursorUtils.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/tokens/treeSitter/cursorUtils.js
 function gotoNextSibling(newCursor, oldCursor) {
   const n2 = newCursor.gotoNextSibling();
   const o = oldCursor.gotoNextSibling();
@@ -54879,7 +54879,7 @@ function getClosestPreviousNodes(cursor, tree) {
   }
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/tokens/treeSitter/treeSitterTree.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/tokens/treeSitter/treeSitterTree.js
 var __decorate23 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -55216,7 +55216,7 @@ function rangesIntersect(a, b) {
   return a.startIndex <= b.startIndex && a.endIndex >= b.startIndex || b.startIndex <= a.startIndex && b.endIndex >= a.startIndex;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/fixedArray.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/fixedArray.js
 var FixedArray = class {
   constructor(_default) {
     this._default = _default;
@@ -55275,7 +55275,7 @@ function arrayFill(length, value) {
   return arr;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/tokens/contiguousMultilineTokens.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/tokens/contiguousMultilineTokens.js
 var ContiguousMultilineTokens = class {
   /**
    * (Inclusive) start line number for these tokens.
@@ -55304,7 +55304,7 @@ var ContiguousMultilineTokens = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/tokens/contiguousMultilineTokensBuilder.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/tokens/contiguousMultilineTokensBuilder.js
 var ContiguousMultilineTokensBuilder = class {
   constructor() {
     this._tokens = [];
@@ -55324,7 +55324,7 @@ var ContiguousMultilineTokensBuilder = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/textModelTokens.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/textModelTokens.js
 var TokenizerWithStateStore = class {
   constructor(lineCount, tokenizationSupport) {
     this.tokenizationSupport = tokenizationSupport;
@@ -55716,7 +55716,7 @@ var DefaultBackgroundTokenizer = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/tokens/treeSitter/tokenStore.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/tokens/treeSitter/tokenStore.js
 var ListNode = class _ListNode {
   get children() {
     return this._children;
@@ -56091,10 +56091,10 @@ var TokenStore = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/treeSitter/treeSitterThemeService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/treeSitter/treeSitterThemeService.js
 var ITreeSitterThemeService = createDecorator("treeSitterThemeService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/changeTracker.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/changeTracker.js
 function recordChanges(obs) {
   return {
     createChangeSummary: (_previousChangeSummary) => {
@@ -56121,7 +56121,7 @@ function recordChanges(obs) {
   };
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/tokens/treeSitter/treeSitterTokenizationImpl.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/tokens/treeSitter/treeSitterTokenizationImpl.js
 var __decorate24 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -56758,10 +56758,10 @@ var TREESITTER_BASE_SCOPES = {
 };
 var BRACKETS = /[\{\}\[\]\<\>\(\)]/g;
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/treeSitter/treeSitterLibraryService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/treeSitter/treeSitterLibraryService.js
 var ITreeSitterLibraryService = createDecorator("treeSitterLibraryService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/utils/promise.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/utils/promise.js
 var ObservablePromise = class _ObservablePromise {
   static resolved(value) {
     return new _ObservablePromise(Promise.resolve(value));
@@ -56798,7 +56798,7 @@ var PromiseResult = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/tokens/treeSitter/treeSitterSyntaxTokenBackend.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/tokens/treeSitter/treeSitterSyntaxTokenBackend.js
 var __decorate25 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -56953,7 +56953,7 @@ TreeSitterSyntaxTokenBackend = __decorate25([
   __param23(5, IInstantiationService)
 ], TreeSitterSyntaxTokenBackend);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/tokens/sparseTokensStore.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/tokens/sparseTokensStore.js
 var SparseTokensStore = class _SparseTokensStore {
   constructor(languageIdCodec) {
     this._pieces = [];
@@ -57122,7 +57122,7 @@ var SparseTokensStore = class _SparseTokensStore {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/tokens/contiguousTokensEditing.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/tokens/contiguousTokensEditing.js
 var EMPTY_LINE_TOKENS = new Uint32Array(0).buffer;
 var ContiguousTokensEditing = class _ContiguousTokensEditing {
   static deleteBeginning(lineTokens, toChIndex) {
@@ -57237,7 +57237,7 @@ function toUint32Array(arr) {
   }
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/tokens/contiguousTokensStore.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/tokens/contiguousTokensStore.js
 var ContiguousTokensStore = class _ContiguousTokensStore {
   constructor(languageIdCodec) {
     this._lineTokens = [];
@@ -57417,7 +57417,7 @@ function getDefaultMetadata(topLevelLanguageId) {
   return (topLevelLanguageId << 0 | 0 << 8 | 0 << 11 | 1 << 15 | 2 << 24 | 1024) >>> 0;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/tokens/tokenizerSyntaxTokenBackend.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/tokens/tokenizerSyntaxTokenBackend.js
 var TokenizerSyntaxTokenBackend = class extends AbstractSyntaxTokenBackend {
   constructor(languageIdCodec, textModel, getLanguageId, attachedViews) {
     super(languageIdCodec, textModel);
@@ -57657,7 +57657,7 @@ var TokenizerSyntaxTokenBackend = class extends AbstractSyntaxTokenBackend {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/tokens/tokenizationTextModelPart.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/tokens/tokenizationTextModelPart.js
 var __decorate26 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -57913,7 +57913,7 @@ TokenizationTextModelPart = TokenizationTextModelPart_1 = __decorate26([
   __param24(7, ITreeSitterLibraryService)
 ], TokenizationTextModelPart);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/textModel.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/textModel.js
 var __decorate27 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -59957,7 +59957,7 @@ var DidChangeContentEmitter = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewModel/monospaceLineBreaksComputer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewModel/monospaceLineBreaksComputer.js
 var MonospaceLineBreaksComputerFactory = class _MonospaceLineBreaksComputerFactory {
   static create(options) {
     return new _MonospaceLineBreaksComputerFactory(options.get(
@@ -60372,7 +60372,7 @@ function computeWrappedTextIndentLength(lineText, tabSize, firstLineBreakColumn,
   return wrappedTextIndentLength;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/cursor/oneCursor.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/cursor/oneCursor.js
 var Cursor = class _Cursor {
   constructor(context) {
     this._selTrackedRange = null;
@@ -60486,7 +60486,7 @@ var Cursor = class _Cursor {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorCollection.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorCollection.js
 var CursorCollection = class {
   constructor(context) {
     this.context = context;
@@ -60660,7 +60660,7 @@ var CursorCollection = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorContext.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/cursor/cursorContext.js
 var CursorContext = class {
   constructor(model, viewModel, coordinatesConverter, cursorConfig) {
     this._cursorContextBrand = void 0;
@@ -60671,7 +60671,7 @@ var CursorContext = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewEvents.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewEvents.js
 var ViewCompositionStartEvent = class {
   constructor() {
     this.type = 0;
@@ -60805,7 +60805,7 @@ var ViewZonesChangedEvent = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewModelEventDispatcher.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewModelEventDispatcher.js
 var ViewModelEventDispatcher = class extends Disposable {
   constructor() {
     super();
@@ -61188,7 +61188,7 @@ var ModelFontChangedEvent2 = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/cursor/cursor.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/cursor/cursor.js
 var CursorsController = class extends Disposable {
   constructor(model, viewModel, coordinatesConverter, cursorConfig) {
     super();
@@ -62050,7 +62050,7 @@ var CompositionState = class _CompositionState {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/textToHtmlTokenizer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/textToHtmlTokenizer.js
 var fallback = {
   getInitialState: () => NullState,
   tokenizeEncoded: (buffer, hasEOL, state) => nullTokenizeEncoded(0, state)
@@ -62177,7 +62177,7 @@ function _tokenizeToString(text2, languageIdCodec, tokenizationSupport) {
   return result;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewLayout/lineHeights.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewLayout/lineHeights.js
 var CustomLine = class {
   constructor(decorationId, index, lineNumber, specialHeight, prefixSum) {
     this.decorationId = decorationId;
@@ -62566,7 +62566,7 @@ var ArrayMap = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewLayout/linesLayout.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewLayout/linesLayout.js
 var PendingChanges = class {
   constructor() {
     this._hasPending = false;
@@ -63270,7 +63270,7 @@ var LinesLayout = class _LinesLayout {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewLayout/viewLayout.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewLayout/viewLayout.js
 var SMOOTH_SCROLLING_TIME = 125;
 var EditorScrollDimensions = class {
   constructor(width2, contentWidth, height, contentHeight) {
@@ -63674,7 +63674,7 @@ var ViewLayout = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewModel/inlineDecorations.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewModel/inlineDecorations.js
 var InlineDecoration = class {
   constructor(range2, inlineClassName, type) {
     this.range = range2;
@@ -63857,7 +63857,7 @@ var InjectedTextInlineDecorationsComputer = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewModel/viewModelDecorations.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewModel/viewModelDecorations.js
 var ViewModelDecorations = class {
   constructor(editorId, model, configuration, linesCollection, coordinatesConverter) {
     this.editorId = editorId;
@@ -63908,7 +63908,7 @@ var ViewModelDecorations = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewModel/modelLineProjection.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewModel/modelLineProjection.js
 function createModelLineProjection(lineBreakData, isVisible) {
   if (lineBreakData === null) {
     if (isVisible) {
@@ -64182,7 +64182,7 @@ function _makeSpaces(count) {
   return new Array(count + 1).join(" ");
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/coordinatesConverter.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/coordinatesConverter.js
 var IdentityCoordinatesConverter = class {
   constructor(model) {
     this._model = model;
@@ -64228,7 +64228,7 @@ var IdentityCoordinatesConverter = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewModel/viewModelLines.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewModel/viewModelLines.js
 var ViewModelLinesFromProjectedModel = class {
   constructor(editorId, model, domLineBreaksComputerFactory, monospaceLineBreaksComputerFactory, fontInfo, tabSize, wrappingStrategy, wrappingColumn, wrappingIndent, wordBreak, wrapOnEscapedLineFeeds) {
     this._editorId = editorId;
@@ -65103,7 +65103,7 @@ var ViewModelLinesFromModelAsIs = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewModel/glyphLanesModel.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewModel/glyphLanesModel.js
 var MAX_LANE = GlyphMarginLane2.Right;
 var GlyphMarginLanesModel = class {
   constructor(maxLine) {
@@ -65157,7 +65157,7 @@ var GlyphMarginLanesModel = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewModel/viewModelImpl.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/viewModel/viewModelImpl.js
 var ViewModel = class extends Disposable {
   constructor(editorId, configuration, model, domLineBreaksComputerFactory, monospaceLineBreaksComputerFactory, scheduleAtNextAnimationFrame2, languageConfigurationService, _themeService, _attachedView, _transactionalTarget) {
     super();
@@ -66413,7 +66413,7 @@ var StableViewport = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/instantiation/common/serviceCollection.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/instantiation/common/serviceCollection.js
 var ServiceCollection = class {
   constructor(...entries2) {
     this._entries = /* @__PURE__ */ new Map();
@@ -66431,7 +66431,7 @@ var ServiceCollection = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/codeEditor/codeEditorWidget.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/codeEditor/codeEditorWidget.js
 var __decorate28 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -68304,7 +68304,7 @@ registerThemingParticipant((theme, collector) => {
   }
 });
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/hover/browser/hover.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/hover/browser/hover.js
 var __decorate29 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -68390,17 +68390,17 @@ WorkbenchHoverDelegate = __decorate29([
   __param27(4, IHoverService)
 ], WorkbenchHoverDelegate);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/contextview/browser/contextView.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/contextview/browser/contextView.js
 var IContextViewService = createDecorator("contextViewService");
 var IContextMenuService = createDecorator("contextMenuService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/hover/browser/hover.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/hover/browser/hover.css
 styleInject('.monaco-hover.workbench-hover {\n  position: relative;\n  font-size: 13px;\n  line-height: 19px;\n  z-index: 40;\n  overflow: hidden;\n  max-width: 700px;\n  background: var(--vscode-editorHoverWidget-background);\n  border: 1px solid var(--vscode-editorHoverWidget-border);\n  border-radius: 5px;\n  color: var(--vscode-editorHoverWidget-foreground);\n  box-shadow: var(--vscode-shadow-lg);\n}\n.monaco-hover.workbench-hover.with-pointer {\n  border-radius: 3px;\n}\n.monaco-hover.workbench-hover .monaco-action-bar .action-item .codicon {\n  width: 13px;\n  height: 13px;\n}\n.monaco-hover.workbench-hover hr {\n  border-bottom: none;\n}\n.monaco-hover.workbench-hover.compact {\n  font-size: 12px;\n}\n.monaco-hover.workbench-hover.compact .monaco-action-bar .action-item .codicon {\n  width: 12px;\n  height: 12px;\n}\n.monaco-hover.workbench-hover.compact .hover-contents {\n  padding: 2px 8px;\n}\n.workbench-hover-container.locked .monaco-hover.workbench-hover {\n  outline: 1px solid var(--vscode-editorHoverWidget-border);\n}\n.workbench-hover-container:focus-within.locked .monaco-hover.workbench-hover {\n  outline-color: var(--vscode-focusBorder);\n}\n.workbench-hover-pointer {\n  position: absolute;\n  z-index: 41;\n  pointer-events: none;\n}\n.workbench-hover-pointer:after {\n  content: "";\n  position: absolute;\n  width: 5px;\n  height: 5px;\n  background-color: var(--vscode-editorHoverWidget-background);\n  border-right: 1px solid var(--vscode-editorHoverWidget-border);\n  border-bottom: 1px solid var(--vscode-editorHoverWidget-border);\n}\n.workbench-hover-container:not(:focus-within).locked .workbench-hover-pointer:after {\n  width: 4px;\n  height: 4px;\n  border-right-width: 2px;\n  border-bottom-width: 2px;\n}\n.workbench-hover-container:focus-within .workbench-hover-pointer:after {\n  border-right: 1px solid var(--vscode-focusBorder);\n  border-bottom: 1px solid var(--vscode-focusBorder);\n}\n.workbench-hover-pointer.left {\n  left: -3px;\n}\n.workbench-hover-pointer.right {\n  right: 3px;\n}\n.workbench-hover-pointer.top {\n  top: -3px;\n}\n.workbench-hover-pointer.bottom {\n  bottom: 3px;\n}\n.workbench-hover-pointer.left:after {\n  transform: rotate(135deg);\n}\n.workbench-hover-pointer.right:after {\n  transform: rotate(315deg);\n}\n.workbench-hover-pointer.top:after {\n  transform: rotate(225deg);\n}\n.workbench-hover-pointer.bottom:after {\n  transform: rotate(45deg);\n}\n.monaco-hover.workbench-hover a {\n  color: var(--vscode-textLink-foreground);\n}\n.monaco-hover.workbench-hover a:focus {\n  outline: 1px solid;\n  outline-offset: -1px;\n  text-decoration: underline;\n  outline-color: var(--vscode-focusBorder);\n}\n.monaco-hover.workbench-hover a.codicon:focus,\n.monaco-hover.workbench-hover a.monaco-button:focus {\n  text-decoration: none;\n}\n.monaco-hover.workbench-hover a:hover,\n.monaco-hover.workbench-hover a:active {\n  color: var(--vscode-textLink-activeForeground);\n}\n.monaco-hover.workbench-hover code {\n  background: var(--vscode-textCodeBlock-background);\n}\n.monaco-hover.workbench-hover .hover-row .actions {\n  background: var(--vscode-editorHoverWidget-statusBarBackground);\n}\n.monaco-hover.workbench-hover.right-aligned {\n  left: 1px;\n}\n.monaco-hover.workbench-hover.right-aligned .hover-row.status-bar .actions {\n  flex-direction: row-reverse;\n}\n.monaco-hover.workbench-hover.right-aligned .hover-row.status-bar .actions .action-container {\n  margin-right: 0;\n  margin-left: 16px;\n}\n');
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/hover/hoverWidget.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/hover/hoverWidget.css
 styleInject('.monaco-hover {\n  cursor: default;\n  position: absolute;\n  overflow: hidden;\n  user-select: text;\n  -webkit-user-select: text;\n  box-sizing: border-box;\n  line-height: 1.5em;\n  white-space: var(--vscode-hover-whiteSpace, normal);\n}\n.monaco-hover.fade-in {\n  animation: fadein 100ms linear;\n}\n.monaco-hover.hidden {\n  display: none;\n}\n.monaco-hover a:hover:not(.disabled) {\n  cursor: pointer;\n}\n.monaco-hover .hover-contents:not(.html-hover-contents) {\n  padding: 4px 8px;\n}\n.monaco-hover .markdown-hover > .hover-contents:not(.code-hover-contents) {\n  max-width: var(--vscode-hover-maxWidth, 500px);\n  word-wrap: break-word;\n}\n.monaco-hover .markdown-hover > .hover-contents:not(.code-hover-contents) hr {\n  min-width: 100%;\n}\n.monaco-hover p,\n.monaco-hover .code,\n.monaco-hover ul,\n.monaco-hover h1,\n.monaco-hover h2,\n.monaco-hover h3,\n.monaco-hover h4,\n.monaco-hover h5,\n.monaco-hover h6 {\n  margin: 8px 0;\n}\n.monaco-hover h1,\n.monaco-hover h2,\n.monaco-hover h3,\n.monaco-hover h4,\n.monaco-hover h5,\n.monaco-hover h6 {\n  line-height: 1.1;\n}\n.monaco-hover code {\n  font-family: var(--monaco-monospace-font);\n}\n.monaco-hover hr {\n  box-sizing: border-box;\n  border-left: 0px;\n  border-right: 0px;\n  margin-top: 4px;\n  margin-bottom: -4px;\n  margin-left: -8px;\n  margin-right: -8px;\n  height: 1px;\n}\n.monaco-hover p:first-child,\n.monaco-hover .code:first-child,\n.monaco-hover ul:first-child {\n  margin-top: 0;\n}\n.monaco-hover p:last-child,\n.monaco-hover .code:last-child,\n.monaco-hover ul:last-child {\n  margin-bottom: 0;\n}\n.monaco-hover ul {\n  padding-left: 20px;\n}\n.monaco-hover ol {\n  padding-left: 20px;\n}\n.monaco-hover li > p {\n  margin-bottom: 0;\n}\n.monaco-hover li > ul {\n  margin-top: 0;\n}\n.monaco-hover code {\n  border-radius: 3px;\n  padding: 0 0.4em;\n}\n.monaco-hover .monaco-tokenized-source {\n  white-space: var(--vscode-hover-sourceWhiteSpace, pre-wrap);\n}\n.monaco-hover .hover-row.status-bar {\n  font-size: 12px;\n  line-height: 22px;\n}\n.monaco-hover .hover-row.status-bar .info {\n  font-style: italic;\n  padding: 0px 8px;\n}\n.monaco-hover .hover-row.status-bar .actions {\n  display: flex;\n  padding: 0px 8px;\n  width: 100%;\n  box-sizing: border-box;\n}\n.monaco-hover .hover-row.status-bar .actions .action-container {\n  margin-right: 16px;\n  cursor: pointer;\n  overflow: hidden;\n  text-wrap: nowrap;\n  text-overflow: ellipsis;\n}\n.monaco-hover .hover-row.status-bar .actions .action-container .action .icon {\n  padding-right: 4px;\n  vertical-align: middle;\n  font-size: inherit;\n}\n.monaco-hover .hover-row.status-bar .actions .action-container a {\n  color: var(--vscode-textLink-foreground);\n  text-decoration: var(--text-link-decoration);\n}\n.monaco-hover .hover-row.status-bar .actions .action-container a .icon.codicon {\n  color: var(--vscode-textLink-foreground);\n}\n.monaco-hover .markdown-hover .hover-contents .codicon {\n  color: inherit;\n  font-size: inherit;\n  vertical-align: middle;\n}\n.monaco-hover .hover-contents a.code-link:hover,\n.monaco-hover .hover-contents a.code-link {\n  color: inherit;\n}\n.monaco-hover .hover-contents a.code-link:before {\n  content: "(";\n}\n.monaco-hover .hover-contents a.code-link:after {\n  content: ")";\n}\n.monaco-hover .hover-contents a.code-link > span {\n  text-decoration: underline;\n  border-bottom: 1px solid transparent;\n  text-underline-position: under;\n  color: var(--vscode-textLink-foreground);\n}\n.monaco-hover .hover-contents a.code-link > span:hover {\n  color: var(--vscode-textLink-activeForeground);\n}\n.monaco-hover .markdown-hover .hover-contents:not(.code-hover-contents):not(.html-hover-contents) span.codicon {\n  margin-bottom: 2px;\n}\n.monaco-hover-content .action-container a {\n  -webkit-user-select: none;\n  user-select: none;\n}\n.monaco-hover-content .action-container.disabled {\n  pointer-events: none;\n  opacity: 0.4;\n  cursor: default;\n}\n.monaco-hover .action-container,\n.monaco-hover .action,\n.monaco-hover button,\n.monaco-hover .monaco-button,\n.monaco-hover .monaco-text-button,\n.monaco-hover [role=button] {\n  -webkit-user-select: none;\n  user-select: none;\n}\n');
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/hover/hoverWidget.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/hover/hoverWidget.js
 var $2 = $;
 var HoverWidget = class extends Disposable {
   constructor(fadeIn) {
@@ -68485,7 +68485,7 @@ var KeyDownAction = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/naturalLanguage/korean.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/naturalLanguage/korean.js
 var codeBuffer = new Uint32Array(10);
 var modernConsonants = new Uint8Array([
   114,
@@ -68774,7 +68774,7 @@ var compatibilityJamo = new Uint16Array([
   // ㆎ
 ]);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/normalization.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/normalization.js
 new LRUCache(1e4);
 var nfdCache = new LRUCache(1e4);
 function normalizeNFD(str) {
@@ -68813,7 +68813,7 @@ var tryNormalizeToBase = (function() {
   };
 })();
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/filters.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/filters.js
 function or(...filter) {
   return function(word, wordToMatchAgainst) {
     for (let i = 0, len = filter.length; i < len; i++) {
@@ -69294,7 +69294,7 @@ function _doScore(pattern, patternLow, patternPos, patternStart, word, wordLow, 
   return score2;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/iconLabels.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/iconLabels.js
 var iconStartMarker = "$(";
 var iconsRegex = new RegExp(`\\$\\(${ThemeIcon.iconNameExpression}(?:${ThemeIcon.iconModifierExpression})?\\)`, "g");
 var escapeIconsRegex = new RegExp(`(\\\\)?${iconsRegex.source}`, "g");
@@ -69359,7 +69359,7 @@ function matchesFuzzyIconAware(query, target, enableSeparateSubstringMatching = 
   return matches;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/htmlContent.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/htmlContent.js
 var MarkdownString = class {
   constructor(value = "", isTrustedOrOptions = false) {
     this.value = value;
@@ -69474,7 +69474,7 @@ function parseHrefAndDimensions(href) {
   return { href, dimensions };
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/idGenerator.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/idGenerator.js
 var IdGenerator = class {
   constructor(prefix) {
     this._prefix = prefix;
@@ -69486,7 +69486,7 @@ var IdGenerator = class {
 };
 var defaultGenerator = new IdGenerator("id#");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/marked/marked.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/marked/marked.js
 function _getDefaults() {
   return {
     async: false,
@@ -71535,7 +71535,7 @@ var parse = marked;
 _Parser.parse;
 var lexer = _Lexer.lex;
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/marshalling.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/marshalling.js
 function stringify(obj) {
   return JSON.stringify(obj, replacer);
 }
@@ -71588,7 +71588,7 @@ function revive(obj, depth = 0) {
   return obj;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/dompurify/dompurify.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/dompurify/dompurify.js
 function _arrayLikeToArray(r, a) {
   (null == a || a > r.length) && (a = r.length);
   for (var e = 0, n2 = Array(a); e < a; e++) n2[e] = r[e];
@@ -72813,7 +72813,7 @@ function createDOMPurify() {
 }
 var purify = createDOMPurify();
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/domSanitize.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/domSanitize.js
 var basicMarkupHtmlTags = Object.freeze([
   "a",
   "abbr",
@@ -73077,7 +73077,7 @@ function safeSetInnerHtml(node, untrusted, config) {
   reset(node, fragment);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/iconLabel/iconLabels.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/iconLabel/iconLabels.js
 var labelWithIconsRegex = new RegExp(`(\\\\)?\\$\\((${ThemeIcon.iconNameExpression}(?:${ThemeIcon.iconModifierExpression})?)\\)`, "g");
 function renderLabelWithIcons(text2, renderIconsInDefaultColor) {
   const elements = new Array();
@@ -73107,7 +73107,7 @@ function renderIcon(icon, renderDefaultColor) {
   return node;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/markdownRenderer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/markdownRenderer.js
 function getLinkTitle(href) {
   try {
     const parsed = URI.parse(href);
@@ -73882,7 +73882,7 @@ function completeTable(tokens) {
   return void 0;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/opener/common/opener.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/opener/common/opener.js
 var IOpenerService = createDecorator("openerService");
 function extractSelection(uri) {
   let selection = void 0;
@@ -73899,7 +73899,7 @@ function extractSelection(uri) {
   return { selection, uri };
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/markdown/browser/markdownRenderer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/markdown/browser/markdownRenderer.js
 var __decorate30 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -73968,7 +73968,7 @@ registerSingleton(
   /* InstantiationType.Delayed */
 );
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/hover/browser/hoverWidget.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/hover/browser/hoverWidget.js
 var __decorate31 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -74566,7 +74566,7 @@ var ElementHoverTarget = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/range.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/range.js
 var Range2;
 (function(Range4) {
   function intersect(one, other) {
@@ -74604,7 +74604,7 @@ var Range2;
   Range4.relativeComplement = relativeComplement2;
 })(Range2 || (Range2 = {}));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/layout.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/layout.js
 var LayoutAnchorMode;
 (function(LayoutAnchorMode2) {
   LayoutAnchorMode2[LayoutAnchorMode2["AVOID"] = 0] = "AVOID";
@@ -74685,10 +74685,10 @@ function layout2d(viewport, view, anchor, options) {
   return { top, left, bottom, right, anchorAlignment, anchorPosition };
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/contextview/contextview.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/contextview/contextview.css
 styleInject(".context-view {\n  position: absolute;\n}\n.context-view.fixed {\n  all: initial;\n  font-family: inherit;\n  font-size: 13px;\n  position: fixed;\n  color: inherit;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/contextview/contextview.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/contextview/contextview.js
 function isAnchor(obj) {
   const anchor = obj;
   return !!anchor && typeof anchor.x === "number" && typeof anchor.y === "number";
@@ -74919,16 +74919,16 @@ var SHADOW_ROOT_CSS = (
 `
 );
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/layout/browser/layoutService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/layout/browser/layoutService.js
 var ILayoutService = createDecorator("layoutService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/hover/hover.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/hover/hover.js
 function isManagedHoverTooltipMarkdownString(obj) {
   const candidate = obj;
   return typeof candidate === "object" && "markdown" in candidate && "markdownNotSupportedFallback" in candidate;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/hover/browser/updatableHoverWidget.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/hover/browser/updatableHoverWidget.js
 var ManagedHoverWidget = class {
   constructor(hoverDelegate, target, fadeInAnimation) {
     this.hoverDelegate = hoverDelegate;
@@ -75015,7 +75015,7 @@ var ManagedHoverWidget = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/hover/browser/hoverService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/hover/browser/hoverService.js
 var __decorate32 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -75652,10 +75652,10 @@ registerThemingParticipant((theme, collector) => {
   }
 });
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/dialogs/common/dialogs.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/dialogs/common/dialogs.js
 var IDialogService = createDecorator("dialogService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/undoRedo/common/undoRedoService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/undoRedo/common/undoRedoService.js
 var __decorate33 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -76721,7 +76721,7 @@ registerSingleton(
   /* InstantiationType.Delayed */
 );
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/common/quickInput.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/common/quickInput.js
 var NO_KEY_MODS = { ctrlCmd: false, alt: false, shift: false };
 var QuickInputHideReason;
 (function(QuickInputHideReason2) {
@@ -76756,7 +76756,7 @@ var QuickInputButtonLocation;
 })(QuickInputButtonLocation || (QuickInputButtonLocation = {}));
 var IQuickInputService = createDecorator("quickInputService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/parts/storage/common/storage.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/parts/storage/common/storage.js
 var StorageHint;
 (function(StorageHint2) {
   StorageHint2[StorageHint2["STORAGE_DOES_NOT_EXIST"] = 0] = "STORAGE_DOES_NOT_EXIST";
@@ -76920,7 +76920,7 @@ var InMemoryStorageDatabase = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/storage/common/storage.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/storage/common/storage.js
 var TARGET_KEY = "__$__targetStorageMarker";
 var IStorageService = createDecorator("storageService");
 var WillSaveStateReason;
@@ -77163,7 +77163,7 @@ var InMemoryStorageService = class extends AbstractStorageService {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/services/inlineCompletionsService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/services/inlineCompletionsService.js
 var __decorate34 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -77377,7 +77377,7 @@ var CancelSnoozeInlineCompletion = class _CancelSnoozeInlineCompletion extends A
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/numbers.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/numbers.js
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
 }
@@ -77422,10 +77422,10 @@ var SlidingWindowAverage = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/environment/common/environment.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/environment/common/environment.js
 var IEnvironmentService = createDecorator("environmentService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/languageFeatureDebounce.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/languageFeatureDebounce.js
 var __decorate35 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -77559,7 +77559,7 @@ registerSingleton(
   /* InstantiationType.Delayed */
 );
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/glob.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/glob.js
 var GLOBSTAR = "**";
 var GLOB_SPLIT = "/";
 var PATH_REGEX = "[/\\\\]";
@@ -78054,7 +78054,7 @@ function aggregateBasenameMatches(parsedPatterns, result) {
   return aggregatedPatterns;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languageSelector.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languageSelector.js
 function score(selector, candidateUri, candidateLanguage, candidateIsSynchronized, candidateNotebookUri, candidateNotebookType) {
   if (Array.isArray(selector)) {
     let ret = 0;
@@ -78134,7 +78134,7 @@ function score(selector, candidateUri, candidateLanguage, candidateIsSynchronize
   }
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languageFeatureRegistry.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languageFeatureRegistry.js
 function isExclusive(selector) {
   if (typeof selector === "string") {
     return false;
@@ -78288,7 +78288,7 @@ function isBuiltinSelector(selector) {
   return Boolean(selector.isBuiltin);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/languageFeaturesService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/languageFeaturesService.js
 var LanguageFeaturesService = class {
   constructor() {
     this.referenceProvider = new LanguageFeatureRegistry(this._score.bind(this));
@@ -78332,7 +78332,7 @@ registerSingleton(
   /* InstantiationType.Delayed */
 );
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/tokens/common.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/tokens/common.js
 var RateLimiter = class {
   constructor(timesPerSecond = 5) {
     this.timesPerSecond = timesPerSecond;
@@ -78348,7 +78348,7 @@ var RateLimiter = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/tokens/sparseMultilineTokens.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/tokens/sparseMultilineTokens.js
 var SparseMultilineTokensStorage = class _SparseMultilineTokensStorage {
   constructor(tokens) {
     this._tokens = tokens;
@@ -78640,7 +78640,7 @@ var SparseLineTokens = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/semanticTokensProviderStyling.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/semanticTokensProviderStyling.js
 var __decorate36 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -78812,10 +78812,10 @@ var HashTable = class _HashTable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/semanticTokensStyling.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/semanticTokensStyling.js
 var ISemanticTokensStylingService = createDecorator("semanticTokensStylingService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/semanticTokensStylingService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/semanticTokensStylingService.js
 var __decorate37 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -78857,7 +78857,7 @@ registerSingleton(
   /* InstantiationType.Delayed */
 );
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/services/abstractCodeEditorService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/services/abstractCodeEditorService.js
 var __decorate38 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -78981,7 +78981,7 @@ AbstractCodeEditorService = __decorate38([
   __param36(0, IThemeService)
 ], AbstractCodeEditorService);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneCodeEditorService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneCodeEditorService.js
 var __decorate39 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -79078,7 +79078,7 @@ registerSingleton(
   /* InstantiationType.Eager */
 );
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneLayoutService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneLayoutService.js
 var __decorate40 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -79149,7 +79149,7 @@ registerSingleton(
   /* InstantiationType.Delayed */
 );
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/accessibility/browser/accessibilityService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/accessibility/browser/accessibilityService.js
 var __decorate41 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -79283,7 +79283,7 @@ AccessibilityService = __decorate41([
   __param39(2, IConfigurationService)
 ], AccessibilityService);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/accessibilitySignal/browser/accessibilitySignalService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/accessibilitySignal/browser/accessibilitySignalService.js
 var IAccessibilitySignalService = createDecorator("accessibilitySignalService");
 var Sound = class _Sound {
   static register(options) {
@@ -79741,7 +79741,7 @@ var AccessibilitySignal = class _AccessibilitySignal {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/actions/common/menuService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/actions/common/menuService.js
 var __decorate42 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -80144,7 +80144,7 @@ function createConfigureKeybindingAction(commandService, keybindingService, comm
   });
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/clipboard/browser/clipboardService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/clipboard/browser/clipboardService.js
 var __decorate43 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -80312,10 +80312,10 @@ BrowserClipboardService = BrowserClipboardService_1 = __decorate43([
   __param41(1, ILogService)
 ], BrowserClipboardService);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/clipboard/common/clipboardService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/clipboard/common/clipboardService.js
 var IClipboardService = createDecorator("clipboardService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/configuration/common/configurationModels.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/configuration/common/configurationModels.js
 function freeze2(data) {
   return Object.isFrozen(data) ? data : deepFreeze(data);
 }
@@ -80959,7 +80959,7 @@ var ConfigurationChangeEvent = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/configuration/common/configurations.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/configuration/common/configurations.js
 var DefaultConfiguration = class extends Disposable {
   get configurationModel() {
     return this._configurationModel;
@@ -81000,7 +81000,7 @@ var DefaultConfiguration = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/ternarySearchTree.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/ternarySearchTree.js
 var StringIterator = class {
   constructor() {
     this._value = "";
@@ -81594,7 +81594,7 @@ var TernarySearchTree = class _TernarySearchTree {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/contextkey/common/contextkeys.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/contextkey/common/contextkeys.js
 new RawContextKey("isMac", isMacintosh, localize(1746, "Whether the operating system is macOS"));
 new RawContextKey("isLinux", isLinux, localize(1747, "Whether the operating system is Linux"));
 var IsWindowsContext = new RawContextKey("isWindows", isWindows, localize(1748, "Whether the operating system is Windows"));
@@ -81607,7 +81607,7 @@ new RawContextKey("productQualityType", "", localize(1753, "Quality type of VS C
 var InputFocusedContextKey = "inputFocus";
 var InputFocusedContext = new RawContextKey(InputFocusedContextKey, false, localize(1754, "Whether keyboard focus is inside an input box"));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/contextkey/browser/contextKeyService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/contextkey/browser/contextKeyService.js
 var __decorate44 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -82035,7 +82035,7 @@ CommandsRegistry.registerCommand("_generateContextKeyInfo", function() {
   console.log(JSON.stringify(result, void 0, 2));
 });
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/cssValue.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/cssValue.js
 function asFragment(raw) {
   return raw;
 }
@@ -82094,7 +82094,7 @@ var Builder = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/hover/hoverDelegateFactory.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/hover/hoverDelegateFactory.js
 var nullHoverDelegateFactory = () => ({
   get delay() {
     return -1;
@@ -82121,10 +82121,10 @@ function createInstantHoverDelegate() {
   return hoverDelegateFactory("element", true);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/selectBox/selectBox.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/selectBox/selectBox.css
 styleInject(".monaco-select-box {\n  width: 100%;\n  cursor: pointer;\n  border-radius: var(--vscode-cornerRadius-small);\n}\n.monaco-select-box-dropdown-container {\n  font-size: 13px;\n  font-weight: normal;\n  text-transform: none;\n}\n.monaco-action-bar .action-item.select-container {\n  cursor: default;\n}\n.monaco-action-bar .action-item .monaco-select-box {\n  cursor: pointer;\n  min-width: 100px;\n  min-height: 18px;\n  padding: 2px 23px 2px 8px;\n}\n.mac .monaco-action-bar .action-item .monaco-select-box {\n  font-size: 11px;\n  border-radius: var(--vscode-cornerRadius-small);\n  min-height: 24px;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/hover/hoverDelegate2.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/hover/hoverDelegate2.js
 var baseHoverDelegate = {
   showInstantHover: () => void 0,
   showDelayedHover: () => void 0,
@@ -82147,7 +82147,7 @@ function getBaseLayerHoverDelegate() {
   return baseHoverDelegate;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/list/splice.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/list/splice.js
 var CombinedSpliceable = class {
   constructor(spliceables) {
     this.spliceables = spliceables;
@@ -82157,10 +82157,10 @@ var CombinedSpliceable = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/list/list.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/list/list.css
 styleInject(".monaco-list {\n  position: relative;\n  height: 100%;\n  width: 100%;\n  white-space: nowrap;\n  overflow: hidden;\n}\n.monaco-list.mouse-support {\n  user-select: none;\n  -webkit-user-select: none;\n}\n.monaco-list > .monaco-scrollable-element {\n  height: 100%;\n}\n.monaco-list-rows {\n  position: relative;\n  width: 100%;\n  height: 100%;\n}\n.monaco-list.horizontal-scrolling .monaco-list-rows {\n  width: auto;\n  min-width: 100%;\n}\n.monaco-list-row {\n  position: absolute;\n  box-sizing: border-box;\n  overflow: hidden;\n  width: 100%;\n}\n.monaco-list.mouse-support .monaco-list-row {\n  cursor: pointer;\n  touch-action: none;\n}\n.monaco-list .monaco-scrollable-element > .scrollbar.vertical,\n.monaco-pane-view > .monaco-split-view2.vertical > .monaco-scrollable-element > .scrollbar.vertical {\n  z-index: 14;\n}\n.monaco-list-row.scrolling {\n  display: none !important;\n}\n.monaco-list.element-focused,\n.monaco-list.selection-single,\n.monaco-list.selection-multiple {\n  outline: 0 !important;\n}\n.monaco-list-type-filter-message {\n  position: absolute;\n  box-sizing: border-box;\n  width: 100%;\n  height: 100%;\n  top: 0;\n  left: 0;\n  padding: 40px 1em 1em 1em;\n  text-align: center;\n  white-space: normal;\n  opacity: 0.7;\n  pointer-events: none;\n}\n.monaco-list-type-filter-message:empty {\n  display: none;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/list/list.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/list/list.js
 var NotSelectableGroupId = "notSelectable";
 var ListError = class extends Error {
   constructor(user, message) {
@@ -82168,7 +82168,7 @@ var ListError = class extends Error {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/list/rangeMap.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/list/rangeMap.js
 function groupIntersect(range2, groups) {
   const result = [];
   for (const r of groups) {
@@ -82305,7 +82305,7 @@ var RangeMap = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/list/rowCache.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/list/rowCache.js
 var RowCache = class {
   constructor(renderers) {
     this.renderers = renderers;
@@ -82403,10 +82403,10 @@ var RowCache = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/dnd/dnd.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/dnd/dnd.css
 styleInject(".monaco-drag-image {\n  display: inline-block;\n  padding: 1px 7px;\n  border-radius: 10px;\n  font-size: 12px;\n  position: absolute;\n  z-index: 1000;\n  background-color: var(--vscode-list-activeSelectionBackground);\n  color: var(--vscode-list-activeSelectionForeground);\n  outline: 1px solid var(--vscode-list-focusOutline);\n  outline-offset: -1px;\n  max-width: 120px;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/dnd/dnd.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/dnd/dnd.js
 function applyDragImage(event, container, label, extraClasses = []) {
   if (!event.dataTransfer) {
     return;
@@ -82426,7 +82426,7 @@ function applyDragImage(event, container, label, extraClasses = []) {
   setTimeout(() => dragImage.remove(), 0);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/list/listView.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/list/listView.js
 var __decorate45 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -83581,7 +83581,7 @@ __decorate45([
   memoize
 ], ListView.prototype, "onTap", null);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/observables/constObservable.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/observables/constObservable.js
 function constObservable(value) {
   return new ConstObservable(value);
 }
@@ -83605,7 +83605,7 @@ var ConstObservable = class extends ConvenientObservable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/list/listWidget.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/list/listWidget.js
 var __decorate46 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -85113,10 +85113,10 @@ __decorate46([
   memoize
 ], List.prototype, "onDidBlur", null);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/selectBox/selectBoxCustom.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/selectBox/selectBoxCustom.css
 styleInject('.monaco-select-box-dropdown-container {\n  display: none;\n  box-sizing: border-box;\n  border-radius: var(--vscode-cornerRadius-large);\n  box-shadow: var(--vscode-shadow-lg);\n}\n.monaco-select-box-dropdown-container > .select-box-details-pane > .select-box-description-markdown * {\n  margin: 0;\n}\n.monaco-select-box-dropdown-container > .select-box-details-pane > .select-box-description-markdown a:focus {\n  outline: 1px solid -webkit-focus-ring-color;\n  outline-offset: -1px;\n}\n.monaco-select-box-dropdown-container > .select-box-details-pane > .select-box-description-markdown code {\n  line-height: 15px;\n  font-family: var(--monaco-monospace-font);\n}\n.monaco-select-box-dropdown-container.visible {\n  display: flex;\n  flex-direction: column;\n  text-align: left;\n  width: 1px;\n  overflow: hidden;\n}\n.monaco-select-box-dropdown-container > .select-box-dropdown-list-container {\n  flex: 0 0 auto;\n  align-self: flex-start;\n  width: 100%;\n  overflow: hidden;\n  box-sizing: border-box;\n}\n.monaco-select-box-dropdown-container > .select-box-details-pane {\n  padding: 5px 6px;\n}\n.monaco-select-box-dropdown-container > .select-box-dropdown-list-container .monaco-list:focus::before {\n  outline: 0 !important;\n}\n.monaco-select-box-dropdown-container > .select-box-dropdown-list-container .monaco-list .monaco-list-row {\n  cursor: pointer;\n  padding-left: 2px;\n}\n.monaco-select-box-dropdown-container > .select-box-dropdown-list-container .monaco-list .monaco-list-row > .option-text {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  padding-left: 6px;\n  white-space: nowrap;\n  float: left;\n}\n.monaco-select-box-dropdown-container > .select-box-dropdown-list-container .monaco-list .monaco-list-row > .option-detail {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  padding-left: 6px;\n  white-space: nowrap;\n  float: left;\n  opacity: 0.7;\n}\n.monaco-select-box-dropdown-container > .select-box-dropdown-list-container .monaco-list .monaco-list-row > .option-decorator-right {\n  text-overflow: ellipsis;\n  overflow: hidden;\n  padding-right: 10px;\n  white-space: nowrap;\n  float: right;\n}\n.monaco-select-box-dropdown-container > .select-box-dropdown-list-container .monaco-list .monaco-list-row.option-separator {\n  cursor: default;\n  border-radius: 0;\n  padding: 0;\n}\n.monaco-select-box-dropdown-container > .select-box-dropdown-list-container .monaco-list .monaco-list-row.option-separator > .option-text {\n  visibility: hidden;\n  width: 0;\n  float: none;\n}\n.monaco-select-box-dropdown-container > .select-box-dropdown-list-container .monaco-list .monaco-list-row.option-separator > .option-detail {\n  display: none;\n}\n.monaco-select-box-dropdown-container > .select-box-dropdown-list-container .monaco-list .monaco-list-row.option-separator > .option-decorator-right {\n  color: var(--vscode-descriptionForeground);\n  font-size: 12px;\n}\n.monaco-select-box-dropdown-container > .select-box-dropdown-list-container .monaco-list .monaco-list-row.option-separator::after {\n  content: "";\n  position: absolute;\n  left: 0;\n  right: 0;\n  top: 50%;\n  height: 1px;\n  background-color: var(--vscode-menu-separatorBackground);\n}\n.monaco-select-box-dropdown-container > .select-box-dropdown-list-container .monaco-list .monaco-list-row > .visually-hidden {\n  position: absolute;\n  left: -10000px;\n  top: auto;\n  width: 1px;\n  height: 1px;\n  overflow: hidden;\n}\n.monaco-select-box-dropdown-container > .select-box-dropdown-container-width-control {\n  flex: 1 1 auto;\n  align-self: flex-start;\n  opacity: 0;\n}\n.monaco-select-box-dropdown-container > .select-box-dropdown-container-width-control > .width-control-div {\n  overflow: hidden;\n  max-height: 0px;\n}\n.monaco-select-box-dropdown-container > .select-box-dropdown-container-width-control > .width-control-div > .option-text-width-control {\n  padding-left: 8px;\n  padding-right: 8px;\n  white-space: nowrap;\n}\n');
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/selectBox/selectBoxCustom.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/selectBox/selectBoxCustom.js
 var $4 = $;
 var SELECT_OPTION_ENTRY_TEMPLATE_ID = "selectOption.entry.template";
 var SelectListRenderer = class {
@@ -85900,7 +85900,7 @@ var SelectBoxList = class _SelectBoxList extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/selectBox/selectBoxNative.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/selectBox/selectBoxNative.js
 var SelectBoxNative = class extends Disposable {
   constructor(options, selected, styles, selectBoxOptions) {
     super();
@@ -86025,7 +86025,7 @@ var SelectBoxNative = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/selectBox/selectBox.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/selectBox/selectBox.js
 var SeparatorSelectOption = Object.freeze({
   text: "\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500",
   isDisabled: true,
@@ -86065,10 +86065,10 @@ var SelectBox = class extends Widget {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/actionbar/actionbar.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/actionbar/actionbar.css
 styleInject(".monaco-action-bar {\n  white-space: nowrap;\n  height: 100%;\n}\n.monaco-action-bar .actions-container {\n  display: flex;\n  margin: 0 auto;\n  padding: 0;\n  height: 100%;\n  width: 100%;\n  align-items: center;\n}\n.monaco-action-bar.vertical .actions-container {\n  display: inline-block;\n}\n.monaco-action-bar .action-item {\n  display: block;\n  align-items: center;\n  justify-content: center;\n  cursor: pointer;\n  position: relative;\n}\n.monaco-action-bar .action-item.disabled {\n  cursor: default;\n}\n.monaco-action-bar .action-item .icon,\n.monaco-action-bar .action-item .codicon {\n  display: block;\n}\n.monaco-action-bar .action-item .codicon {\n  display: flex;\n  align-items: center;\n  width: 16px;\n  height: 16px;\n}\n.monaco-action-bar .action-label,\n.monaco-action-bar .action-item .keybinding {\n  display: flex;\n  font-size: 11px;\n  padding: 3px;\n  border-radius: var(--vscode-cornerRadius-medium);\n}\n.monaco-action-bar .action-item.disabled .action-label:not(.icon),\n.monaco-action-bar .action-item.disabled .action-label:not(.icon)::before,\n.monaco-action-bar .action-item.disabled .action-label:not(.icon):hover {\n  color: var(--vscode-disabledForeground);\n}\n.monaco-action-bar .action-item.disabled .action-label.icon,\n.monaco-action-bar .action-item.disabled .action-label.icon::before,\n.monaco-action-bar .action-item.disabled .action-label.icon:hover {\n  opacity: 0.6;\n}\n.monaco-action-bar.vertical {\n  text-align: left;\n}\n.monaco-action-bar.vertical .action-item {\n  display: block;\n}\n.monaco-action-bar.vertical .action-item .action-label.separator {\n  display: block;\n  border-bottom: 1px solid var(--vscode-menu-separatorBackground, var(--vscode-disabledForeground));\n  padding-top: 1px;\n  margin: 4px .8em;\n  width: 100%;\n  height: 0;\n  background-color: transparent;\n}\n.monaco-action-bar .action-item .action-label.separator {\n  width: 1px;\n  height: 16px;\n  margin: 5px 4px !important;\n  cursor: default;\n  min-width: 1px;\n  padding: 0;\n  background-color: var(--vscode-disabledForeground);\n}\n.secondary-actions .monaco-action-bar .action-label {\n  margin-left: 6px;\n}\n.monaco-action-bar .action-item.select-container {\n  overflow: hidden;\n  flex: 1;\n  max-width: 170px;\n  min-width: 60px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  margin-right: 10px;\n}\n.monaco-action-bar .action-item.action-dropdown-item {\n  display: flex;\n}\n.monaco-action-bar .action-item.action-dropdown-item > .action-dropdown-item-separator {\n  display: flex;\n  align-items: center;\n  cursor: default;\n}\n.monaco-action-bar .action-item.action-dropdown-item > .action-dropdown-item-separator > div {\n  width: 1px;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/actionbar/actionViewItems.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/actionbar/actionViewItems.js
 var BaseActionViewItem = class extends Disposable {
   get action() {
     return this._action;
@@ -86407,10 +86407,10 @@ var SelectActionViewItem = class extends BaseActionViewItem {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/dropdown/dropdown.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/dropdown/dropdown.css
 styleInject(".monaco-dropdown {\n  height: 100%;\n  padding: 0;\n}\n.monaco-dropdown > .dropdown-label {\n  cursor: pointer;\n  height: 100%;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n.monaco-dropdown > .dropdown-label > .action-label.disabled {\n  cursor: default;\n}\n.monaco-dropdown .dropdown-menu {\n  border-radius: var(--vscode-cornerRadius-large);\n  box-shadow: var(--vscode-shadow-lg);\n}\n.monaco-dropdown-with-primary {\n  display: flex !important;\n  flex-direction: row;\n  border-radius: 5px;\n}\n.monaco-dropdown-with-primary > .action-container > .action-label {\n  margin-right: 0;\n}\n.monaco-dropdown-with-primary > .dropdown-action-container > .monaco-dropdown > .dropdown-label .codicon[class*=codicon-] {\n  font-size: 12px;\n  padding-left: 0px;\n  padding-right: 0px;\n  line-height: 16px;\n  margin-left: -3px;\n}\n.monaco-dropdown-with-primary > .dropdown-action-container > .monaco-dropdown > .dropdown-label > .action-label {\n  display: block;\n  background-size: 16px;\n  background-position: center center;\n  background-repeat: no-repeat;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/dropdown/dropdown.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/dropdown/dropdown.js
 var BaseDropdown = class extends ActionRunner {
   constructor(container, options) {
     super();
@@ -86543,7 +86543,7 @@ var DropdownMenu = class extends BaseDropdown {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/dropdown/dropdownActionViewItem.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/dropdown/dropdownActionViewItem.js
 var DropdownMenuActionViewItem = class extends BaseActionViewItem {
   get onDidChangeVisibility() {
     return this._onDidChangeVisibility.event;
@@ -86649,7 +86649,7 @@ var DropdownMenuActionViewItem = class extends BaseActionViewItem {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/keybindingLabels.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/keybindingLabels.js
 var ModifierLabelProvider = class {
   constructor(mac, windows, linux = windows) {
     this.modifierLabels = [null];
@@ -86775,12 +86775,12 @@ function _simpleAsString(modifiers, key, labels) {
   return result.join(labels.separator);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/action/common/action.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/action/common/action.js
 function isICommandActionToggleInfo(thing) {
   return thing ? thing.condition !== void 0 : false;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/browser/defaultStyles.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/browser/defaultStyles.js
 function overrideStyles(override, styles) {
   const result = { ...styles };
   for (const key in override) {
@@ -86962,7 +86962,7 @@ var defaultMenuStyles = {
   scrollbarSliderActiveBackground: asCssVariable(scrollbarSliderActiveBackground)
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/animations/animations.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/animations/animations.js
 var confettiColors = [
   "#007acc",
   "#005a9e",
@@ -87324,7 +87324,7 @@ function triggerClickAnimation(element, animation, icon) {
   }
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/window/common/window.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/window/common/window.js
 function hasNativeContextMenu(configurationService, titleBarStyle) {
   if (isWeb) {
     return false;
@@ -87381,10 +87381,10 @@ function getWindowControlsStyle(configurationService) {
   return "native";
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/actions/browser/menuEntryActionViewItem.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/actions/browser/menuEntryActionViewItem.css
 styleInject('.monaco-action-bar .action-item.menu-entry .action-label.icon {\n  width: 16px;\n  height: 16px;\n  background-repeat: no-repeat;\n  background-position: 50%;\n  background-size: 16px;\n}\n.monaco-action-bar .action-item.menu-entry.text-only .action-label {\n  color: var(--vscode-descriptionForeground);\n  overflow: hidden;\n  border-radius: 2px;\n}\n.monaco-action-bar .action-item.menu-entry.text-only.use-comma:not(:last-of-type) .action-label::after {\n  content: ", ";\n}\n.monaco-action-bar .action-item.menu-entry.text-only + .action-item:not(.text-only) > .monaco-dropdown .action-label {\n  color: var(--vscode-descriptionForeground);\n}\n.monaco-dropdown-with-default {\n  display: flex !important;\n  flex-direction: row;\n  border-radius: 5px;\n}\n.monaco-dropdown-with-default > .action-container > .action-label {\n  margin-right: 0;\n}\n.monaco-dropdown-with-default > .action-container.menu-entry > .action-label.icon {\n  width: 16px;\n  height: 16px;\n  background-repeat: no-repeat;\n  background-position: 50%;\n  background-size: 16px;\n}\n.monaco-dropdown-with-default > .action-container.disabled {\n  cursor: default;\n}\n.monaco-dropdown-with-default > .action-container.disabled > .action-label {\n  opacity: 0.4;\n  pointer-events: none;\n}\n.monaco-dropdown-with-default:hover {\n  background-color: var(--vscode-toolbar-hoverBackground);\n}\n.monaco-dropdown-with-default > .dropdown-action-container > .monaco-dropdown > .dropdown-label .codicon[class*=codicon-] {\n  font-size: 12px;\n  padding-left: 0px;\n  padding-right: 0px;\n  line-height: 16px;\n  margin-left: -3px;\n}\n.monaco-dropdown-with-default > .dropdown-action-container > .monaco-dropdown > .dropdown-label > .action-label {\n  display: block;\n  background-size: 16px;\n  background-position: center center;\n  background-repeat: no-repeat;\n}\n');
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/actions/browser/menuEntryActionViewItem.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/actions/browser/menuEntryActionViewItem.js
 var __decorate47 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -87815,7 +87815,7 @@ function createActionViewItem(instaService, action, options) {
   }
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/actionbar/actionbar.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/actionbar/actionbar.js
 var ActionBar = class extends Disposable {
   get viewItems() {
     return this._viewItems;
@@ -88280,7 +88280,7 @@ var ActionBar = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/menu/menu.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/menu/menu.js
 var MENU_MNEMONIC_REGEX = /\(&([^\s&])\)|(^|[^&])&([^\s&])/;
 var MENU_ESCAPED_MNEMONIC_REGEX = /(&amp;)?(&amp;)([^\s&])/g;
 var HorizontalDirection;
@@ -89399,7 +89399,7 @@ ${formatRule(Codicon.menuSubmenu)}
   return result;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/contextview/browser/contextMenuHandler.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/contextview/browser/contextMenuHandler.js
 var ContextMenuHandler = class {
   constructor(contextViewService, telemetryService, notificationService, keybindingService) {
     this.contextViewService = contextViewService;
@@ -89511,7 +89511,7 @@ var ContextMenuHandler = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/contextview/browser/contextMenuService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/contextview/browser/contextMenuService.js
 var __decorate48 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -89598,7 +89598,7 @@ var ContextMenuMenuDelegate;
   ContextMenuMenuDelegate2.transform = transform;
 })(ContextMenuMenuDelegate || (ContextMenuMenuDelegate = {}));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/contextview/browser/contextViewService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/contextview/browser/contextViewService.js
 var __decorate49 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -89665,7 +89665,7 @@ var ContextViewService = class extends ContextViewHandler {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/dataChannel/common/dataChannel.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/dataChannel/common/dataChannel.js
 var IDataChannelService = createDecorator("dataChannelService");
 var NullDataChannelService = class {
   getDataChannel(_channelId) {
@@ -89676,10 +89676,10 @@ var NullDataChannelService = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/defaultAccount/common/defaultAccount.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/defaultAccount/common/defaultAccount.js
 var IDefaultAccountService = createDecorator("defaultAccountService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/instantiation/common/graph.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/instantiation/common/graph.js
 var Node2 = class {
   constructor(key, data) {
     this.key = key;
@@ -89768,7 +89768,7 @@ var Graph = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/instantiation/common/instantiationService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/instantiation/common/instantiationService.js
 var _enableAllTracing = false;
 var CyclicDependencyError = class extends Error {
   constructor(graph) {
@@ -90123,7 +90123,7 @@ var Trace = class _Trace {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/keybinding/common/keybindingResolver.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/keybinding/common/keybindingResolver.js
 var NoMatchingKb = {
   kind: 0
   /* ResultKind.NoMatchingKb */
@@ -90395,7 +90395,7 @@ function printSourceExplanation(kb) {
   return kb.extensionId ? kb.isBuiltinExtension ? `built-in extension ${kb.extensionId}` : `user extension ${kb.extensionId}` : kb.isDefault ? `built-in` : `user`;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/keybinding/common/abstractKeybindingService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/keybinding/common/abstractKeybindingService.js
 var HIGH_FREQ_COMMANDS = /^(cursor|delete|undo|redo|tab|editor\.action\.clipboard)/;
 var AbstractKeybindingService = class extends Disposable {
   get onDidUpdateKeybindings() {
@@ -90677,7 +90677,7 @@ var KeybindingModifierSet = class _KeybindingModifierSet {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/keybinding/common/resolvedKeybindingItem.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/keybinding/common/resolvedKeybindingItem.js
 var ResolvedKeybindingItem = class {
   constructor(resolvedKeybinding, command, commandArgs, when, isDefault, extensionId, isBuiltinExtension) {
     this._resolvedKeybindingItemBrand = void 0;
@@ -90707,7 +90707,7 @@ function toEmptyArrayIfContainsNull(arr) {
   return result;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/keybinding/common/baseResolvedKeybinding.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/keybinding/common/baseResolvedKeybinding.js
 var BaseResolvedKeybinding = class extends ResolvedKeybinding {
   constructor(os, chords) {
     super();
@@ -90752,7 +90752,7 @@ var BaseResolvedKeybinding = class extends ResolvedKeybinding {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/keybinding/common/usLayoutResolvedKeybinding.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/keybinding/common/usLayoutResolvedKeybinding.js
 var USLayoutResolvedKeybinding = class _USLayoutResolvedKeybinding extends BaseResolvedKeybinding {
   constructor(chords, os) {
     super(os, chords);
@@ -90965,10 +90965,10 @@ var USLayoutResolvedKeybinding = class _USLayoutResolvedKeybinding extends BaseR
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/label/common/label.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/label/common/label.js
 var ILabelService = createDecorator("labelService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/list/listPaging.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/list/listPaging.js
 var PagedRenderer = class {
   get templateId() {
     return this.renderer.templateId;
@@ -91087,10 +91087,10 @@ var PagedList = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/sash/sash.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/sash/sash.css
 styleInject(':root {\n  --vscode-sash-size: 4px;\n  --vscode-sash-hover-size: 4px;\n}\n.monaco-sash {\n  position: absolute;\n  z-index: 35;\n  touch-action: none;\n}\n.monaco-sash.disabled {\n  pointer-events: none;\n}\n.monaco-sash.mac.vertical {\n  cursor: col-resize;\n}\n.monaco-sash.vertical.minimum {\n  cursor: e-resize;\n}\n.monaco-sash.vertical.maximum {\n  cursor: w-resize;\n}\n.monaco-sash.mac.horizontal {\n  cursor: row-resize;\n}\n.monaco-sash.horizontal.minimum {\n  cursor: s-resize;\n}\n.monaco-sash.horizontal.maximum {\n  cursor: n-resize;\n}\n.monaco-sash.disabled {\n  cursor: default !important;\n  pointer-events: none !important;\n}\n.monaco-sash.vertical {\n  cursor: ew-resize;\n  top: 0;\n  width: var(--vscode-sash-size);\n  height: 100%;\n}\n.monaco-sash.horizontal {\n  cursor: ns-resize;\n  left: 0;\n  width: 100%;\n  height: var(--vscode-sash-size);\n}\n.monaco-sash:not(.disabled) > .orthogonal-drag-handle {\n  content: " ";\n  height: calc(var(--vscode-sash-size) * 2);\n  width: calc(var(--vscode-sash-size) * 2);\n  z-index: 100;\n  display: block;\n  cursor: all-scroll;\n  position: absolute;\n}\n.monaco-sash.horizontal.orthogonal-edge-north:not(.disabled) > .orthogonal-drag-handle.start,\n.monaco-sash.horizontal.orthogonal-edge-south:not(.disabled) > .orthogonal-drag-handle.end {\n  cursor: nwse-resize;\n}\n.monaco-sash.horizontal.orthogonal-edge-north:not(.disabled) > .orthogonal-drag-handle.end,\n.monaco-sash.horizontal.orthogonal-edge-south:not(.disabled) > .orthogonal-drag-handle.start {\n  cursor: nesw-resize;\n}\n.monaco-sash.vertical > .orthogonal-drag-handle.start {\n  left: calc(var(--vscode-sash-size) * -0.5);\n  top: calc(var(--vscode-sash-size) * -1);\n}\n.monaco-sash.vertical > .orthogonal-drag-handle.end {\n  left: calc(var(--vscode-sash-size) * -0.5);\n  bottom: calc(var(--vscode-sash-size) * -1);\n}\n.monaco-sash.horizontal > .orthogonal-drag-handle.start {\n  top: calc(var(--vscode-sash-size) * -0.5);\n  left: calc(var(--vscode-sash-size) * -1);\n}\n.monaco-sash.horizontal > .orthogonal-drag-handle.end {\n  top: calc(var(--vscode-sash-size) * -0.5);\n  right: calc(var(--vscode-sash-size) * -1);\n}\n.monaco-sash:before {\n  content: "";\n  pointer-events: none;\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  background: transparent;\n}\n.monaco-enable-motion .monaco-sash:before {\n  transition: background-color 0.1s ease-out;\n}\n.monaco-sash.hover:before,\n.monaco-sash.active:before {\n  background: var(--vscode-sash-hoverBorder);\n}\n.monaco-sash.vertical:before {\n  width: var(--vscode-sash-hover-size);\n  left: calc(50% - (var(--vscode-sash-hover-size) / 2));\n}\n.monaco-sash.horizontal:before {\n  height: var(--vscode-sash-hover-size);\n  top: calc(50% - (var(--vscode-sash-hover-size) / 2));\n}\n.pointer-events-disabled {\n  pointer-events: none !important;\n}\n.monaco-sash.debug {\n  background: cyan;\n}\n.monaco-sash.debug.disabled {\n  background: rgba(0, 255, 255, 0.2);\n}\n.monaco-sash.debug:not(.disabled) > .orthogonal-drag-handle {\n  background: red;\n}\n');
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/sash/sash.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/sash/sash.js
 var __decorate50 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -91512,10 +91512,10 @@ var Sash = class _Sash extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/splitview/splitview.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/splitview/splitview.css
 styleInject('.monaco-split-view2 {\n  position: relative;\n  width: 100%;\n  height: 100%;\n}\n.monaco-split-view2 > .sash-container {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  pointer-events: none;\n}\n.monaco-split-view2 > .sash-container > .monaco-sash {\n  pointer-events: initial;\n}\n.monaco-split-view2 > .monaco-scrollable-element {\n  width: 100%;\n  height: 100%;\n}\n.monaco-split-view2 > .monaco-scrollable-element > .split-view-container {\n  width: 100%;\n  height: 100%;\n  white-space: nowrap;\n  position: relative;\n}\n.monaco-split-view2 > .monaco-scrollable-element > .split-view-container > .split-view-view {\n  white-space: initial;\n  position: absolute;\n}\n.monaco-split-view2 > .monaco-scrollable-element > .split-view-container > .split-view-view:not(.visible) {\n  display: none;\n}\n.monaco-split-view2.vertical > .monaco-scrollable-element > .split-view-container > .split-view-view {\n  width: 100%;\n}\n.monaco-split-view2.horizontal > .monaco-scrollable-element > .split-view-container > .split-view-view {\n  height: 100%;\n}\n.monaco-split-view2.separator-border > .monaco-scrollable-element > .split-view-container > .split-view-view:not(:first-child)::before {\n  content: " ";\n  position: absolute;\n  top: 0;\n  left: 0;\n  z-index: 5;\n  pointer-events: none;\n  background-color: var(--separator-border);\n}\n.monaco-split-view2.separator-border.horizontal > .monaco-scrollable-element > .split-view-container > .split-view-view:not(:first-child)::before {\n  height: 100%;\n  width: 1px;\n}\n.monaco-split-view2.separator-border.vertical > .monaco-scrollable-element > .split-view-container > .split-view-view:not(:first-child)::before {\n  height: 1px;\n  width: 100%;\n}\n');
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/splitview/splitview.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/splitview/splitview.js
 var defaultStyles = {
   separatorBorder: Color.transparent
 };
@@ -92295,10 +92295,10 @@ var SplitView = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/table/table.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/table/table.css
 styleInject('.monaco-table {\n  display: flex;\n  flex-direction: column;\n  position: relative;\n  height: 100%;\n  width: 100%;\n  white-space: nowrap;\n  overflow: hidden;\n}\n.monaco-table > .monaco-split-view2 {\n  border-bottom: 1px solid transparent;\n}\n.monaco-table > .monaco-list {\n  flex: 1;\n}\n.monaco-table-tr {\n  display: flex;\n  height: 100%;\n}\n.monaco-table-th {\n  width: 100%;\n  height: 100%;\n  font-weight: bold;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.monaco-table-th,\n.monaco-table-td {\n  box-sizing: border-box;\n  flex-shrink: 0;\n  overflow: hidden;\n  white-space: nowrap;\n  text-overflow: ellipsis;\n}\n.monaco-table > .monaco-split-view2 .monaco-sash.vertical::before {\n  content: "";\n  position: absolute;\n  left: calc(var(--vscode-sash-size) / 2);\n  width: 0;\n  border-left: 1px solid transparent;\n}\n.monaco-enable-motion .monaco-table > .monaco-split-view2,\n.monaco-enable-motion .monaco-table > .monaco-split-view2 .monaco-sash.vertical::before {\n  transition: border-color 0.2s ease-out;\n}\n');
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/table/tableWidget.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/table/tableWidget.js
 var TableListRenderer = class _TableListRenderer {
   static {
     this.TemplateId = "row";
@@ -92501,10 +92501,10 @@ var Table = class _Table {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/toggle/toggle.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/toggle/toggle.css
 styleInject(".monaco-custom-toggle {\n  margin-left: 2px;\n  float: left;\n  cursor: pointer;\n  overflow: hidden;\n  width: 20px;\n  height: 20px;\n  border-radius: 3px;\n  border: 1px solid transparent;\n  padding: 1px;\n  box-sizing: border-box;\n  user-select: none;\n  -webkit-user-select: none;\n}\n.monaco-custom-toggle:hover {\n  background-color: var(--vscode-inputOption-hoverBackground);\n}\n.monaco-custom-toggle.disabled {\n  opacity: 0.4;\n  cursor: default;\n  pointer-events: none;\n}\n.hc-black .monaco-custom-toggle:hover,\n.hc-light .monaco-custom-toggle:hover {\n  border: 1px dashed var(--vscode-focusBorder);\n}\n.hc-black .monaco-custom-toggle,\n.hc-light .monaco-custom-toggle {\n  background: none;\n}\n.hc-black .monaco-custom-toggle:hover,\n.hc-light .monaco-custom-toggle:hover {\n  background: none;\n}\n.monaco-custom-toggle.monaco-checkbox {\n  height: 18px;\n  width: 18px;\n  border: 1px solid transparent;\n  border-radius: 3px;\n  margin-right: 9px;\n  margin-left: 0px;\n  padding: 0px;\n  opacity: 1;\n  background-size: 16px !important;\n}\n.monaco-action-bar .checkbox-action-item {\n  display: flex;\n  align-items: center;\n  border-radius: 2px;\n  padding-right: 2px;\n}\n.monaco-action-bar .checkbox-action-item:hover {\n  background-color: var(--vscode-toolbar-hoverBackground);\n}\n.monaco-action-bar .checkbox-action-item > .monaco-custom-toggle.monaco-checkbox {\n  margin-right: 4px;\n}\n.monaco-action-bar .checkbox-action-item > .checkbox-label {\n  font-size: 12px;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/toggle/toggle.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/toggle/toggle.js
 var unthemedToggleStyles = {
   inputActiveOptionBorder: "#007ACC00",
   inputActiveOptionForeground: "#FFFFFF",
@@ -92805,7 +92805,7 @@ function createToggleActionViewItemProvider(toggleStyles) {
   };
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/findinput/findInputToggles.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/findinput/findInputToggles.js
 var NLS_CASE_SENSITIVE_TOGGLE_LABEL = localize(2, "Match Case");
 var NLS_WHOLE_WORD_TOGGLE_LABEL = localize(3, "Match Whole Word");
 var NLS_REGEX_TOGGLE_LABEL = localize(4, "Use Regular Expression");
@@ -92849,7 +92849,7 @@ var RegexToggle = class extends Toggle {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/formattedTextRenderer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/formattedTextRenderer.js
 function renderText(text2, _options, target) {
   const element = target ?? document.createElement("div");
   element.textContent = text2;
@@ -92994,7 +92994,7 @@ function formatTagType(char, supportCodeSegments) {
   }
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/navigator.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/navigator.js
 var ArrayNavigator = class {
   constructor(items, start = 0, end = items.length, index = start - 1) {
     this.items = items;
@@ -93026,7 +93026,7 @@ var ArrayNavigator = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/history.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/history.js
 var HistoryNavigator = class {
   constructor(_history = /* @__PURE__ */ new Set(), limit = 10) {
     this._history = _history;
@@ -93107,10 +93107,10 @@ var HistoryNavigator = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/inputbox/inputBox.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/inputbox/inputBox.css
 styleInject(".monaco-inputbox {\n  position: relative;\n  display: block;\n  padding: 0;\n  box-sizing: border-box;\n  border-radius: 4px;\n  font-size: inherit;\n}\n.monaco-inputbox > .ibwrapper > .input,\n.monaco-inputbox > .ibwrapper > .mirror {\n  padding: 4px 6px;\n}\n.monaco-inputbox > .ibwrapper {\n  position: relative;\n  width: 100%;\n}\n.monaco-inputbox > .ibwrapper > .input {\n  display: inline-block;\n  box-sizing: border-box;\n  width: 100%;\n  height: 100%;\n  line-height: inherit;\n  border: none;\n  font-family: inherit;\n  font-size: inherit;\n  resize: none;\n  color: inherit;\n}\n.monaco-inputbox > .ibwrapper > input {\n  text-overflow: ellipsis;\n}\n.monaco-inputbox > .ibwrapper > textarea.input {\n  display: block;\n  scrollbar-width: none;\n  outline: none;\n}\n.monaco-inputbox > .ibwrapper > textarea.input::-webkit-scrollbar {\n  display: none;\n}\n.monaco-inputbox > .ibwrapper > textarea.input.empty {\n  white-space: nowrap;\n}\n.monaco-inputbox > .ibwrapper > .mirror {\n  position: absolute;\n  display: inline-block;\n  width: 100%;\n  top: 0;\n  left: 0;\n  box-sizing: border-box;\n  white-space: pre-wrap;\n  visibility: hidden;\n  word-wrap: break-word;\n}\n.monaco-inputbox-container {\n  text-align: right;\n}\n.monaco-inputbox-container .monaco-inputbox-message {\n  display: inline-block;\n  overflow: hidden;\n  text-align: left;\n  width: 100%;\n  box-sizing: border-box;\n  padding: 0.4em;\n  font-size: 12px;\n  line-height: 17px;\n  margin-top: -1px;\n  word-wrap: break-word;\n}\n.monaco-inputbox .monaco-action-bar {\n  position: absolute;\n  right: 2px;\n  top: 4px;\n}\n.monaco-inputbox .monaco-action-bar .action-item {\n  margin-left: 2px;\n}\n.monaco-inputbox .monaco-action-bar .action-item .codicon {\n  background-repeat: no-repeat;\n  width: 16px;\n  height: 16px;\n  color: var(--vscode-icon-foreground);\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/inputbox/inputBox.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/inputbox/inputBox.js
 var $5 = $;
 var InputBox = class extends Widget {
   get onDidChange() {
@@ -93623,10 +93623,10 @@ var HistoryInputBox = class extends InputBox {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/findinput/findInput.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/findinput/findInput.css
 styleInject(".monaco-findInput {\n  position: relative;\n}\n.monaco-findInput .monaco-inputbox {\n  font-size: 13px;\n  width: 100%;\n}\n.monaco-findInput > .controls {\n  position: absolute;\n  top: 3px;\n  right: 2px;\n}\n.vs .monaco-findInput.disabled {\n  background-color: #E1E1E1;\n}\n.vs-dark .monaco-findInput.disabled {\n  background-color: #333;\n}\n.monaco-findInput.highlight-0 .controls,\n.hc-light .monaco-findInput.highlight-0 .controls {\n  animation: monaco-findInput-highlight-0 100ms linear 0s;\n}\n.monaco-findInput.highlight-1 .controls,\n.hc-light .monaco-findInput.highlight-1 .controls {\n  animation: monaco-findInput-highlight-1 100ms linear 0s;\n}\n.hc-black .monaco-findInput.highlight-0 .controls,\n.vs-dark .monaco-findInput.highlight-0 .controls {\n  animation: monaco-findInput-highlight-dark-0 100ms linear 0s;\n}\n.hc-black .monaco-findInput.highlight-1 .controls,\n.vs-dark .monaco-findInput.highlight-1 .controls {\n  animation: monaco-findInput-highlight-dark-1 100ms linear 0s;\n}\n@keyframes monaco-findInput-highlight-0 {\n  0% {\n    background: rgba(253, 255, 0, 0.8);\n  }\n  100% {\n    background: transparent;\n  }\n}\n@keyframes monaco-findInput-highlight-1 {\n  0% {\n    background: rgba(253, 255, 0, 0.8);\n  }\n  99% {\n    background: transparent;\n  }\n}\n@keyframes monaco-findInput-highlight-dark-0 {\n  0% {\n    background: rgba(255, 255, 255, 0.44);\n  }\n  100% {\n    background: transparent;\n  }\n}\n@keyframes monaco-findInput-highlight-dark-1 {\n  0% {\n    background: rgba(255, 255, 255, 0.44);\n  }\n  99% {\n    background: transparent;\n  }\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/findinput/findInput.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/findinput/findInput.js
 var NLS_DEFAULT_LABEL = localize(1, "input");
 var FindInput = class extends Widget {
   get onDidOptionChange() {
@@ -93947,7 +93947,7 @@ var FindInput = class extends Widget {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/tree/tree.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/tree/tree.js
 var ObjectTreeElementCollapseState;
 (function(ObjectTreeElementCollapseState2) {
   ObjectTreeElementCollapseState2[ObjectTreeElementCollapseState2["Expanded"] = 0] = "Expanded";
@@ -93982,7 +93982,7 @@ var WeakMapper = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/tree/indexTreeModel.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/tree/indexTreeModel.js
 function isFilterResult(obj) {
   return !!obj && obj.visibility !== void 0;
 }
@@ -94488,10 +94488,10 @@ var IndexTreeModel = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/tree/media/tree.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/tree/media/tree.css
 styleInject('.monaco-tl-row {\n  display: flex;\n  height: 100%;\n  align-items: center;\n  position: relative;\n}\n.monaco-tl-row.disabled {\n  cursor: default;\n}\n.monaco-tl-indent {\n  height: 100%;\n  position: absolute;\n  top: 0;\n  left: 16px;\n  pointer-events: none;\n}\n.hide-arrows .monaco-tl-indent {\n  left: 12px;\n}\n.monaco-tl-indent > .indent-guide {\n  display: inline-block;\n  box-sizing: border-box;\n  height: 100%;\n  border-left: 1px solid transparent;\n  opacity: 0;\n}\n.monaco-enable-motion .monaco-tl-indent > .indent-guide {\n  transition: opacity 0.1s linear;\n}\n.monaco-tl-twistie,\n.monaco-tl-contents {\n  height: 100%;\n}\n.monaco-tl-twistie {\n  font-size: 10px;\n  text-align: right;\n  padding-right: 6px;\n  flex-shrink: 0;\n  width: 16px;\n  display: flex !important;\n  align-items: center;\n  justify-content: center;\n  transform: translateX(3px);\n}\n.monaco-tl-contents {\n  flex: 1;\n  overflow: hidden;\n}\n.monaco-tl-twistie::before {\n  border-radius: 20px;\n}\n.monaco-tl-twistie.collapsed::before {\n  transform: rotate(-90deg);\n}\n.monaco-tl-twistie.codicon-tree-item-loading::before {\n  animation: codicon-spin 1.25s steps(30) infinite;\n  transform-origin: center center;\n}\n.monaco-tree-type-filter {\n  position: absolute;\n  top: 0;\n  right: 0;\n  display: flex;\n  padding: 3px;\n  max-width: 200px;\n  z-index: 100;\n  margin: 0 10px 0 6px;\n  border: 1px solid var(--vscode-widget-border);\n  border-bottom-left-radius: 4px;\n  border-bottom-right-radius: 4px;\n}\n.monaco-enable-motion .monaco-tree-type-filter {\n  transition: top 0.3s;\n}\n.monaco-tree-type-filter.disabled {\n  top: -40px !important;\n}\n.monaco-tree-type-filter-input {\n  flex: 1;\n}\n.monaco-tree-type-filter-input .monaco-inputbox {\n  height: 23px;\n}\n.monaco-tree-type-filter-input .monaco-inputbox > .ibwrapper > .input,\n.monaco-tree-type-filter-input .monaco-inputbox > .ibwrapper > .mirror {\n  padding: 2px 4px;\n}\n.monaco-tree-type-filter-input .monaco-findInput > .controls {\n  top: 2px;\n}\n.monaco-tree-type-filter-actionbar {\n  margin-left: 4px;\n}\n.monaco-tree-type-filter-actionbar .monaco-action-bar .action-label {\n  padding: 2px;\n}\n.monaco-list .monaco-scrollable-element .monaco-tree-sticky-container {\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 0;\n  z-index: 13;\n  background-color: var(--vscode-sideBar-background);\n}\n.monaco-list .monaco-scrollable-element .monaco-tree-sticky-container .monaco-tree-sticky-row.monaco-list-row {\n  position: absolute;\n  width: 100%;\n  opacity: 1 !important;\n  overflow: hidden;\n  background-color: var(--vscode-sideBar-background);\n}\n.monaco-list .monaco-scrollable-element .monaco-tree-sticky-container .monaco-tree-sticky-row:hover {\n  background-color: var(--vscode-list-hoverBackground) !important;\n  cursor: pointer;\n}\n.monaco-list .monaco-scrollable-element .monaco-tree-sticky-container.empty,\n.monaco-list .monaco-scrollable-element .monaco-tree-sticky-container.empty .monaco-tree-sticky-container-shadow {\n  display: none;\n}\n.monaco-list .monaco-scrollable-element .monaco-tree-sticky-container .monaco-tree-sticky-container-shadow {\n  position: absolute;\n  bottom: -3px;\n  left: 0px;\n  height: 0px;\n  width: 100%;\n}\n.monaco-list .monaco-scrollable-element .monaco-tree-sticky-container[tabindex="0"]:focus {\n  outline: none;\n}\n');
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/tree/abstractTree.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/tree/abstractTree.js
 var TreeElementsDragAndDropData = class extends ElementsDragAndDropData {
   constructor(data) {
     super(data.elements.map((node) => node.element));
@@ -96481,7 +96481,7 @@ var AbstractTree = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/tree/objectTreeModel.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/tree/objectTreeModel.js
 var ObjectTreeModel = class {
   constructor(user, options = {}) {
     this.user = user;
@@ -96687,7 +96687,7 @@ var ObjectTreeModel = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/tree/compressedObjectTreeModel.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/tree/compressedObjectTreeModel.js
 function noCompress(element) {
   const elements = [element.element];
   const incompressible = element.incompressible || false;
@@ -97080,7 +97080,7 @@ var CompressibleObjectTreeModel = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/tree/objectTree.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/tree/objectTree.js
 var __decorate51 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -97269,7 +97269,7 @@ var CompressibleObjectTree = class extends ObjectTree {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/tree/asyncDataTree.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/tree/asyncDataTree.js
 function createAsyncDataTreeNode(props) {
   return {
     ...props,
@@ -98228,7 +98228,7 @@ function getVisibility(filterResult) {
   }
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/tree/dataTree.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/tree/dataTree.js
 var DataTree = class extends AbstractTree {
   constructor(user, container, delegate, renderers, dataSource, options = {}) {
     super(user, container, delegate, renderers, options);
@@ -98241,7 +98241,7 @@ var DataTree = class extends AbstractTree {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/list/browser/listService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/list/browser/listService.js
 var __decorate52 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -99218,7 +99218,7 @@ configurationRegistry2.registerConfiguration({
   }
 });
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/log/common/logService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/log/common/logService.js
 var LogService = class extends Disposable {
   constructor(primaryLogger, otherLoggers = []) {
     super();
@@ -99251,7 +99251,7 @@ var LogService = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/markers/common/markers.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/markers/common/markers.js
 var MarkerSeverity;
 (function(MarkerSeverity3) {
   MarkerSeverity3[MarkerSeverity3["Hint"] = 1] = "Hint";
@@ -99367,7 +99367,7 @@ var IMarkerData;
 })(IMarkerData || (IMarkerData = {}));
 var IMarkerService = createDecorator("markerService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/markers/common/markerService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/markers/common/markerService.js
 var unsupportedSchemas = /* @__PURE__ */ new Set([
   Schemas.inMemory,
   Schemas.vscodeSourceControl,
@@ -99661,7 +99661,7 @@ var MarkerService = class _MarkerService {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/progress/common/progress.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/progress/common/progress.js
 var IProgressService = createDecorator("progressService");
 var Progress = class {
   static {
@@ -99678,7 +99678,7 @@ var Progress = class {
 };
 var IEditorProgressService = createDecorator("editorProgressService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/userInteraction/browser/userInteractionServiceImpl.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/userInteraction/browser/userInteractionServiceImpl.js
 var UserInteractionService = class {
   constructor() {
     this._modifierObservables = /* @__PURE__ */ new WeakMap();
@@ -99738,7 +99738,7 @@ registerSingleton(
   /* InstantiationType.Delayed */
 );
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/workspace/common/workspace.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/workspace/common/workspace.js
 var IWorkspaceContextService = createDecorator("contextService");
 var WorkspaceFolder = class {
   constructor(data, raw) {
@@ -99755,10 +99755,10 @@ var WORKSPACE_EXTENSION = "code-workspace";
 [{ name: localize(2119, "Code Workspace"), extensions: [WORKSPACE_EXTENSION] }];
 var STANDALONE_EDITOR_WORKSPACE_ID = "4064f6ec-cb38-4ad0-af64-ee6467e63c82";
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/workspace/common/workspaceTrust.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/workspace/common/workspaceTrust.js
 var IWorkspaceTrustManagementService = createDecorator("workspaceTrustManagementService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/services/bulkEditService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/services/bulkEditService.js
 var IBulkEditService = createDecorator("IWorkspaceEditService");
 var ResourceEdit = class {
   constructor(metadata) {
@@ -99820,14 +99820,14 @@ var ResourceFileEdit = class _ResourceFileEdit extends ResourceEdit {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/editor/common/editor.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/editor/common/editor.js
 var EditorOpenSource;
 (function(EditorOpenSource2) {
   EditorOpenSource2[EditorOpenSource2["API"] = 0] = "API";
   EditorOpenSource2[EditorOpenSource2["USER"] = 1] = "USER";
 })(EditorOpenSource || (EditorOpenSource = {}));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/services/openerService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/services/openerService.js
 var __decorate53 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -100010,7 +100010,7 @@ OpenerService = __decorate53([
   __param47(1, ICommandService)
 ], OpenerService);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/services/renameSymbolTrackerService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/services/renameSymbolTrackerService.js
 var IRenameSymbolTrackerService = createDecorator("renameSymbolTrackerService");
 var NullRenameSymbolTrackerService = class {
   constructor() {
@@ -100020,7 +100020,7 @@ var NullRenameSymbolTrackerService = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/config/diffEditor.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/config/diffEditor.js
 var diffEditorDefaultOptions = {
   enableSplitViewResizing: true,
   renderSideBySide: true,
@@ -100054,7 +100054,7 @@ var diffEditorDefaultOptions = {
   compactMode: false
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/config/editorConfigurationSchema.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/config/editorConfigurationSchema.js
 var editorConfigurationBaseNode = Object.freeze({
   id: "editor",
   order: 5,
@@ -100394,7 +100394,7 @@ function isDiffEditorConfigurationKey(key) {
 var configurationRegistry3 = Registry.as(Extensions4.Configuration);
 configurationRegistry3.registerConfiguration(editorConfiguration);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/editOperation.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/editOperation.js
 var EditOperation = class {
   static insert(position, text2) {
     return {
@@ -100424,13 +100424,13 @@ var EditOperation = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/editorFeatures.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/editorFeatures.js
 var editorFeatures = [];
 function getEditorFeatures() {
   return editorFeatures.slice(0);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/languagesAssociations.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/languagesAssociations.js
 var registeredAssociations = [];
 var nonUserRegisteredAssociations = [];
 var userRegisteredAssociations = [];
@@ -100581,7 +100581,7 @@ function getAssociationByFirstline(firstLine) {
   return void 0;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/languagesRegistry.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/languagesRegistry.js
 var hasOwnProperty2 = Object.prototype.hasOwnProperty;
 var NULL_LANGUAGE_ID = "vs.editor.nullLanguage";
 var LanguageIdCodec = class {
@@ -100808,7 +100808,7 @@ var LanguagesRegistry = class _LanguagesRegistry extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/languageService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/languageService.js
 var LanguageService = class _LanguageService extends Disposable {
   static {
     this.instanceCount = 0;
@@ -100891,7 +100891,7 @@ var LanguageSelection = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/markerDecorationsService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/markerDecorationsService.js
 var __decorate54 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -101123,7 +101123,7 @@ var MarkerDecorations = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/modelService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/modelService.js
 var __decorate55 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -101500,7 +101500,7 @@ var DefaultModelSHA1Computer = class _DefaultModelSHA1Computer {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/standaloneStrings.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/standaloneStrings.js
 var InspectTokensNLS;
 (function(InspectTokensNLS2) {
   InspectTokensNLS2.inspectTokensAction = localize(821, "Developer: Inspect Tokens");
@@ -101537,13 +101537,13 @@ var StandaloneServicesNLS;
   StandaloneServicesNLS2.bulkEditServiceSummary = localize(831, "Made {0} edits in {1} files");
 })(StandaloneServicesNLS || (StandaloneServicesNLS = {}));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/common/standaloneTheme.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/common/standaloneTheme.js
 var IStandaloneThemeService = createDecorator("themeService");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickInput/standaloneQuickInput.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickInput/standaloneQuickInput.css
 styleInject(".quick-input-widget {\n  font-size: 13px;\n}\n.quick-input-widget .monaco-highlighted-label .highlight,\n.quick-input-widget .monaco-highlighted-label .highlight {\n  color: #0066BF;\n}\n.vs .quick-input-widget .monaco-list-row.focused .monaco-highlighted-label .highlight,\n.vs .quick-input-widget .monaco-list-row.focused .monaco-highlighted-label .highlight {\n  color: #9DDDFF;\n}\n.vs-dark .quick-input-widget .monaco-highlighted-label .highlight,\n.vs-dark .quick-input-widget .monaco-highlighted-label .highlight {\n  color: #0097fb;\n}\n.hc-black .quick-input-widget .monaco-highlighted-label .highlight,\n.hc-black .quick-input-widget .monaco-highlighted-label .highlight {\n  color: #F38518;\n}\n.hc-light .quick-input-widget .monaco-highlighted-label .highlight,\n.hc-light .quick-input-widget .monaco-highlighted-label .highlight {\n  color: #0F4A85;\n}\n.monaco-keybinding > .monaco-keybinding-key {\n  background-color: rgba(221, 221, 221, 0.4);\n  border: solid 1px rgba(204, 204, 204, 0.4);\n  border-bottom-color: rgba(187, 187, 187, 0.4);\n  box-shadow: inset 0 -1px 0 rgba(187, 187, 187, 0.4);\n  color: #555;\n}\n.hc-black .monaco-keybinding > .monaco-keybinding-key {\n  background-color: transparent;\n  border: solid 1px rgb(111, 195, 223);\n  box-shadow: none;\n  color: #fff;\n}\n.hc-light .monaco-keybinding > .monaco-keybinding-key {\n  background-color: transparent;\n  border: solid 1px #0F4A85;\n  box-shadow: none;\n  color: #292929;\n}\n.vs-dark .monaco-keybinding > .monaco-keybinding-key {\n  background-color: rgba(128, 128, 128, 0.17);\n  border: solid 1px rgba(51, 51, 51, 0.6);\n  border-bottom-color: rgba(68, 68, 68, 0.6);\n  box-shadow: inset 0 -1px 0 rgba(68, 68, 68, 0.6);\n  color: #ccc;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/common/quickAccess.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/common/quickAccess.js
 var DefaultQuickAccessFilterValue;
 (function(DefaultQuickAccessFilterValue2) {
   DefaultQuickAccessFilterValue2[DefaultQuickAccessFilterValue2["PRESERVE"] = 0] = "PRESERVE";
@@ -101581,7 +101581,7 @@ var QuickAccessRegistry = class {
 };
 Registry.add(Extensions9.Quickaccess, new QuickAccessRegistry());
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/quickAccess.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/quickAccess.js
 var __decorate56 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -101745,10 +101745,10 @@ QuickAccessController = __decorate56([
   __param50(2, IContextKeyService)
 ], QuickAccessController);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/media/quickInput.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/media/quickInput.css
 styleInject('.quick-input-widget {\n  position: absolute;\n  width: 600px;\n  z-index: 2550;\n  left: 50%;\n  -webkit-app-region: no-drag;\n  border-radius: var(--vscode-cornerRadius-xLarge);\n  box-shadow: var(--vscode-shadow-xl);\n}\n.quick-input-titlebar {\n  cursor: grab;\n  display: flex;\n  align-items: center;\n  border-top-right-radius: 5px;\n  border-top-left-radius: 5px;\n}\n.quick-input-widget.no-drag .quick-input-titlebar,\n.quick-input-widget.no-drag .quick-input-title,\n.quick-input-widget.no-drag .quick-input-header {\n  cursor: default;\n}\n.quick-input-widget .monaco-inputbox .monaco-action-bar {\n  top: 0;\n}\n.quick-input-widget .monaco-action-bar .monaco-custom-toggle {\n  margin-left: 0;\n  border-radius: 5px;\n  box-sizing: content-box;\n}\n.quick-input-left-action-bar {\n  display: flex;\n  margin-left: 4px;\n}\n.quick-input-inline-action-bar .actions-container > .action-item:first-child {\n  margin-left: 5px;\n}\n.quick-input-inline-action-bar .actions-container > .action-item {\n  margin-top: 2px;\n}\n.quick-input-title {\n  cursor: grab;\n  padding: 3px 0px;\n  text-align: center;\n  text-overflow: ellipsis;\n  overflow: hidden;\n  flex: 1;\n}\n.quick-input-right-action-bar {\n  display: flex;\n  margin-right: 4px;\n}\n.quick-input-right-action-bar .actions-container {\n  justify-content: flex-end;\n}\n.quick-input-right-action-bar .actions-container > .action-item {\n  margin-left: 4px;\n}\n.quick-input-inline-action-bar .actions-container > .action-item {\n  margin-left: 4px;\n}\n.quick-input-titlebar .monaco-action-bar .action-label.codicon {\n  background-position: center;\n  background-repeat: no-repeat;\n  padding: 2px;\n}\n.quick-input-description {\n  margin: 6px 6px 6px 11px;\n}\n.quick-input-header .quick-input-description {\n  margin: 4px 2px;\n  flex: 1;\n}\n.quick-input-header {\n  cursor: grab;\n  display: flex;\n  padding: 6px 6px 4px 6px;\n}\n.quick-input-widget .quick-input-filter .monaco-inputbox {\n  border-radius: var(--vscode-cornerRadius-medium);\n}\n.quick-input-widget.hidden-input .quick-input-header {\n  padding: 0;\n  margin-bottom: 0;\n}\n.quick-input-and-message {\n  display: flex;\n  flex-direction: column;\n  flex-grow: 1;\n  min-width: 0;\n  position: relative;\n}\n.quick-input-check-all {\n  align-self: center;\n  margin: 0;\n}\n.quick-input-widget .quick-input-header .monaco-checkbox {\n  margin-top: 6px;\n}\n.quick-input-filter {\n  flex-grow: 1;\n  display: flex;\n  position: relative;\n}\n.quick-input-box {\n  flex-grow: 1;\n}\n.quick-input-widget.show-checkboxes .quick-input-box,\n.quick-input-widget.show-checkboxes .quick-input-message {\n  margin-left: 5px;\n}\n.quick-input-visible-count {\n  position: absolute;\n  left: -10000px;\n}\n.quick-input-count {\n  align-self: center;\n  position: absolute;\n  right: 4px;\n  display: flex;\n  align-items: center;\n}\n.quick-input-count .monaco-count-badge {\n  vertical-align: middle;\n  padding: 2px 4px;\n  border-radius: 2px;\n  min-height: auto;\n  line-height: normal;\n}\n.quick-input-action {\n  margin-left: 6px;\n}\n.quick-input-message {\n  margin-top: -1px;\n  padding: 5px;\n  overflow-wrap: break-word;\n}\n.quick-input-message > .codicon {\n  margin: 0 0.2em;\n  vertical-align: text-bottom;\n}\n.quick-input-message a {\n  color: inherit;\n}\n.quick-input-progress.monaco-progress-container {\n  position: relative;\n}\n.quick-input-list {\n  line-height: 22px;\n}\n.quick-input-widget.hidden-input .quick-input-list {\n  margin-top: 4px;\n  padding-bottom: 4px;\n}\n.quick-input-list .monaco-list {\n  overflow: hidden;\n  max-height: calc(20 * 22px);\n  padding-bottom: 7px;\n}\n.quick-input-list .monaco-scrollable-element {\n  padding: 0px 6px;\n}\n.quick-input-list .quick-input-list-entry {\n  box-sizing: border-box;\n  overflow: hidden;\n  display: flex;\n  padding: 0 6px;\n}\n.quick-input-list .quick-input-list-entry.quick-input-list-separator-border {\n  border-top-width: 1px;\n  border-top-style: solid;\n}\n.quick-input-list .monaco-list-row {\n  border-radius: 3px;\n}\n.quick-input-list .monaco-list-row[data-index="0"] .quick-input-list-entry.quick-input-list-separator-border {\n  border-top-style: none;\n}\n.quick-input-list .quick-input-list-label {\n  overflow: hidden;\n  display: flex;\n  height: 100%;\n  flex: 1;\n}\n.quick-input-widget .monaco-checkbox {\n  margin-right: 0;\n}\n.quick-input-widget .quick-input-list .monaco-checkbox,\n.quick-input-widget .quick-input-tree .monaco-checkbox {\n  margin-top: 4px;\n}\n.quick-input-list .quick-input-list-icon {\n  background-size: 16px;\n  background-position: left center;\n  background-repeat: no-repeat;\n  padding-right: 6px;\n  width: 16px;\n  height: 22px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n.quick-input-list .quick-input-list-rows {\n  overflow: hidden;\n  text-overflow: ellipsis;\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  flex: 1;\n  margin-left: 5px;\n}\n.quick-input-list .quick-input-list-rows > .quick-input-list-row {\n  display: flex;\n  align-items: center;\n}\n.quick-input-list .quick-input-list-rows > .quick-input-list-row .monaco-icon-label,\n.quick-input-list .quick-input-list-rows > .quick-input-list-row .monaco-icon-label .monaco-icon-label-container > .monaco-icon-name-container {\n  flex: 1;\n}\n.quick-input-list .quick-input-list-rows > .quick-input-list-row .codicon[class*=codicon-] {\n  vertical-align: text-bottom;\n}\n.quick-input-list .quick-input-list-rows .monaco-highlighted-label > span {\n  opacity: 1;\n}\n.quick-input-list .quick-input-list-entry .quick-input-list-entry-keybinding {\n  margin-right: 8px;\n}\n.quick-input-list .quick-input-list-label-meta {\n  opacity: 0.7;\n  line-height: normal;\n  text-overflow: ellipsis;\n  overflow: hidden;\n}\n.quick-input-list .monaco-list .monaco-list-row .monaco-highlighted-label .highlight {\n  font-weight: bold;\n  background-color: unset;\n  color: var(--vscode-list-highlightForeground) !important;\n}\n.quick-input-list .monaco-list .monaco-list-row.focused .monaco-highlighted-label .highlight {\n  color: var(--vscode-quickInputList-focusHighlightForeground) !important;\n}\n.quick-input-list .quick-input-list-entry .quick-input-list-separator {\n  margin-right: 4px;\n  font-size: var(--vscode-bodyFontSize-xSmall);\n  color: var(--vscode-descriptionForeground);\n}\n.quick-input-list .quick-input-list-entry-action-bar {\n  display: flex;\n  flex: 0;\n  overflow: visible;\n}\n.quick-input-list .quick-input-list-entry-action-bar .action-label,\n.quick-input-list .quick-input-list-entry-action-bar .monaco-custom-toggle {\n  display: none;\n}\n.quick-input-list .quick-input-list-entry-action-bar .action-label.codicon {\n  margin-right: 4px;\n  padding: 2px;\n}\n.quick-input-list .quick-input-list-entry-action-bar .monaco-custom-toggle.codicon {\n  margin-right: 4px;\n}\n.quick-input-list .quick-input-list-entry-action-bar {\n  margin-top: 1px;\n}\n.quick-input-list .quick-input-list-entry-action-bar {\n  margin-right: 4px;\n}\n.quick-input-list .quick-input-list-entry .quick-input-list-entry-action-bar .action-label.always-visible,\n.quick-input-list .quick-input-list-entry:hover .quick-input-list-entry-action-bar .action-label,\n.quick-input-list .quick-input-list-entry.focus-inside .quick-input-list-entry-action-bar .action-label,\n.quick-input-list .monaco-list-row.focused .quick-input-list-entry-action-bar .action-label,\n.quick-input-list .monaco-list-row.passive-focused .quick-input-list-entry-action-bar .action-label,\n.quick-input-list .quick-input-list-entry .quick-input-list-entry-action-bar .monaco-custom-toggle.always-visible,\n.quick-input-list .quick-input-list-entry:hover .quick-input-list-entry-action-bar .monaco-custom-toggle,\n.quick-input-list .quick-input-list-entry.focus-inside .quick-input-list-entry-action-bar .monaco-custom-toggle,\n.quick-input-list .monaco-list-row.focused .quick-input-list-entry-action-bar .monaco-custom-toggle,\n.quick-input-list .monaco-list-row.passive-focused .quick-input-list-entry-action-bar .monaco-custom-toggle {\n  display: flex;\n}\n.quick-input-list > .monaco-list:focus .monaco-list-row.focused {\n  outline: 1px solid var(--vscode-list-focusOutline) !important;\n  outline-offset: -1px;\n}\n.quick-input-list > .monaco-list:focus .monaco-list-row.focused .quick-input-list-entry.quick-input-list-separator-border {\n  border-color: transparent;\n}\n.quick-input-list .monaco-list-row.focused .monaco-keybinding-key,\n.quick-input-list .monaco-list-row.focused .quick-input-list-entry .quick-input-list-separator {\n  color: inherit;\n}\n.quick-input-list .monaco-list-row.focused .monaco-keybinding-key,\n.quick-input-list .monaco-list-row:hover .monaco-keybinding-key {\n  background: none;\n  border-color: var(--vscode-widget-shadow);\n}\n:is(.vs, .vs-dark) .quick-input-list .monaco-list-row.focused .monaco-keybinding-key,\n:is(.vs, .vs-dark) .quick-input-list .monaco-list-row:hover .monaco-keybinding-key {\n  border-color: color-mix(in srgb, currentColor 30%, transparent);\n}\n.quick-input-list .quick-input-list-separator-as-item {\n  padding: 4px 6px;\n  font-size: 12px;\n}\n.quick-input-list .quick-input-list-separator-as-item .label-name {\n  font-weight: 600;\n}\n.quick-input-list .quick-input-list-separator-as-item .label-description {\n  opacity: 1 !important;\n}\n.quick-input-list .monaco-tree-sticky-row .quick-input-list-entry.quick-input-list-separator-as-item.quick-input-list-separator-border {\n  border-top-style: none;\n}\n.quick-input-list .monaco-tree-sticky-row {\n  padding: 0 5px;\n}\n.quick-input-list .monaco-tl-twistie {\n  display: none !important;\n}\n.quick-input-tree .monaco-list {\n  overflow: hidden;\n  max-height: calc(20 * 22px);\n  padding-bottom: 5px;\n}\n.quick-input-tree.quick-input-tree-flat .monaco-tl-indent,\n.quick-input-tree.quick-input-tree-flat .monaco-tl-twistie {\n  display: none !important;\n}\n.quick-input-tree.quick-input-tree-flat .monaco-checkbox {\n  margin-left: 6px;\n}\n.quick-input-tree .quick-input-tree-entry {\n  box-sizing: border-box;\n  overflow: hidden;\n  display: flex;\n  padding-right: 6px;\n}\n.quick-input-tree .quick-input-tree-label {\n  overflow: hidden;\n  display: flex;\n  height: 100%;\n  flex: 1;\n}\n.quick-input-tree .quick-input-tree-icon {\n  background-size: 16px;\n  background-position: left center;\n  background-repeat: no-repeat;\n  padding-right: 6px;\n  width: 16px;\n  height: 22px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n.quick-input-tree .quick-input-tree-rows {\n  overflow: hidden;\n  text-overflow: ellipsis;\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  flex: 1;\n  margin-left: 5px;\n}\n.quick-input-tree .quick-input-tree-rows > .quick-input-tree-row {\n  display: flex;\n  align-items: center;\n}\n.quick-input-tree .quick-input-tree-rows > .quick-input-tree-row .monaco-icon-label,\n.quick-input-tree .quick-input-tree-rows > .quick-input-tree-row .monaco-icon-label .monaco-icon-label-container > .monaco-icon-name-container {\n  flex: 1;\n}\n.quick-input-tree .quick-input-tree-rows > .quick-input-tree-row .codicon[class*=codicon-] {\n  vertical-align: text-bottom;\n}\n.quick-input-tree .quick-input-tree-rows .monaco-highlighted-label > span {\n  opacity: 1;\n}\n.quick-input-tree .quick-input-tree-entry-action-bar {\n  display: flex;\n  flex: 0;\n  overflow: visible;\n}\n.quick-input-tree .quick-input-tree-entry-action-bar .action-label,\n.quick-input-tree .quick-input-tree-entry-action-bar .monaco-custom-toggle {\n  display: none;\n}\n.quick-input-tree .quick-input-tree-entry-action-bar .action-label.codicon {\n  margin-right: 4px;\n  padding: 2px;\n}\n.quick-input-tree .quick-input-tree-entry-action-bar .monaco-custom-toggle.codicon {\n  margin-right: 4px;\n}\n.quick-input-tree .quick-input-tree-entry-action-bar {\n  margin-top: 1px;\n}\n.quick-input-tree .quick-input-tree-entry-action-bar {\n  margin-right: 4px;\n}\n.quick-input-tree .quick-input-tree-entry .quick-input-tree-entry-action-bar .action-label.always-visible,\n.quick-input-tree .quick-input-tree-entry:hover .quick-input-tree-entry-action-bar .action-label,\n.quick-input-tree .quick-input-tree-entry.focus-inside .quick-input-tree-entry-action-bar .action-label,\n.quick-input-tree .monaco-list-row.focused .quick-input-tree-entry-action-bar .action-label,\n.quick-input-tree .monaco-list-row.passive-focused .quick-input-tree-entry-action-bar .action-label,\n.quick-input-tree .quick-input-tree-entry .quick-input-tree-entry-action-bar .monaco-custom-toggle.always-visible,\n.quick-input-tree .quick-input-tree-entry:hover .quick-input-tree-entry-action-bar .monaco-custom-toggle,\n.quick-input-tree .quick-input-tree-entry.focus-inside .quick-input-tree-entry-action-bar .monaco-custom-toggle,\n.quick-input-tree .monaco-list-row.focused .quick-input-tree-entry-action-bar .monaco-custom-toggle,\n.quick-input-tree .monaco-list-row.passive-focused .quick-input-tree-entry-action-bar .monaco-custom-toggle {\n  display: flex;\n}\n.quick-input-tree > .monaco-list:focus .monaco-list-row.focused {\n  outline: 1px solid var(--vscode-list-focusOutline) !important;\n  outline-offset: -1px;\n}\n');
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/linkedText.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/linkedText.js
 var __decorate57 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -101789,7 +101789,7 @@ function parseLinkedText(text2) {
   return new LinkedText(result);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/quickInputUtils.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/quickInputUtils.js
 var iconPathToClass = {};
 var iconClassGenerator = new IdGenerator("quick-input-button-icon-");
 function getIconClass(iconPath) {
@@ -101909,7 +101909,7 @@ function renderQuickInputDescription(description, container, actionHandler) {
   }
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/quickInput.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/quickInput.js
 var __decorate58 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -102869,10 +102869,10 @@ QuickInputHoverDelegate = __decorate58([
   __param51(1, IHoverService)
 ], QuickInputHoverDelegate);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/toolbar/toolbar.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/toolbar/toolbar.css
 styleInject(".monaco-toolbar {\n  height: 100%;\n}\n.monaco-toolbar .toolbar-toggle-more {\n  display: inline-block;\n  padding: 0;\n}\n.monaco-toolbar.responsive.responsive-all {\n  .monaco-action-bar > .actions-container > .action-item {\n    flex-shrink: 1;\n    min-width: var(--vscode-toolbar-action-min-width, 20px);\n  }\n}\n.monaco-toolbar.responsive.responsive-last {\n  .monaco-action-bar > .actions-container > .action-item {\n    flex-shrink: 0;\n  }\n  .monaco-action-bar:not(.has-overflow) > .actions-container > .action-item:last-child,\n  .monaco-action-bar.has-overflow > .actions-container > .action-item:nth-last-child(2) {\n    flex-shrink: 1;\n    min-width: var(--vscode-toolbar-action-min-width, 20px);\n  }\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/toolbar/toolbar.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/toolbar/toolbar.js
 var ACTION_MIN_WIDTH = 20;
 var ACTION_PADDING = 4;
 var ACTION_MIN_WIDTH_VAR = "--vscode-toolbar-action-min-width";
@@ -103196,10 +103196,10 @@ var ToggleMenuAction = class _ToggleMenuAction extends Action {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/button/button.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/button/button.css
 styleInject(".monaco-text-button {\n  box-sizing: border-box;\n  display: flex;\n  width: 100%;\n  padding: 4px 8px;\n  border-radius: 4px;\n  text-align: center;\n  cursor: pointer;\n  justify-content: center;\n  align-items: center;\n  border: 1px solid var(--vscode-button-border, transparent);\n  line-height: 16px;\n  font-size: 12px;\n  overflow-wrap: normal;\n}\n.monaco-text-button.secondary {\n  border-color: var(--vscode-button-secondaryBorder, var(--vscode-button-border, transparent));\n}\n.monaco-text-button.small {\n  line-height: 14px;\n  font-size: 11px;\n  padding: 3px 6px;\n}\n.monaco-text-button:focus {\n  outline-offset: 2px !important;\n}\n.monaco-text-button:hover {\n  text-decoration: none !important;\n}\n.monaco-button.disabled:focus,\n.monaco-button.disabled {\n  opacity: 0.4 !important;\n  cursor: default;\n}\n.monaco-text-button .codicon {\n  margin: 0 0.2em;\n  color: inherit !important;\n}\n.monaco-text-button.monaco-text-button-with-short-label {\n  flex-direction: row;\n  flex-wrap: wrap;\n  padding: 0 4px;\n  overflow: hidden;\n  height: 28px;\n}\n.monaco-text-button.monaco-text-button-with-short-label > .monaco-button-label {\n  flex-basis: 100%;\n}\n.monaco-text-button.monaco-text-button-with-short-label > .monaco-button-label-short {\n  flex-grow: 1;\n  width: 0;\n  overflow: hidden;\n}\n.monaco-text-button.monaco-text-button-with-short-label > .monaco-button-label,\n.monaco-text-button.monaco-text-button-with-short-label > .monaco-button-label-short {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  font-weight: normal;\n  font-style: inherit;\n  line-height: 18px;\n  padding: 4px 0;\n}\n.monaco-button-dropdown {\n  display: flex;\n  cursor: pointer;\n}\n.monaco-button-dropdown.disabled {\n  cursor: default;\n}\n.monaco-button-dropdown > .monaco-button:focus {\n  outline-offset: -1px !important;\n}\n.monaco-button-dropdown.disabled > .monaco-button.disabled,\n.monaco-button-dropdown.disabled > .monaco-button.disabled:focus,\n.monaco-button-dropdown.disabled > .monaco-button-dropdown-separator {\n  opacity: 0.4 !important;\n}\n.monaco-button-dropdown > .monaco-button.monaco-text-button {\n  border-right-width: 0 !important;\n}\n.monaco-button-dropdown .monaco-button-dropdown-separator {\n  padding: 4px 0;\n  cursor: default;\n}\n.monaco-button-dropdown .monaco-button-dropdown-separator > div {\n  height: 100%;\n  width: 1px;\n}\n.monaco-button-dropdown > .monaco-button.monaco-dropdown-button {\n  border: 1px solid var(--vscode-button-border, transparent);\n  border-left-width: 0 !important;\n  border-radius: 0 4px 4px 0;\n  padding: 0 4px;\n  display: flex;\n  align-items: center;\n}\n.monaco-button-dropdown > .monaco-button.monaco-dropdown-button.secondary {\n  border-color: var(--vscode-button-secondaryBorder, var(--vscode-button-border, transparent));\n}\n.monaco-button-dropdown > .monaco-button.monaco-text-button {\n  border-radius: 4px 0 0 4px;\n}\n.monaco-description-button {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  margin: 4px 5px;\n}\n.monaco-description-button .monaco-button-description {\n  font-style: italic;\n  font-size: 11px;\n  padding: 4px 20px;\n}\n.monaco-description-button .monaco-button-label,\n.monaco-description-button .monaco-button-description {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n.monaco-description-button .monaco-button-label > .codicon,\n.monaco-description-button .monaco-button-description > .codicon {\n  margin: 0 0.2em;\n  color: inherit !important;\n}\n.monaco-button.default-colors,\n.monaco-button-dropdown.default-colors > .monaco-button {\n  color: var(--vscode-button-foreground);\n  background-color: var(--vscode-button-background);\n}\n.monaco-button.default-colors:hover,\n.monaco-button-dropdown.default-colors > .monaco-button:hover {\n  background-color: var(--vscode-button-hoverBackground);\n}\n.monaco-button.default-colors.secondary,\n.monaco-button-dropdown.default-colors > .monaco-button.secondary {\n  color: var(--vscode-button-secondaryForeground);\n  background-color: var(--vscode-button-secondaryBackground);\n}\n.monaco-button.default-colors.secondary:hover,\n.monaco-button-dropdown.default-colors > .monaco-button.secondary:hover {\n  background-color: var(--vscode-button-secondaryHoverBackground);\n}\n.monaco-button-dropdown.default-colors .monaco-button-dropdown-separator {\n  background-color: var(--vscode-button-background);\n  border-top: 1px solid var(--vscode-button-border);\n  border-bottom: 1px solid var(--vscode-button-border);\n}\n.monaco-button-dropdown.default-colors .monaco-button.secondary + .monaco-button-dropdown-separator {\n  background-color: var(--vscode-button-secondaryBackground);\n  border-top-color: var(--vscode-button-secondaryBorder, var(--vscode-button-border));\n  border-bottom-color: var(--vscode-button-secondaryBorder, var(--vscode-button-border));\n}\n.monaco-button-dropdown.default-colors .monaco-button-dropdown-separator > div {\n  background-color: var(--vscode-button-separator);\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/button/button.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/button/button.js
 ({
   buttonSeparator: Color.white.toString(),
   buttonForeground: Color.white.toString()
@@ -103433,10 +103433,10 @@ var Button = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/countBadge/countBadge.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/countBadge/countBadge.css
 styleInject(".monaco-count-badge {\n  padding: 3px 5px;\n  border-radius: 11px;\n  font-size: 11px;\n  min-width: 18px;\n  min-height: 18px;\n  line-height: 11px;\n  font-weight: normal;\n  text-align: center;\n  display: inline-block;\n  box-sizing: border-box;\n}\n.monaco-count-badge.long {\n  padding: 2px 3px;\n  border-radius: 2px;\n  min-height: auto;\n  line-height: normal;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/countBadge/countBadge.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/countBadge/countBadge.js
 var CountBadge = class extends Disposable {
   constructor(container, options, styles) {
     super();
@@ -103477,10 +103477,10 @@ var CountBadge = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/progressbar/progressbar.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/progressbar/progressbar.css
 styleInject(".monaco-progress-container {\n  width: 100%;\n  height: 2px;\n  overflow: hidden;\n}\n.monaco-progress-container .progress-bit {\n  width: 2%;\n  height: 2px;\n  position: absolute;\n  left: 0;\n  display: none;\n}\n.monaco-progress-container.active .progress-bit {\n  display: inherit;\n}\n.monaco-progress-container.discrete .progress-bit {\n  left: 0;\n  transition: width 100ms linear;\n}\n.monaco-progress-container.discrete.done .progress-bit {\n  width: 100%;\n}\n.monaco-progress-container.infinite .progress-bit {\n  animation-name: progress;\n  animation-duration: 4s;\n  animation-iteration-count: infinite;\n  transform: translate3d(0px, 0px, 0px);\n  animation-timing-function: linear;\n}\n.monaco-progress-container.infinite.infinite-long-running .progress-bit {\n  animation-timing-function: steps(100);\n}\n@keyframes progress {\n  from {\n    transform: translateX(0%) scaleX(1);\n  }\n  50% {\n    transform: translateX(2500%) scaleX(3);\n  }\n  to {\n    transform: translateX(4900%) scaleX(1);\n  }\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/progressbar/progressbar.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/progressbar/progressbar.js
 var CSS_DONE = "done";
 var CSS_ACTIVE = "active";
 var CSS_INFINITE = "infinite";
@@ -103564,7 +103564,7 @@ var ProgressBar = class _ProgressBar extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/quickInputBox.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/quickInputBox.js
 var $6 = $;
 var QuickInputBox = class extends Disposable {
   constructor(parent, inputBoxStyles, toggleStyles) {
@@ -103682,10 +103682,10 @@ var QuickInputBox = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/iconLabel/iconlabel.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/iconLabel/iconlabel.css
 styleInject(".monaco-icon-label {\n  display: flex;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.monaco-icon-label::before {\n  background-size: 16px;\n  background-position: left center;\n  background-repeat: no-repeat;\n  padding-right: 6px;\n  width: 16px;\n  height: 22px;\n  line-height: inherit !important;\n  display: inline-block;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale;\n  vertical-align: top;\n  flex-shrink: 0;\n}\n.monaco-icon-label-iconpath {\n  width: 16px;\n  height: 22px;\n  margin-right: 6px;\n  display: flex;\n}\n.monaco-icon-label-container.disabled {\n  color: var(--vscode-disabledForeground);\n}\n.monaco-icon-label > .monaco-icon-label-container {\n  min-width: 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  flex: 1;\n}\n.monaco-icon-label > .monaco-icon-label-container > .monaco-icon-name-container > .label-name {\n  color: inherit;\n  white-space: pre;\n}\n.monaco-icon-label > .monaco-icon-label-container > .monaco-icon-name-container > .label-name > .label-separator {\n  margin: 0 2px;\n  opacity: 0.5;\n}\n.monaco-icon-label > .monaco-icon-label-container > .monaco-icon-suffix-container > .label-suffix {\n  opacity: .7;\n  white-space: pre;\n}\n.monaco-icon-label > .monaco-icon-label-container > .monaco-icon-description-container > .label-description {\n  opacity: .7;\n  margin-left: 0.5em;\n  font-size: 0.9em;\n  white-space: pre;\n}\n.monaco-icon-label.nowrap > .monaco-icon-label-container > .monaco-icon-description-container > .label-description {\n  white-space: nowrap;\n}\n.vs .monaco-icon-label > .monaco-icon-label-container > .monaco-icon-description-container > .label-description {\n  opacity: .95;\n}\n.monaco-icon-label.bold > .monaco-icon-label-container > .monaco-icon-name-container > .label-name,\n.monaco-icon-label.bold > .monaco-icon-label-container > .monaco-icon-description-container > .label-description {\n  font-weight: bold;\n}\n.monaco-icon-label.italic > .monaco-icon-label-container > .monaco-icon-name-container > .label-name,\n.monaco-icon-label.italic > .monaco-icon-label-container > .monaco-icon-description-container > .label-description {\n  font-style: italic;\n}\n.monaco-icon-label.deprecated {\n  text-decoration: line-through;\n  opacity: 0.66;\n}\n.monaco-icon-label.strikethrough > .monaco-icon-label-container > .monaco-icon-name-container > .label-name,\n.monaco-icon-label.strikethrough > .monaco-icon-label-container > .monaco-icon-description-container > .label-description {\n  text-decoration: line-through;\n}\n.monaco-icon-label::after {\n  opacity: 0.75;\n  font-size: 90%;\n  font-weight: 600;\n  margin: auto 16px 0 5px;\n  text-align: center;\n}\n.monaco-list:focus .selected .monaco-icon-label,\n.monaco-list:focus .selected .monaco-icon-label::after {\n  color: inherit !important;\n}\n.monaco-list-row.focused.selected .label-description,\n.monaco-list-row.selected .label-description {\n  opacity: .8;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/highlightedlabel/highlightedLabel.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/highlightedlabel/highlightedLabel.js
 var HighlightedLabel = class _HighlightedLabel extends Disposable {
   /**
    * Create a new {@link HighlightedLabel}.
@@ -103795,7 +103795,7 @@ var HighlightedLabel = class _HighlightedLabel extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/iconLabel/iconLabel.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/iconLabel/iconLabel.js
 var FastLabelNode = class {
   constructor(_element) {
     this._element = _element;
@@ -104060,10 +104060,10 @@ var LabelWithHighlights = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/keybindingLabel/keybindingLabel.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/keybindingLabel/keybindingLabel.css
 styleInject(".monaco-keybinding {\n  display: flex;\n  align-items: center;\n  line-height: 10px;\n}\n.monaco-keybinding > .monaco-keybinding-key {\n  display: inline-flex;\n  align-items: center;\n  border-style: solid;\n  border-width: 1px;\n  border-radius: 3px;\n  justify-content: center;\n  min-width: 12px;\n  font-size: 11px;\n  padding: 3px 5px;\n  margin: 0 2px;\n}\n.monaco-keybinding > .monaco-keybinding-key:first-child {\n  margin-left: 0;\n}\n.monaco-keybinding > .monaco-keybinding-key:last-child {\n  margin-right: 0;\n}\n.monaco-keybinding > .monaco-keybinding-key-separator {\n  display: inline-block;\n}\n.monaco-keybinding > .monaco-keybinding-key-chord-separator {\n  width: 6px;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/keybindingLabel/keybindingLabel.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/browser/ui/keybindingLabel/keybindingLabel.js
 var $7 = $;
 var KeybindingLabel = class _KeybindingLabel extends Disposable {
   constructor(container, os, options) {
@@ -104164,7 +104164,7 @@ var KeybindingLabel = class _KeybindingLabel extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/comparers.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/comparers.js
 var intlFileNameCollatorBaseNumeric = new Lazy(() => {
   const collator = safeIntl.Collator(void 0, { numeric: true, sensitivity: "base" }).value;
   return {
@@ -104229,7 +104229,7 @@ function compareByPrefix(one, other, lookFor) {
   return 0;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/quickInputList.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/quickInputList.js
 var __decorate59 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -105453,7 +105453,7 @@ function compareEntries(elementA, elementB, lookFor) {
   return compareAnything(elementA.saneSortLabel, elementB.saneSortLabel, lookFor);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/quickInputActions.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/quickInputActions.js
 function registerQuickInputCommandAndKeybindingRule(rule, options = {}) {
   KeybindingsRegistry.registerCommandAndKeybindingRule({
     weight: 200,
@@ -105673,7 +105673,7 @@ registerQuickPickCommandAndKeybindingRule({
   }
 });
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/tree/quickInputTreeRenderer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/tree/quickInputTreeRenderer.js
 var __decorate60 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -105820,7 +105820,7 @@ QuickInputTreeRenderer = QuickInputTreeRenderer_1 = __decorate60([
   __param53(6, IThemeService)
 ], QuickInputTreeRenderer);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/tree/quickInputDelegate.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/tree/quickInputDelegate.js
 var QuickInputTreeDelegate = class {
   getHeight(_element) {
     return 22;
@@ -105830,7 +105830,7 @@ var QuickInputTreeDelegate = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/tree/quickInputTree.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/tree/quickInputTree.js
 function getParentNodeState(parentChildren) {
   let containsChecks = false;
   let containsUnchecks = false;
@@ -105855,7 +105855,7 @@ function getParentNodeState(parentChildren) {
   return newState;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/tree/quickInputTreeAccessibilityProvider.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/tree/quickInputTreeAccessibilityProvider.js
 var QuickTreeAccessibilityProvider = class {
   constructor(onCheckedEvent) {
     this.onCheckedEvent = onCheckedEvent;
@@ -105882,7 +105882,7 @@ var QuickTreeAccessibilityProvider = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/tree/quickInputTreeFilter.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/tree/quickInputTreeFilter.js
 var QuickInputTreeFilter = class {
   constructor() {
     this.filterValue = "";
@@ -105906,7 +105906,7 @@ var QuickInputTreeFilter = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/tree/quickInputTreeSorter.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/tree/quickInputTreeSorter.js
 var QuickInputTreeSorter = class extends Disposable {
   constructor() {
     super(...arguments);
@@ -105942,7 +105942,7 @@ var QuickInputTreeSorter = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/tree/quickInputTreeController.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/tree/quickInputTreeController.js
 var __decorate61 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -106262,7 +106262,7 @@ QuickInputTreeController = __decorate61([
   __param54(3, IInstantiationService)
 ], QuickInputTreeController);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/tree/quickTree.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/tree/quickTree.js
 var QuickTree = class _QuickTree extends QuickInput {
   static {
     this.DEFAULT_ARIA_LABEL = localize(1837, "Type to narrow down results.");
@@ -106419,7 +106419,7 @@ var QuickTree = class _QuickTree extends QuickInput {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/quickInputController.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/quickInputController.js
 var __decorate62 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -107395,7 +107395,7 @@ QuickInputDragAndDropController = __decorate62([
   __param55(6, IConfigurationService)
 ], QuickInputDragAndDropController);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/quickInputService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/quickinput/browser/quickInputService.js
 var __decorate63 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -107574,7 +107574,7 @@ QuickInputService = __decorate63([
   __param56(4, IConfigurationService)
 ], QuickInputService);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickInput/standaloneQuickInputService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/quickInput/standaloneQuickInputService.js
 var __decorate64 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -107749,7 +107749,7 @@ registerEditorContribution(
   /* EditorContributionInstantiation.Lazy */
 );
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/webWorker/browser/webWorkerServiceImpl.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/webWorker/browser/webWorkerServiceImpl.js
 var WebWorkerService = class _WebWorkerService {
   static {
     this._workerIdPool = 0;
@@ -107882,7 +107882,7 @@ var WebWorker = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/services/standaloneWebWorkerService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/services/standaloneWebWorkerService.js
 var StandaloneWebWorkerService = class extends WebWorkerService {
   _createWorker(descriptor) {
     const monacoEnvironment2 = getMonacoEnvironment();
@@ -107921,7 +107921,7 @@ Ensure your bundler properly bundles modules referenced by "new URL(${examplePat
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/common/themes.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/common/themes.js
 var vs = {
   base: "vs",
   inherit: false,
@@ -108138,7 +108138,7 @@ var hc_light = {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/iconRegistry.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/common/iconRegistry.js
 var Extensions10 = {
   IconContribution: "base.contributions.icons"
 };
@@ -108300,7 +108300,7 @@ registerIcon("goto-next-location", Codicon.arrowDown, localize(2098, "Icon for g
 ThemeIcon.modify(Codicon.sync, "spin");
 ThemeIcon.modify(Codicon.loading, "spin");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/browser/iconsStyleSheet.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/theme/browser/iconsStyleSheet.js
 function getIconsStyleSheet(themeService) {
   const disposable = new DisposableStore();
   const onDidChangeEmmiter = disposable.add(new Emitter());
@@ -108364,7 +108364,7 @@ var UnthemedProductIconTheme = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneThemeService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneThemeService.js
 var VS_LIGHT_THEME_NAME = "vs";
 var VS_DARK_THEME_NAME = "vs-dark";
 var HC_BLACK_THEME_NAME = "hc-black";
@@ -108702,7 +108702,7 @@ ${this._themeCSS}`;
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneTreeSitterLibraryService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneTreeSitterLibraryService.js
 var StandaloneTreeSitterLibraryService = class {
   getParserClass() {
     throw new Error("not implemented in StandaloneTreeSitterLibraryService");
@@ -108721,7 +108721,7 @@ var StandaloneTreeSitterLibraryService = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneServices.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneServices.js
 var __decorate65 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -109605,12 +109605,12 @@ var StandaloneServices;
   StandaloneServices2.withServices = withServices;
 })(StandaloneServices || (StandaloneServices = {}));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/hotReloadHelpers.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/hotReloadHelpers.js
 function readHotReloadableExport(value, reader) {
   return value;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/observable/common/platformObservableUtils.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/observable/common/platformObservableUtils.js
 function bindContextKey(key, service, computeValue, debugLocation = DebugLocation.ofCaller()) {
   const boundKey = key.bindTo(service);
   const store = new DisposableStore();
@@ -109622,7 +109622,7 @@ function bindContextKey(key, service, computeValue, debugLocation = DebugLocatio
   return store;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/stableEditorScroll.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/stableEditorScroll.js
 var StableEditorScrollState = class _StableEditorScrollState {
   static capture(editor2) {
     if (editor2.getScrollTop() === 0 || editor2.hasPendingScrollAnimation()) {
@@ -109671,7 +109671,7 @@ var StableEditorScrollState = class _StableEditorScrollState {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/utils.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/utils.js
 function joinCombine(arr1, arr2, keySelector, combine) {
   if (arr1.length === 0) {
     return arr2;
@@ -110077,10 +110077,10 @@ var ClonedRefCounted = class extends RefCounted {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/components/accessibleDiffViewer.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/components/accessibleDiffViewer.css
 styleInject(".monaco-diff-editor .diff-review {\n  position: absolute;\n}\n.monaco-component.diff-review {\n  user-select: none;\n  -webkit-user-select: none;\n  z-index: 99;\n  .diff-review-line-number {\n    text-align: right;\n    display: inline-block;\n    color: var(--vscode-editorLineNumber-foreground);\n  }\n  .diff-review-summary {\n    padding-left: 10px;\n  }\n  .diff-review-shadow {\n    position: absolute;\n    box-shadow: var(--vscode-scrollbar-shadow) 0 -6px 6px -6px inset;\n  }\n  .diff-review-row {\n    white-space: pre;\n  }\n  .diff-review-table {\n    display: table;\n    min-width: 100%;\n  }\n  .diff-review-row {\n    display: table-row;\n    width: 100%;\n  }\n  .diff-review-spacer {\n    display: inline-block;\n    width: 10px;\n    vertical-align: middle;\n  }\n  .diff-review-spacer > .codicon {\n    font-size: 9px !important;\n  }\n  .diff-review-actions {\n    display: inline-block;\n    position: absolute;\n    right: 10px;\n    top: 2px;\n    z-index: 100;\n  }\n  .diff-review-actions .action-label {\n    width: 16px;\n    height: 16px;\n    margin: 2px 0;\n  }\n  .revertButton {\n    cursor: pointer;\n  }\n  .action-label {\n    background: var(--vscode-editorActionList-background);\n  }\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/components/accessibleDiffViewer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/components/accessibleDiffViewer.js
 var __decorate66 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -110679,7 +110679,7 @@ var AccessibleDiffViewerModelFromEditors = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/registrations.contribution.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/registrations.contribution.js
 registerColor("diffEditor.move.border", "#8b8b8b9c", localize(153, "The border color for text that got moved in the diff editor."));
 registerColor("diffEditor.moveActive.border", "#FFA500", localize(154, "The active border color for text that got moved in the diff editor."));
 registerColor("diffEditor.unchangedRegionShadow", { dark: "#000000", light: "#737373BF", hcDark: "#000000", hcLight: "#737373BF" }, localize(155, "The color of the shadow around unchanged region widgets."));
@@ -110740,7 +110740,7 @@ var diffDeleteDecorationEmpty = ModelDecorationOptions.register({
   description: "char-delete diff-range-empty"
 });
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/diffProviderFactoryService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/diffProviderFactoryService.js
 var __decorate67 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -110877,7 +110877,7 @@ WorkerBasedDocumentDiffProvider = WorkerBasedDocumentDiffProvider_1 = __decorate
   __param60(2, ITelemetryService)
 ], WorkerBasedDocumentDiffProvider);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/utils/utilsCancellation.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/utils/utilsCancellation.js
 function waitForState(observable, predicate, isError, cancellationToken) {
   if (!predicate) {
     predicate = (state) => state !== null && state !== void 0;
@@ -110927,7 +110927,7 @@ function waitForState(observable, predicate, isError, cancellationToken) {
   });
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/observables/observableSignalFromEvent.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/observables/observableSignalFromEvent.js
 function observableSignalFromEvent(owner, event, debugLocation = DebugLocation.ofCaller()) {
   return new FromEventObservableSignal(typeof owner === "string" ? owner : new DebugNameData(owner, void 0, void 0), event, debugLocation);
 }
@@ -110956,7 +110956,7 @@ var FromEventObservableSignal = class extends BaseObservable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/diffEditorViewModel.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/diffEditorViewModel.js
 var __decorate68 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -111381,7 +111381,7 @@ function applyModifiedEdits(diff, textEdits, originalTextModel, modifiedTextMode
   return void 0;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/components/diffEditorViewZones/copySelection.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/components/diffEditorViewZones/copySelection.js
 function enableCopySelection(options) {
   const { domNode, renderLinesResult, diffEntry, originalModel, clipboardService } = options;
   const viewZoneDisposable = new DisposableStore();
@@ -111414,7 +111414,7 @@ function enableCopySelection(options) {
   return viewZoneDisposable;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/components/diffEditorViewZones/inlineDiffDeletedCodeMargin.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/components/diffEditorViewZones/inlineDiffDeletedCodeMargin.js
 var InlineDiffDeletedCodeMargin = class extends Disposable {
   get visibility() {
     return this._visibility;
@@ -111536,7 +111536,7 @@ var InlineDiffDeletedCodeMargin = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/components/diffEditorViewZones/renderLines.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/components/diffEditorViewZones/renderLines.js
 var ttPolicy5 = createTrustedTypesPolicy("diffEditorWidget", { createHTML: (value) => value });
 function renderLines(source, options, decorations, domNode, noExtra = false) {
   applyFontInfo(domNode, options.fontInfo);
@@ -111751,7 +111751,7 @@ function renderOriginalLine(viewLineIdx, lineTokens, decorations, hasCharChanges
   return { output, maxCharWidth };
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/components/diffEditorViewZones/diffEditorViewZones.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/components/diffEditorViewZones/diffEditorViewZones.js
 var __decorate69 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -112266,7 +112266,7 @@ function rangeIsSingleLine(range2) {
   return range2.startLineNumber === range2.endLineNumber;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/features/movedBlocksLinesFeature.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/features/movedBlocksLinesFeature.js
 var MovedBlocksLinesFeature = class _MovedBlocksLinesFeature extends Disposable {
   static {
     this.movedCodeBlockPadding = 4;
@@ -112514,7 +112514,7 @@ var MovedBlockOverlayWidget = class extends ViewZoneOverlayWidget {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/components/diffEditorDecorations.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/components/diffEditorDecorations.js
 var DiffEditorDecorations = class extends Disposable {
   constructor(_editors, _diffModel, _options, widget) {
     super();
@@ -112617,7 +112617,7 @@ var DiffEditorDecorations = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/2d/point.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/2d/point.js
 var Point = class _Point {
   static equals(a, b) {
     return a.x === b.x && a.y === b.y;
@@ -112662,7 +112662,7 @@ var Point = class _Point {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/observableCodeEditor.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/observableCodeEditor.js
 function observableCodeEditor(editor2) {
   return ObservableCodeEditor.get(editor2);
 }
@@ -113098,7 +113098,7 @@ var ObservableCodeEditor = class _ObservableCodeEditor extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/features/overviewRulerFeature.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/features/overviewRulerFeature.js
 var __decorate70 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -113237,7 +113237,7 @@ OverviewRulerFeature = OverviewRulerFeature_1 = __decorate70([
   __param63(6, IThemeService)
 ], OverviewRulerFeature);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/components/diffEditorEditors.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/components/diffEditorEditors.js
 var __decorate71 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -113409,7 +113409,7 @@ DiffEditorEditors = __decorate71([
   __param64(7, IKeybindingService)
 ], DiffEditorEditors);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/components/diffEditorSash.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/components/diffEditorSash.js
 var SashLayout = class {
   resetSash() {
     this._sashRatio.set(void 0, void 0);
@@ -113486,7 +113486,7 @@ var DiffEditorSash = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/delegatingEditorImpl.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/delegatingEditorImpl.js
 var DelegatingEditor = class _DelegatingEditor extends Disposable {
   constructor() {
     super(...arguments);
@@ -113593,12 +113593,12 @@ var DelegatingEditor = class _DelegatingEditor extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/experimental/utils.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/observableInternal/experimental/utils.js
 function derivedConstOnceDefined(owner, fn) {
   return derivedObservableWithCache(owner, (reader, lastValue) => lastValue ?? fn(reader));
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/diffEditorOptions.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/diffEditorOptions.js
 var __decorate72 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -113772,7 +113772,7 @@ function validateDiffEditorOptions(options, defaults) {
   };
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/actions/browser/actionViewItemService.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/actions/browser/actionViewItemService.js
 var IActionViewItemService = createDecorator("IActionViewItemService");
 var ActionViewItemService = class {
   constructor() {
@@ -113797,7 +113797,7 @@ registerSingleton(
   /* InstantiationType.Delayed */
 );
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/actions/browser/toolbar.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/actions/browser/toolbar.js
 var __decorate73 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -114032,7 +114032,7 @@ MenuWorkbenchToolBar = __decorate73([
   __param66(10, IInstantiationService)
 ], MenuWorkbenchToolBar);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/textModelText.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/textModelText.js
 var TextModelText = class extends AbstractText {
   constructor(_textModel) {
     super();
@@ -114051,7 +114051,7 @@ var TextModelText = class extends AbstractText {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/multiDiffEditor/utils.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/multiDiffEditor/utils.js
 var ActionRunnerWithContext = class extends ActionRunner {
   constructor(_getContext) {
     super();
@@ -114063,7 +114063,7 @@ var ActionRunnerWithContext = class extends ActionRunner {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/utils/editorGutter.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/utils/editorGutter.js
 var EditorGutter = class extends Disposable {
   constructor(_editor, _domNode, itemProvider) {
     super();
@@ -114166,7 +114166,7 @@ var ManagedGutterItemView = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/features/gutterFeature.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/features/gutterFeature.js
 var __decorate74 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -114385,7 +114385,7 @@ DiffToolBar = __decorate74([
   __param67(3, IInstantiationService)
 ], DiffToolBar);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/features/hideUnchangedRegionsFeature.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/features/hideUnchangedRegionsFeature.js
 var __decorate75 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -114800,7 +114800,7 @@ var CollapsedCodeOverlayWidget = class extends ViewZoneOverlayWidget {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/features/revertButtonsFeature.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/features/revertButtonsFeature.js
 var emptyArr3 = [];
 var RevertButtonsFeature = class extends Disposable {
   constructor(_editors, _diffModel, _options, _widget) {
@@ -114929,10 +114929,10 @@ var RevertButton = class _RevertButton extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/style.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/style.css
 styleInject(".monaco-editor .diff-hidden-lines-widget {\n  width: 100%;\n}\n.monaco-editor .diff-hidden-lines {\n  height: 0px;\n  transform: translate(0px, -10px);\n  font-size: 13px;\n  line-height: 14px;\n}\n.monaco-editor .diff-hidden-lines:not(.dragging) .top:hover,\n.monaco-editor .diff-hidden-lines:not(.dragging) .bottom:hover,\n.monaco-editor .diff-hidden-lines .top.dragging,\n.monaco-editor .diff-hidden-lines .bottom.dragging {\n  background-color: var(--vscode-focusBorder);\n}\n.monaco-editor .diff-hidden-lines .top,\n.monaco-editor .diff-hidden-lines .bottom {\n  transition: background-color 0.1s ease-out;\n  height: 4px;\n  background-color: transparent;\n  background-clip: padding-box;\n  border-bottom: 2px solid transparent;\n  border-top: 4px solid transparent;\n}\n.monaco-editor.draggingUnchangedRegion.canMoveTop:not(.canMoveBottom) *,\n.monaco-editor .diff-hidden-lines .top.canMoveTop:not(.canMoveBottom),\n.monaco-editor .diff-hidden-lines .bottom.canMoveTop:not(.canMoveBottom) {\n  cursor: n-resize !important;\n}\n.monaco-editor.draggingUnchangedRegion:not(.canMoveTop).canMoveBottom *,\n.monaco-editor .diff-hidden-lines .top:not(.canMoveTop).canMoveBottom,\n.monaco-editor .diff-hidden-lines .bottom:not(.canMoveTop).canMoveBottom {\n  cursor: s-resize !important;\n}\n.monaco-editor.draggingUnchangedRegion.canMoveTop.canMoveBottom *,\n.monaco-editor .diff-hidden-lines .top.canMoveTop.canMoveBottom,\n.monaco-editor .diff-hidden-lines .bottom.canMoveTop.canMoveBottom {\n  cursor: ns-resize !important;\n}\n.monaco-editor .diff-hidden-lines .top {\n  transform: translate(0px, 4px);\n}\n.monaco-editor .diff-hidden-lines .bottom {\n  transform: translate(0px, -6px);\n}\n.monaco-editor .diff-unchanged-lines {\n  background: var(--vscode-diffEditor-unchangedCodeBackground);\n}\n.monaco-editor .noModificationsOverlay {\n  z-index: 1;\n  background: var(--vscode-editor-background);\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n.monaco-editor .diff-hidden-lines .center {\n  background: var(--vscode-diffEditor-unchangedRegionBackground);\n  color: var(--vscode-diffEditor-unchangedRegionForeground);\n  overflow: hidden;\n  display: block;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n  height: 24px;\n  box-shadow: inset 0 -5px 5px -7px var(--vscode-diffEditor-unchangedRegionShadow), inset 0 5px 5px -7px var(--vscode-diffEditor-unchangedRegionShadow);\n}\n.monaco-editor .diff-hidden-lines .center span.codicon {\n  vertical-align: middle;\n}\n.monaco-editor .diff-hidden-lines .center a:hover .codicon {\n  cursor: pointer;\n  color: var(--vscode-editorLink-activeForeground) !important;\n}\n.monaco-editor .diff-hidden-lines div.breadcrumb-item {\n  cursor: pointer;\n}\n.monaco-editor .diff-hidden-lines div.breadcrumb-item:hover {\n  color: var(--vscode-editorLink-activeForeground);\n}\n.monaco-editor .movedOriginal {\n  border: 2px solid var(--vscode-diffEditor-move-border);\n}\n.monaco-editor .movedModified {\n  border: 2px solid var(--vscode-diffEditor-move-border);\n}\n.monaco-editor .movedOriginal.currentMove,\n.monaco-editor .movedModified.currentMove {\n  border: 2px solid var(--vscode-diffEditor-moveActive-border);\n}\n.monaco-diff-editor .moved-blocks-lines path.currentMove {\n  stroke: var(--vscode-diffEditor-moveActive-border);\n}\n.monaco-diff-editor .moved-blocks-lines path {\n  pointer-events: visiblestroke;\n}\n.monaco-diff-editor .moved-blocks-lines .arrow {\n  fill: var(--vscode-diffEditor-move-border);\n}\n.monaco-diff-editor .moved-blocks-lines .arrow.currentMove {\n  fill: var(--vscode-diffEditor-moveActive-border);\n}\n.monaco-diff-editor .moved-blocks-lines .arrow-rectangle {\n  fill: var(--vscode-editor-background);\n}\n.monaco-diff-editor .moved-blocks-lines {\n  position: absolute;\n  pointer-events: none;\n}\n.monaco-diff-editor .moved-blocks-lines path {\n  fill: none;\n  stroke: var(--vscode-diffEditor-move-border);\n  stroke-width: 2;\n}\n.monaco-editor .char-delete.diff-range-empty {\n  margin-left: -1px;\n  border-left: solid var(--vscode-diffEditor-removedTextBackground) 3px;\n}\n.monaco-editor .char-insert.diff-range-empty {\n  border-left: solid var(--vscode-diffEditor-insertedTextBackground) 3px;\n}\n.monaco-editor .fold-unchanged {\n  cursor: pointer;\n}\n.monaco-diff-editor .diff-moved-code-block {\n  display: flex;\n  justify-content: flex-end;\n  margin-top: -4px;\n}\n.monaco-diff-editor .diff-moved-code-block .action-bar .action-label.codicon {\n  width: 12px;\n  height: 12px;\n  font-size: 12px;\n}\n.monaco-diff-editor .diffOverview {\n  z-index: 9;\n}\n.monaco-diff-editor .diffOverview .diffViewport {\n  z-index: 10;\n}\n.monaco-diff-editor.vs .diffOverview {\n  background: rgba(0, 0, 0, 0.03);\n}\n.monaco-diff-editor.vs-dark .diffOverview {\n  background: rgba(255, 255, 255, 0.01);\n}\n.monaco-scrollable-element.modified-in-monaco-diff-editor.vs .scrollbar {\n  background: rgba(0, 0, 0, 0);\n}\n.monaco-scrollable-element.modified-in-monaco-diff-editor.vs-dark .scrollbar {\n  background: rgba(0, 0, 0, 0);\n}\n.monaco-scrollable-element.modified-in-monaco-diff-editor.hc-black .scrollbar {\n  background: none;\n}\n.monaco-scrollable-element.modified-in-monaco-diff-editor.hc-light .scrollbar {\n  background: none;\n}\n.monaco-scrollable-element.modified-in-monaco-diff-editor .slider {\n  z-index: 10;\n}\n.modified-in-monaco-diff-editor .slider.active {\n  background: rgba(171, 171, 171, .4);\n}\n.modified-in-monaco-diff-editor.hc-black .slider.active {\n  background: none;\n}\n.modified-in-monaco-diff-editor.hc-light .slider.active {\n  background: none;\n}\n.monaco-editor .insert-sign,\n.monaco-diff-editor .insert-sign,\n.monaco-editor .delete-sign,\n.monaco-diff-editor .delete-sign {\n  font-size: 11px !important;\n  opacity: 0.7 !important;\n  display: flex !important;\n  align-items: center;\n}\n.monaco-editor.hc-black .insert-sign,\n.monaco-diff-editor.hc-black .insert-sign,\n.monaco-editor.hc-black .delete-sign,\n.monaco-diff-editor.hc-black .delete-sign,\n.monaco-editor.hc-light .insert-sign,\n.monaco-diff-editor.hc-light .insert-sign,\n.monaco-editor.hc-light .delete-sign,\n.monaco-diff-editor.hc-light .delete-sign {\n  opacity: 1;\n}\n.monaco-editor .inline-deleted-margin-view-zone {\n  text-align: right;\n}\n.monaco-editor .inline-added-margin-view-zone {\n  text-align: right;\n}\n.monaco-editor .arrow-revert-change {\n  z-index: 10;\n  position: absolute;\n}\n.monaco-editor .arrow-revert-change:hover {\n  cursor: pointer;\n}\n.monaco-editor .view-zones .view-lines .view-line span {\n  display: inline-block;\n}\n.monaco-editor .margin-view-zones .lightbulb-glyph:hover {\n  cursor: pointer;\n}\n.monaco-editor .char-insert,\n.monaco-diff-editor .char-insert {\n  background-color: var(--vscode-diffEditor-insertedTextBackground);\n}\n.monaco-editor .line-insert,\n.monaco-diff-editor .line-insert {\n  background-color: var(--vscode-diffEditor-insertedLineBackground, var(--vscode-diffEditor-insertedTextBackground));\n}\n.monaco-editor .line-insert,\n.monaco-editor .char-insert {\n  box-sizing: border-box;\n  border: 1px solid var(--vscode-diffEditor-insertedTextBorder);\n}\n.monaco-editor.hc-black .line-insert,\n.monaco-editor.hc-light .line-insert,\n.monaco-editor.hc-black .char-insert,\n.monaco-editor.hc-light .char-insert {\n  border-style: dashed;\n}\n.monaco-editor .line-delete,\n.monaco-editor .char-delete {\n  box-sizing: border-box;\n  border: 1px solid var(--vscode-diffEditor-removedTextBorder);\n}\n.monaco-editor.hc-black .line-delete,\n.monaco-editor.hc-light .line-delete,\n.monaco-editor.hc-black .char-delete,\n.monaco-editor.hc-light .char-delete {\n  border-style: dashed;\n}\n.monaco-editor .inline-added-margin-view-zone,\n.monaco-editor .gutter-insert,\n.monaco-diff-editor .gutter-insert {\n  background-color: var(--vscode-diffEditorGutter-insertedLineBackground, var(--vscode-diffEditor-insertedLineBackground), var(--vscode-diffEditor-insertedTextBackground));\n}\n.monaco-editor .char-delete,\n.monaco-diff-editor .char-delete,\n.monaco-editor .inline-deleted-text {\n  background-color: var(--vscode-diffEditor-removedTextBackground);\n}\n.monaco-editor .inline-deleted-text {\n  text-decoration: line-through;\n}\n.monaco-editor .line-delete,\n.monaco-diff-editor .line-delete {\n  background-color: var(--vscode-diffEditor-removedLineBackground, var(--vscode-diffEditor-removedTextBackground));\n}\n.monaco-editor .inline-deleted-margin-view-zone,\n.monaco-editor .gutter-delete,\n.monaco-diff-editor .gutter-delete {\n  background-color: var(--vscode-diffEditorGutter-removedLineBackground, var(--vscode-diffEditor-removedLineBackground), var(--vscode-diffEditor-removedTextBackground));\n}\n.monaco-diff-editor.side-by-side .editor.modified {\n  box-shadow: -6px 0 5px -5px var(--vscode-scrollbar-shadow);\n  border-left: 1px solid var(--vscode-diffEditor-border);\n}\n.monaco-diff-editor.side-by-side .editor.original {\n  box-shadow: 6px 0 5px -5px var(--vscode-scrollbar-shadow);\n  border-right: 1px solid var(--vscode-diffEditor-border);\n}\n.monaco-diff-editor .diffViewport {\n  background: var(--vscode-scrollbarSlider-background);\n}\n.monaco-diff-editor .diffViewport:hover {\n  background: var(--vscode-scrollbarSlider-hoverBackground);\n}\n.monaco-diff-editor .diffViewport:active {\n  background: var(--vscode-scrollbarSlider-activeBackground);\n}\n.monaco-editor .diagonal-fill {\n  background-image:\n    linear-gradient(\n      -45deg,\n      var(--vscode-diffEditor-diagonalFill) 12.5%,\n      #0000 12.5%,\n      #0000 50%,\n      var(--vscode-diffEditor-diagonalFill) 50%,\n      var(--vscode-diffEditor-diagonalFill) 62.5%,\n      #0000 62.5%,\n      #0000 100%);\n  background-size: 8px 8px;\n}\n.monaco-diff-editor .gutter {\n  position: relative;\n  overflow: hidden;\n  flex-shrink: 0;\n  flex-grow: 0;\n  & > div {\n    position: absolute;\n  }\n  .gutterItem {\n    opacity: 0;\n    transition: opacity 0.7s;\n    &.showAlways {\n      opacity: 1;\n      transition: none;\n    }\n    &.noTransition {\n      transition: none;\n    }\n  }\n  &:hover .gutterItem {\n    opacity: 1;\n    transition: opacity 0.1s ease-in-out;\n  }\n  .gutterItem {\n    .background {\n      position: absolute;\n      height: 100%;\n      left: 50%;\n      width: 1px;\n      border-left: 2px var(--vscode-menu-separatorBackground) solid;\n    }\n    .buttons {\n      position: absolute;\n      width: 100%;\n      display: flex;\n      justify-content: center;\n      align-items: center;\n      .monaco-toolbar {\n        height: fit-content;\n        .monaco-action-bar {\n          line-height: 1;\n          .actions-container {\n            width: fit-content;\n            border-radius: 4px;\n            background: var(--vscode-editorGutter-itemBackground);\n            .action-item {\n              &:hover {\n                background: var(--vscode-toolbar-hoverBackground);\n              }\n              .action-label {\n                color: var(--vscode-editorGutter-itemGlyphForeground);\n                padding: 1px 2px;\n              }\n            }\n          }\n        }\n      }\n    }\n  }\n}\n.monaco-diff-editor .diff-hidden-lines-compact {\n  display: flex;\n  height: 11px;\n  .line-left,\n  .line-right {\n    height: 1px;\n    border-top: 1px solid;\n    border-color: var(--vscode-editorCodeLens-foreground);\n    opacity: 0.5;\n    margin: auto;\n    width: 100%;\n  }\n  .line-left {\n    width: 20px;\n  }\n  .text {\n    color: var(--vscode-editorCodeLens-foreground);\n    text-wrap: nowrap;\n    font-size: 11px;\n    line-height: 11px;\n    margin: 0 4px;\n  }\n}\n.monaco-editor .line-delete-selectable {\n  user-select: text !important;\n  -webkit-user-select: text !important;\n  z-index: 1 !important;\n}\n.line-delete-selectable .view-line {\n  user-select: text !important;\n  -webkit-user-select: text !important;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/diffEditorWidget.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/diffEditor/diffEditorWidget.js
 var __decorate76 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -115480,7 +115480,7 @@ function toLineChanges(state) {
   });
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/editorBrowser.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/editorBrowser.js
 function isCodeEditor(thing) {
   if (thing && typeof thing.getEditorType === "function") {
     return thing.getEditorType() === EditorType.ICodeEditor;
@@ -115489,10 +115489,10 @@ function isCodeEditor(thing) {
   }
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/markdownRenderer/browser/renderedMarkdown.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/markdownRenderer/browser/renderedMarkdown.css
 styleInject(".monaco-editor .rendered-markdown kbd {\n  background-color: var(--vscode-keybindingLabel-background);\n  color: var(--vscode-keybindingLabel-foreground);\n  border-style: solid;\n  border-width: 1px;\n  border-radius: 3px;\n  border-color: var(--vscode-keybindingLabel-border);\n  border-bottom-color: var(--vscode-keybindingLabel-bottomBorder);\n  box-shadow: inset 0 -1px 0 var(--vscode-widget-shadow);\n  vertical-align: middle;\n  padding: 1px 3px;\n}\n.rendered-markdown li:has(input[type=checkbox]) {\n  list-style-type: none;\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/markdownRenderer/browser/editorMarkdownCodeBlockRenderer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/markdownRenderer/browser/editorMarkdownCodeBlockRenderer.js
 var __decorate77 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -115560,7 +115560,7 @@ EditorMarkdownCodeBlockRenderer = EditorMarkdownCodeBlockRenderer_1 = __decorate
   __param70(1, ILanguageService)
 ], EditorMarkdownCodeBlockRenderer);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneCodeEditor.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneCodeEditor.js
 var __decorate78 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -115828,12 +115828,12 @@ function doCreateModel(modelService, value, languageSelection, uri) {
   return modelService.createModel(value, languageSelection, uri);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/multiDiffEditor/colors.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/multiDiffEditor/colors.js
 registerColor("multiDiffEditor.headerBackground", { dark: "#262626", light: "tab.inactiveBackground", hcDark: "tab.inactiveBackground", hcLight: "tab.inactiveBackground" }, localize(158, "The background color of the diff editor's header"));
 registerColor("multiDiffEditor.background", editorBackground, localize(159, "The background color of the multi file diff editor"));
 registerColor("multiDiffEditor.border", { dark: "sideBarSectionHeader.border", light: "#cccccc", hcDark: "sideBarSectionHeader.border", hcLight: "#cccccc" }, localize(160, "The border color of the multi file diff editor"));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/multiDiffEditor/diffEditorItemTemplate.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/multiDiffEditor/diffEditorItemTemplate.js
 var __decorate79 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -116106,7 +116106,7 @@ DiffEditorItemTemplate = __decorate79([
   __param72(4, IContextKeyService)
 ], DiffEditorItemTemplate);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/multiDiffEditor/objectPool.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/multiDiffEditor/objectPool.js
 var ObjectPool = class {
   constructor(_create) {
     this._create = _create;
@@ -116151,10 +116151,10 @@ var ObjectPool = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/multiDiffEditor/style.css
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/multiDiffEditor/style.css
 styleInject(".monaco-component.multiDiffEditor {\n  background: var(--vscode-multiDiffEditor-background);\n  position: relative;\n  height: 100%;\n  width: 100%;\n  overflow-y: hidden;\n  > div {\n    position: absolute;\n    top: 0px;\n    left: 0px;\n    height: 100%;\n    width: 100%;\n    &.placeholder {\n      visibility: hidden;\n      &.visible {\n        visibility: visible;\n      }\n      display: grid;\n      place-items: center;\n      place-content: center;\n    }\n  }\n  > .multi-diff-root-floating-menu {\n    position: absolute;\n    top: auto;\n    right: 28px;\n    bottom: 24px;\n    left: auto;\n    width: auto;\n  }\n  .active {\n    --vscode-multiDiffEditor-border: var(--vscode-focusBorder);\n  }\n  .multiDiffEntry {\n    display: flex;\n    flex-direction: column;\n    flex: 1;\n    overflow: hidden;\n    .collapse-button {\n      margin: 0 5px;\n      cursor: pointer;\n      a {\n        display: block;\n      }\n    }\n    .header {\n      z-index: 1000;\n      background: var(--vscode-editor-background);\n      &:not(.collapsed) .header-content {\n        border-bottom: 1px solid var(--vscode-sideBarSectionHeader-border);\n      }\n      .header-content {\n        margin: 8px 0px 0px 0px;\n        padding: 4px 5px;\n        border-top: 1px solid var(--vscode-multiDiffEditor-border);\n        display: flex;\n        align-items: center;\n        color: var(--vscode-foreground);\n        background: var(--vscode-multiDiffEditor-headerBackground);\n        &.shadow {\n          box-shadow: var(--vscode-scrollbar-shadow) 0px 6px 6px -6px;\n        }\n        .file-path {\n          display: flex;\n          flex: 1;\n          min-width: 0;\n          .title {\n            font-size: 14px;\n            line-height: 22px;\n            &.original {\n              flex: 1;\n              min-width: 0;\n              text-overflow: ellipsis;\n            }\n          }\n          .status {\n            font-weight: 600;\n            opacity: 0.75;\n            margin: 0px 10px;\n            line-height: 22px;\n          }\n        }\n        .actions {\n          padding: 0 8px;\n        }\n      }\n    }\n    .editorParent {\n      flex: 1;\n      display: flex;\n      flex-direction: column;\n      border-bottom: 1px solid var(--vscode-multiDiffEditor-border);\n      overflow: hidden;\n    }\n    .editorContainer {\n      flex: 1;\n    }\n  }\n}\n");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/multiDiffEditor/multiDiffEditorWidgetImpl.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/multiDiffEditor/multiDiffEditorWidgetImpl.js
 var __decorate80 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -116545,7 +116545,7 @@ var VirtualizedViewItem = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/multiDiffEditor/multiDiffEditorWidget.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/browser/widget/multiDiffEditor/multiDiffEditorWidget.js
 var __decorate81 = function(decorators, target, key, desc) {
   var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -116575,7 +116575,7 @@ MultiDiffEditorWidget = __decorate81([
   __param74(2, IInstantiationService)
 ], MultiDiffEditorWidget);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneEditor.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneEditor.js
 function create2(domElement, options, override) {
   const instantiationService = StandaloneServices.initialize(override || {});
   return instantiationService.createInstance(StandaloneEditor, domElement, options);
@@ -116927,7 +116927,7 @@ function createMonacoEditorAPI() {
   };
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/common/monarch/monarchCompile.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/common/monarch/monarchCompile.js
 function isArrayOf(elemType, obj) {
   if (!obj) {
     return false;
@@ -117391,7 +117391,7 @@ function compile(languageId, json) {
   return lexer2;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneLanguages.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/standalone/browser/standaloneLanguages.js
 function register2(language) {
   ModesRegistry.registerLanguage(language);
 }
@@ -117832,7 +117832,7 @@ function createMonacoLanguagesAPI() {
   };
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/contrib/editorState/browser/keybindingCancellation.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/contrib/editorState/browser/keybindingCancellation.js
 var IEditorCancellationTokens = createDecorator("IEditorCancelService");
 var ctxCancellableOperation = new RawContextKey("cancellableOperation", false, localize(978, "Whether the editor runs a cancellable operation, e.g. like 'Peek References'"));
 registerSingleton(
@@ -117894,7 +117894,7 @@ registerEditorCommand(new class extends EditorCommand {
   }
 }());
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/extensions/common/extensions.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/platform/extensions/common/extensions.js
 var ExtensionIdentifier = class {
   constructor(value) {
     this.value = value;
@@ -117927,7 +117927,7 @@ var ExtensionIdentifierSet = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/contrib/format/browser/format.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/contrib/format/browser/format.js
 function getRealAndSyntheticDocumentFormattersOrdered(documentFormattingEditProvider, documentRangeFormattingEditProvider, model) {
   const result = [];
   const seen = new ExtensionIdentifierSet();
@@ -118067,7 +118067,7 @@ function ensureFormattingOptions(options, reference) {
   return validatedOptions;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/editor.api.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/editor.api.js
 EditorOptions.wrappingIndent.defaultValue = 0;
 EditorOptions.glyphMargin.defaultValue = false;
 EditorOptions.autoIndent.defaultValue = 3;

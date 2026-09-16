@@ -47,19 +47,24 @@ export function GraphMoleculeViewer({
   moleculeId = null,
   onScreenshot,
   onSelectionChange,
+  onReady,
   source,
-  title = 'PyMOL-style (PDB/CIF)',
+  title = 'Molecular structure',
 }: {
   className?: string;
   moleculeId?: string | null;
   onScreenshot?: (screenshot: GraphMoleculeScreenshot) => void;
   onSelectionChange?: (selection: GraphMoleculeAtomSelection) => void;
+  onReady?: (view: { captureScreenshot: () => string; trajectoryIndex: number }) => void;
   source: GraphMoleculeViewerSource;
   title?: string | null;
 }) {
   const viewerHostRef = useRef<HTMLDivElement | null>(null);
   const viewerRef = useRef<GLViewer | null>(null);
   const modelRef = useRef<GLModel | null>(null);
+  const [viewerReady, setViewerReady] = useState(false);
+  const onReadyRef = useRef(onReady);
+  onReadyRef.current = onReady;
   const zoomedRef = useRef(false);
   const unitCellPreferenceRef = useRef(true);
 
@@ -147,9 +152,12 @@ export function GraphMoleculeViewer({
     }
 
     const resizeViewer = () => {
+      if (cancelled || !host.clientWidth || !host.clientHeight) return;
       viewerRef.current?.resize();
       viewerRef.current?.render();
     };
+    const resizeObserver = new ResizeObserver(resizeViewer);
+    resizeObserver.observe(host);
 
     load3Dmol()
       .then(($3Dmol) => {
@@ -160,6 +168,7 @@ export function GraphMoleculeViewer({
         try {
           const viewer = $3Dmol.createViewer(host, {});
           viewerRef.current = viewer;
+          setViewerReady(true);
           viewer.setBackgroundColor('#f8fafc', 0.8);
           window.addEventListener('resize', resizeViewer);
           window.setTimeout(resizeViewer, 100);
@@ -179,6 +188,7 @@ export function GraphMoleculeViewer({
 
     return () => {
       cancelled = true;
+      resizeObserver.disconnect();
       window.removeEventListener('resize', resizeViewer);
       viewerRef.current = null;
       modelRef.current = null;
@@ -285,11 +295,16 @@ export function GraphMoleculeViewer({
       );
 
       viewer.render();
+      onReadyRef.current?.({ captureScreenshot: () => {
+        viewer.render();
+        if (!viewer.pngURI) throw new Error('Screenshot is unavailable');
+        return viewer.pngURI();
+      }, trajectoryIndex: currentIndex });
     } catch (error) {
       console.error('Failed to render molecule:', error);
       setViewerInitError('Unable to render this molecular structure.');
     }
-  }, [xyzContent, xyzFormat]);
+  }, [xyzContent, xyzFormat, viewerReady, currentIndex]);
 
   useEffect(() => {
     const viewer = viewerRef.current;
@@ -445,7 +460,7 @@ export function GraphMoleculeViewer({
             {title}
           </h2>
           <p className="mt-1 hidden text-[11px] text-slate-400 sm:block">
-            cartoon + surface
+            Structure and trajectory
           </p>
         </div>
         <span className="shrink-0 text-[11px] text-slate-400">

@@ -68,7 +68,7 @@ const THEME_MODE_OPTIONS: Array<{
 
 interface ThreadWorkspaceLayoutProps {
   threads: ThreadDto[];
-  status: AgentRuntimeStatusDto | null;
+  status?: AgentRuntimeStatusDto | null;
   loading?: boolean;
   error?: string | null;
   viewportConstrained?: boolean;
@@ -80,6 +80,8 @@ interface ThreadWorkspaceLayoutProps {
   showMobileThreadNavToggle?: boolean;
   showMobileNewThreadShortcut?: boolean;
   hideRoomsRail?: boolean;
+  navigationTitle?: string;
+  renderNavigationHeader?: (input: { collapsed: boolean; closeNavigation: () => void }) => ReactNode;
   settingsDialogOpen?: boolean;
   onSettingsDialogOpenChange?: (open: boolean) => void;
   mobileHeaderAction?: ReactNode;
@@ -408,6 +410,8 @@ export function ThreadWorkspaceLayout({
   onThemeModeChange,
   showMobileNewThreadShortcut = true,
   hideRoomsRail = false,
+  navigationTitle,
+  renderNavigationHeader,
   settingsDialogOpen,
   onSettingsDialogOpenChange,
   mobileHeaderAction,
@@ -655,7 +659,7 @@ export function ThreadWorkspaceLayout({
     setCreatingThread(true);
 
     try {
-      if (title && onNewThreadTitle) {
+      if (onNewThreadTitle) {
         await onNewThreadTitle(title);
         setNewThreadTitleDraft("");
         setCreateThreadDialogOpen(false);
@@ -1228,8 +1232,10 @@ export function ThreadWorkspaceLayout({
 
           {!hideRoomsRail ? (
             <GraphChatRoomsRailShell
-              collapsed={roomsRailCollapsed}
+              collapsed={roomsRailCollapsed && !renderMobileTopbarControls}
               mobileOpen={mobileRoomsOpen}
+              mobile={renderMobileTopbarControls}
+              onClose={() => setMobileRoomsOpen(false)}
             >
             <div
               className={`thread-rooms-rail-header flex h-[calc(3rem+env(safe-area-inset-top))] shrink-0 items-end border-b border-[var(--theme-border)] px-4 pb-2 sm:h-16 sm:items-center sm:pb-0 ${
@@ -1260,6 +1266,9 @@ export function ThreadWorkspaceLayout({
                       <PanelLeftClose className="h-4 w-4" />
                     )}
                   </button>
+                  {navigationTitle && (!roomsRailCollapsed || renderMobileTopbarControls) ? (
+                    <span className="truncate text-sm font-semibold text-[var(--theme-fg)]">{navigationTitle}</span>
+                  ) : null}
                 </div>
                 <div
                   className={`flex shrink-0 items-center gap-1 ${
@@ -1279,6 +1288,11 @@ export function ThreadWorkspaceLayout({
               </div>
             </div>
 
+            {renderNavigationHeader?.({
+              collapsed: roomsRailCollapsed && !renderMobileTopbarControls,
+              closeNavigation: closeNavigationSurfaces,
+            })}
+
             <div
               className={`thread-graph-new-room-strip flex shrink-0 items-center border-b ${
                 roomsRailCollapsed
@@ -1288,11 +1302,11 @@ export function ThreadWorkspaceLayout({
             >
               {renderNewThreadDialogButton(
                 `thread-graph-new-room-button inline-flex items-center justify-center rounded-xl font-medium transition ${
-                  roomsRailCollapsed
+                  roomsRailCollapsed && !renderMobileTopbarControls
                     ? "h-9 w-9 p-0"
                     : "h-11 w-full gap-2 px-3 text-sm sm:h-9"
                 }`,
-                roomsRailCollapsed,
+                roomsRailCollapsed && !renderMobileTopbarControls,
               )}
             </div>
 
@@ -1301,7 +1315,7 @@ export function ThreadWorkspaceLayout({
                 roomsRailCollapsed ? "w-full px-2 py-2" : "px-3 py-3"
               }`}
             >
-              {renderRoomsRailContent(roomsRailCollapsed)}
+              {renderRoomsRailContent(roomsRailCollapsed && !renderMobileTopbarControls)}
             </div>
             </GraphChatRoomsRailShell>
           ) : null}

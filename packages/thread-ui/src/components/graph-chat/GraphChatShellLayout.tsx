@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 
 export function GraphChatShellRoot({
   children,
@@ -81,13 +81,32 @@ export function GraphChatRoomsRailShell({
   children,
   collapsed,
   mobileOpen,
+  mobile = false,
+  onClose,
 }: {
   children: ReactNode;
   collapsed: boolean;
   mobileOpen: boolean;
+  mobile?: boolean;
+  onClose?: () => void;
 }) {
+  const rail = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!mobile || !mobileOpen) return;
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    rail.current?.querySelector<HTMLButtonElement>('[aria-label="Close rooms"]')?.focus();
+    return () => { if (previousFocus?.isConnected) previousFocus.focus(); };
+  }, [mobile, mobileOpen]);
   return (
     <aside
+      ref={rail}
+      inert={mobile && !mobileOpen}
+      onKeyDown={(event) => {
+        if (mobile && event.key === 'Escape') {
+          event.preventDefault();
+          onClose?.();
+        }
+      }}
       className={`thread-graph-rooms-surface thread-rooms-rail fixed inset-y-0 left-0 z-50 flex min-h-0 min-w-0 w-[min(20rem,calc(100vw-2rem))] flex-col overflow-x-hidden border-r border-slate-200/80 bg-white shadow-[0_20px_50px_rgba(15,23,42,0.18)] transition-transform duration-200 ease-out sm:static sm:z-auto sm:w-auto sm:translate-x-0 sm:rounded-[12px] sm:border sm:shadow-[0_10px_30px_rgba(15,23,42,0.04)] ${
         mobileOpen
           ? 'translate-x-0'

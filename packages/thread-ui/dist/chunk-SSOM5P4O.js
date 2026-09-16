@@ -1,4 +1,4 @@
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/errors.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/errors.js
 var ErrorHandler = class {
   constructor() {
     this.listeners = [];
@@ -126,7 +126,7 @@ var BugIndicatingError = class _BugIndicatingError extends Error {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/functional.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/functional.js
 function createSingleCallFunction(fn, fnDidRunCallback) {
   const _this = this;
   let didCall = false;
@@ -143,7 +143,7 @@ function createSingleCallFunction(fn, fnDidRunCallback) {
   };
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/assert.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/assert.js
 function ok(value, message) {
   if (!value) {
     throw new Error(message ? `Assertion failed (${message})` : "Assertion Failed");
@@ -183,7 +183,7 @@ function checkAdjacentItems(items, predicate) {
   return true;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/types.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/types.js
 function isString(str) {
   return typeof str === "string";
 }
@@ -252,7 +252,7 @@ function validateConstraint(arg, constraint) {
   }
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/iterator.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/iterator.js
 var Iterable;
 (function(Iterable2) {
   function is(thing) {
@@ -424,7 +424,7 @@ var Iterable;
   Iterable2.asyncToArrayFlat = asyncToArrayFlat;
 })(Iterable || (Iterable = {}));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/lifecycle.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/lifecycle.js
 function setParentOfDisposable(child, parent) {
 }
 function markAsSingleton(singleton) {
@@ -679,7 +679,7 @@ var DisposableMap = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/linkedList.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/linkedList.js
 var Node = class _Node {
   static {
     this.Undefined = new _Node(void 0);
@@ -789,7 +789,7 @@ var LinkedList = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/nls.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/nls.js
 function getNLSMessages() {
   return globalThis._VSCODE_NLS_MESSAGES;
 }
@@ -849,7 +849,7 @@ function localize2(data, originalMessage, ...args) {
   };
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/platform.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/platform.js
 var LANGUAGE_DEFAULT = "en";
 var _isWindows = false;
 var _isMacintosh = false;
@@ -973,7 +973,7 @@ var isSafari = !!(!isChrome && (userAgent && userAgent.indexOf("Safari") >= 0));
 var isEdge = !!(userAgent && userAgent.indexOf("Edg/") >= 0);
 var isAndroid = !!(userAgent && userAgent.indexOf("Android") >= 0);
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/process.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/process.js
 var safeProcess;
 var vscodeGlobal = globalThis.vscode;
 if (typeof vscodeGlobal !== "undefined" && typeof vscodeGlobal.process !== "undefined") {
@@ -1029,7 +1029,7 @@ var cwd = safeProcess.cwd;
 var env = safeProcess.env;
 var platform2 = safeProcess.platform;
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/stopwatch.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/stopwatch.js
 var performanceNow = globalThis.performance.now.bind(globalThis.performance);
 var StopWatch = class _StopWatch {
   static create(highResolution) {
@@ -1055,7 +1055,7 @@ var StopWatch = class _StopWatch {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/event.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/event.js
 var _bufferLeakWarnCountThreshold = 100;
 var _bufferLeakWarnTimeThreshold = 6e4;
 function _isBufferLeakWarningEnabled() {
@@ -2047,7 +2047,7 @@ function disposeAndRemove(result, disposables) {
   result.dispose();
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/cancellation.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/cancellation.js
 var shortcutEvent = Object.freeze(function(callback, context) {
   const handle = setTimeout(callback.bind(context), 0);
   return { dispose() {
@@ -2143,7 +2143,7 @@ var CancellationTokenSource = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/keyCodes.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/keyCodes.js
 var KeyCodeStrMap = class {
   constructor() {
     this._keyCodeToStr = [];
@@ -2483,7 +2483,7 @@ function isModifierKey(keyCode) {
   return keyCode === 5 || keyCode === 4 || keyCode === 6 || keyCode === 57;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/path.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/path.js
 var CHAR_UPPERCASE_A = 65;
 var CHAR_LOWERCASE_A = 97;
 var CHAR_UPPERCASE_Z = 90;
@@ -3578,7 +3578,7 @@ var basename = platformIsWin32 ? win32.basename : posix.basename;
 var extname = platformIsWin32 ? win32.extname : posix.extname;
 var sep = platformIsWin32 ? win32.sep : posix.sep;
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/uri.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/uri.js
 var _schemePattern = /^\w[\w\d+.-]*$/;
 var _singleSlashStart = /^\//;
 var _doubleSlashStart = /^\/\//;
@@ -4113,7 +4113,7 @@ function percentDecode(str) {
   return str.replace(_rEncodedAsHex, (match) => decodeURIComponentGraceful(match));
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/position.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/position.js
 var Position = class _Position {
   constructor(lineNumber, column) {
     this.lineNumber = lineNumber;
@@ -4242,7 +4242,7 @@ var Position = class _Position {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/range.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/range.js
 var Range = class _Range {
   constructor(startLineNumber, startColumn, endLineNumber, endColumn) {
     if (startLineNumber > endLineNumber || startLineNumber === endLineNumber && startColumn > endColumn) {
@@ -4631,7 +4631,7 @@ var Range = class _Range {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/selection.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/selection.js
 var Selection = class _Selection extends Range {
   constructor(selectionStartLineNumber, selectionStartColumn, positionLineNumber, positionColumn) {
     super(selectionStartLineNumber, selectionStartColumn, positionLineNumber, positionColumn);
@@ -4757,7 +4757,7 @@ var Selection = class _Selection extends Range {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/codiconsUtil.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/codiconsUtil.js
 var _codiconFontCharacters = /* @__PURE__ */ Object.create(null);
 function register(id, fontCharacter) {
   if (isString(fontCharacter)) {
@@ -4774,7 +4774,7 @@ function getCodiconFontCharacters() {
   return _codiconFontCharacters;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/codiconsLibrary.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/codiconsLibrary.js
 var codiconsLibrary = {
   add: register("add", 6e4),
   plus: register("plus", 6e4),
@@ -5497,7 +5497,7 @@ var codiconsLibrary = {
   voiceModeCompact: register("voice-mode-compact", 60620)
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/codicons.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/codicons.js
 var codiconsDerived = {
   dialogError: register("dialog-error", "error"),
   dialogWarning: register("dialog-warning", "warning"),
@@ -5536,7 +5536,7 @@ var Codicon = {
   ...codiconsDerived
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/tokenizationRegistry.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/tokenizationRegistry.js
 var TokenizationRegistry = class {
   constructor() {
     this._tokenizationSupports = /* @__PURE__ */ new Map();
@@ -5653,7 +5653,7 @@ var TokenizationSupportFactoryData = class extends Disposable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages.js
 var Token = class {
   constructor(offset, type, language) {
     this.offset = offset;
@@ -6368,7 +6368,7 @@ var LazyTokenizationSupport = class {
 };
 var TokenizationRegistry2 = new TokenizationRegistry();
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/standalone/standaloneEnums.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/standalone/standaloneEnums.js
 var AccessibilitySupport;
 (function(AccessibilitySupport2) {
   AccessibilitySupport2[AccessibilitySupport2["Unknown"] = 0] = "Unknown";
@@ -7022,7 +7022,7 @@ var WrappingIndent;
   WrappingIndent2[WrappingIndent2["DeepIndent"] = 3] = "DeepIndent";
 })(WrappingIndent || (WrappingIndent = {}));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/editorBaseApi.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/editorBaseApi.js
 var KeyMod = class {
   static {
     this.CtrlCmd = 2048;
@@ -7061,7 +7061,7 @@ function createMonacoBaseAPI() {
   };
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/arrays.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/arrays.js
 function tail(arr) {
   if (arr.length === 0) {
     throw new Error("Invalid tail call");
@@ -7365,7 +7365,7 @@ var CallbackIterable = class _CallbackIterable {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/objects.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/objects.js
 function deepClone(obj) {
   if (!obj || typeof obj !== "object") {
     return obj;
@@ -7483,7 +7483,7 @@ function equals2(one, other) {
   return true;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/wordHelper.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/wordHelper.js
 var USUAL_WORD_SEPARATORS = "`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?";
 function createWordRegExp(allowInWords = "") {
   let source = "(-?\\d*\\.\\d\\w*)|([^";
@@ -7584,7 +7584,7 @@ function _findRegexMatchEnclosingPosition(wordDefinition, text, pos, stopPos) {
   return null;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/cache.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/cache.js
 function identity(t) {
   return t;
 }
@@ -7636,7 +7636,7 @@ var CachedFunction = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/lazy.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/lazy.js
 var LazyValueState;
 (function(LazyValueState2) {
   LazyValueState2[LazyValueState2["Uninitialized"] = 0] = "Uninitialized";
@@ -7680,7 +7680,7 @@ var Lazy = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/strings.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/strings.js
 function isFalsyOrWhitespace(str) {
   if (!str || typeof str !== "string") {
     return true;
@@ -8323,7 +8323,7 @@ var InvisibleCharacters = class _InvisibleCharacters {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model.js
 var OverviewRulerLane2;
 (function(OverviewRulerLane3) {
   OverviewRulerLane3[OverviewRulerLane3["Left"] = 1] = "Left";
@@ -8430,7 +8430,7 @@ function shouldSynchronizeModel(model) {
   return !model.isTooLargeForSyncing() && !model.isForSimpleWidget;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/color.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/color.js
 function roundFloat(number, decimalPoints) {
   const decimal = Math.pow(10, decimalPoints);
   return Math.round(number * decimal) / decimal;
@@ -9243,7 +9243,7 @@ var Color = class _Color {
   })(Color2.Format || (Color2.Format = {}));
 })(Color || (Color = {}));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/diff/diffChange.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/diff/diffChange.js
 var DiffChange = class {
   /**
    * Constructs a new DiffChange with the given sequence information
@@ -9269,7 +9269,7 @@ var DiffChange = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/buffer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/buffer.js
 var hasBuffer = typeof Buffer !== "undefined";
 new Lazy(() => new Uint8Array(256));
 var textDecoder;
@@ -9337,7 +9337,7 @@ function encodeHex({ buffer }) {
   return result;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/hash.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/hash.js
 function hash(obj) {
   return doHash(obj, 0);
 }
@@ -9565,7 +9565,7 @@ var StringSHA1 = class _StringSHA1 {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/diff/diff.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/diff/diff.js
 var StringDiffSequence = class {
   constructor(source) {
     this.source = source;
@@ -10302,7 +10302,7 @@ var LcsDiff = class _LcsDiff {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/uint.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/uint.js
 function toUint8(v) {
   if (v < 0) {
     return 0;
@@ -10322,7 +10322,7 @@ function toUint32(v) {
   return v | 0;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/characterClassifier.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/characterClassifier.js
 var CharacterClassifier = class _CharacterClassifier {
   constructor(_defaultValue) {
     const defaultValue = toUint8(_defaultValue);
@@ -10356,7 +10356,7 @@ var CharacterClassifier = class _CharacterClassifier {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/linkComputer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/linkComputer.js
 var Uint8Matrix = class {
   constructor(rows, cols, defaultValue) {
     const data = new Uint8Array(rows * cols);
@@ -10718,7 +10718,7 @@ function computeLinks(model) {
   return LinkComputer.computeLinks(model);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/supports/inplaceReplaceSupport.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/supports/inplaceReplaceSupport.js
 var BasicInplaceReplace = class _BasicInplaceReplace {
   constructor() {
     this._defaultValueSet = [
@@ -10799,7 +10799,7 @@ var BasicInplaceReplace = class _BasicInplaceReplace {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/date.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/date.js
 var safeIntl = {
   DateTimeFormat(locales, options) {
     return new Lazy(() => {
@@ -10848,7 +10848,7 @@ var safeIntl = {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/map.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/map.js
 var _a;
 var _b;
 var _c;
@@ -11493,7 +11493,7 @@ var NKeyMap = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/wordCharacterClassifier.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/wordCharacterClassifier.js
 var WordCharacterClassifier = class extends CharacterClassifier {
   constructor(wordSeparators, intlSegmenterLocales) {
     super(
@@ -11584,7 +11584,7 @@ function getMapForWordSeparators(wordSeparators, intlSegmenterLocales) {
   return result;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/textModelSearch.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/textModelSearch.js
 var LIMIT_FIND_COUNT = 999;
 var SearchParams = class {
   constructor(searchString, isRegex, matchCase, wordSeparators) {
@@ -11994,7 +11994,7 @@ var Searcher = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/unicodeTextModelHighlighter.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/unicodeTextModelHighlighter.js
 var UnicodeTextModelHighlighter = class {
   static computeUnicodeHighlights(model, options, range2) {
     const startLine = range2 ? range2.startLineNumber : 1;
@@ -12170,7 +12170,7 @@ function isAllowedInvisibleCharacter(character) {
   return character === " " || character === "\n" || character === "	";
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/linesDiffComputer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/linesDiffComputer.js
 var LinesDiff = class {
   constructor(changes, moves, hitTimeout) {
     this.changes = changes;
@@ -12185,7 +12185,7 @@ var MovedText = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/ranges/offsetRange.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/ranges/offsetRange.js
 var OffsetRange = class _OffsetRange {
   static fromTo(start, endExclusive) {
     return new _OffsetRange(start, endExclusive);
@@ -12410,7 +12410,7 @@ var OffsetRangeSet = class _OffsetRangeSet {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/arraysFind.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/arraysFind.js
 function findLast(array, predicate, fromIndex = array.length - 1) {
   const idx = findLastIdx(array, predicate, fromIndex);
   if (idx === -1) {
@@ -12532,7 +12532,7 @@ function findMaxIdx(array, comparator) {
   return maxIdx;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/ranges/lineRange.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/ranges/lineRange.js
 var LineRange = class _LineRange {
   static ofLength(startLineNumber, length) {
     return new _LineRange(startLineNumber, startLineNumber + length);
@@ -12809,7 +12809,7 @@ var LineRangeSet = class _LineRangeSet {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/text/textLength.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/text/textLength.js
 var TextLength = class _TextLength {
   static {
     this.zero = new _TextLength(0, 0);
@@ -12882,7 +12882,7 @@ var TextLength = class _TextLength {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/text/positionToOffsetImpl.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/text/positionToOffsetImpl.js
 var PositionOffsetTransformerBase = class {
   getOffsetRange(range2) {
     return new OffsetRange(this.getOffset(range2.getStartPosition()), this.getOffset(range2.getEndPosition()));
@@ -12985,7 +12985,7 @@ var PositionOffsetTransformer = class extends PositionOffsetTransformerBase {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/text/abstractText.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/text/abstractText.js
 var AbstractText = class {
   constructor() {
     this._transformer = void 0;
@@ -13064,7 +13064,7 @@ var StringText = class extends AbstractText {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/edits/textEdit.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/edits/textEdit.js
 var TextEdit = class _TextEdit {
   static fromStringEdit(edit, initialState) {
     const edits = edit.replacements.map((e) => TextReplacement.fromStringReplacement(e, initialState));
@@ -13307,7 +13307,7 @@ function rangeFromPositions(start, end) {
   return new Range(start.lineNumber, start.column, end.lineNumber, end.column);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/rangeMapping.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/rangeMapping.js
 var LineRangeMapping = class _LineRangeMapping {
   static inverse(mapping, originalLineCount, modifiedLineCount) {
     const result = [];
@@ -13489,7 +13489,7 @@ function getLineRangeMapping(rangeMapping, originalLines, modifiedLines) {
   return new DetailedLineRangeMapping(originalLineRange, modifiedLineRange, [rangeMapping]);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/legacyLinesDiffComputer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/legacyLinesDiffComputer.js
 var MINIMUM_MATCHING_CHARACTER_LENGTH = 3;
 var LegacyLinesDiffComputer = class {
   computeDiff(originalLines, modifiedLines, options) {
@@ -13908,7 +13908,7 @@ function createContinueProcessingPredicate(maximumRuntime) {
   };
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/algorithms/diffAlgorithm.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/algorithms/diffAlgorithm.js
 var DiffAlgorithmResult = class _DiffAlgorithmResult {
   static trivial(seq1, seq2) {
     return new _DiffAlgorithmResult([new SequenceDiff(OffsetRange.ofLength(seq1.length), OffsetRange.ofLength(seq2.length))], false);
@@ -14040,7 +14040,7 @@ var DateTimeout = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/utils.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/utils.js
 var Array2D = class {
   constructor(width, height) {
     this.width = width;
@@ -14100,7 +14100,7 @@ var LineRangeFragment = class _LineRangeFragment {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/algorithms/dynamicProgrammingDiffing.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/algorithms/dynamicProgrammingDiffing.js
 var DynamicProgrammingDiffing = class {
   compute(sequence1, sequence2, timeout2 = InfiniteTimeout.instance, equalityScore) {
     if (sequence1.length === 0 || sequence2.length === 0) {
@@ -14176,7 +14176,7 @@ var DynamicProgrammingDiffing = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/algorithms/myersDiffAlgorithm.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/algorithms/myersDiffAlgorithm.js
 var MyersDiffAlgorithm = class {
   compute(seq1, seq2, timeout2 = InfiniteTimeout.instance) {
     if (seq1.length === 0 || seq2.length === 0) {
@@ -14305,7 +14305,7 @@ var FastArrayNegativeIndices = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/linesSliceCharSequence.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/linesSliceCharSequence.js
 var LinesSliceCharSequence = class {
   constructor(lines, range2, considerWhitespaceChanges) {
     this.lines = lines;
@@ -14508,7 +14508,7 @@ function getCategory(charCode) {
   }
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/computeMovedLines.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/computeMovedLines.js
 function computeMovedLines(changes, originalLines, modifiedLines, hashedOriginalLines, hashedModifiedLines, timeout2) {
   let { moves, excludedChanges } = computeMovesFromSimpleDeletionsToSimpleInsertions(changes, originalLines, modifiedLines, timeout2);
   if (!timeout2.isValid()) {
@@ -14734,7 +14734,7 @@ function removeMovesInSameDiff(changes, moves) {
   return moves;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/heuristicSequenceOptimizations.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/heuristicSequenceOptimizations.js
 function optimizeSequenceDiffs(sequence1, sequence2, sequenceDiffs) {
   let result = sequenceDiffs;
   result = joinSequenceDiffsByShifting(sequence1, sequence2, result);
@@ -15044,7 +15044,7 @@ function removeVeryShortMatchingTextBetweenLongDiffs(sequence1, sequence2, seque
   return newDiffs;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/lineSequence.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/lineSequence.js
 var LineSequence2 = class {
   constructor(trimmedHash, lines) {
     this.trimmedHash = trimmedHash;
@@ -15076,7 +15076,7 @@ function getIndentation(str) {
   return i;
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/defaultLinesDiffComputer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/defaultLinesDiffComputer/defaultLinesDiffComputer.js
 var DefaultLinesDiffComputer = class {
   constructor() {
     this.dynamicProgrammingDiffing = new DynamicProgrammingDiffing();
@@ -15233,7 +15233,7 @@ function toLineRangeMapping(sequenceDiff) {
   return new LineRangeMapping(new LineRange(sequenceDiff.seq1Range.start + 1, sequenceDiff.seq1Range.endExclusive + 1), new LineRange(sequenceDiff.seq2Range.start + 1, sequenceDiff.seq2Range.endExclusive + 1));
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/network.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/network.js
 var Schemas;
 (function(Schemas2) {
   Schemas2.inMemory = "inmemory";
@@ -15440,7 +15440,7 @@ var COI;
   COI2.addSearchParam = addSearchParam;
 })(COI || (COI = {}));
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/amdX.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/amdX.js
 function resolveAmdNodeModulePath(nodeModuleName, pathInsideNodeModule) {
   const product = globalThis._VSCODE_PRODUCT_JSON;
   Boolean((product ?? globalThis.vscode?.context?.configuration()?.product)?.commit);
@@ -15450,7 +15450,7 @@ function resolveAmdNodeModulePath(nodeModuleName, pathInsideNodeModule) {
   return FileAccess.asBrowserUri(resourcePath).toString(true);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/edits/edit.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/edits/edit.js
 var BaseEdit = class {
   constructor(replacements) {
     this.replacements = replacements;
@@ -15639,7 +15639,7 @@ var BaseReplacement = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/edits/stringEdit.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/edits/stringEdit.js
 var BaseStringEdit = class extends BaseEdit {
   apply(base) {
     const resultText = [];
@@ -15754,7 +15754,7 @@ var StringReplacement = class _StringReplacement extends BaseStringReplacement {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/text/positionToOffset.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/core/text/positionToOffset.js
 _setPositionOffsetTransformerDependencies({
   StringEdit,
   StringReplacement,
@@ -15763,7 +15763,7 @@ _setPositionOffsetTransformerDependencies({
   TextLength
 });
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/externalLinesDiffComputer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/externalLinesDiffComputer.js
 var externalModulePromise;
 var externalDiffComputerPromise;
 var externalWasmDiffComputerPromise;
@@ -15839,7 +15839,7 @@ var ExternalLinesDiffComputer = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/linesDiffComputers.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/diff/linesDiffComputers.js
 var linesDiffComputers = {
   getLegacy: () => new LegacyLinesDiffComputer(),
   getDefault: () => new DefaultLinesDiffComputer(),
@@ -15847,7 +15847,7 @@ var linesDiffComputers = {
   getAdvancedWasm: () => getExternalLinesDiffComputer(true)
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/defaultDocumentColorsComputer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/languages/defaultDocumentColorsComputer.js
 function _parseCaptureGroups(captureGroups) {
   const values = [];
   for (const captureGroup of captureGroups) {
@@ -15968,7 +15968,7 @@ function computeDefaultDocumentColors(model) {
   return computeColors(model);
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/findSectionHeaders.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/findSectionHeaders.js
 var trimDashesRegex = /^-+|-+$/g;
 var CHUNK_SIZE = 100;
 var MAX_SECTION_LINES = 5;
@@ -16068,10 +16068,10 @@ function getHeaderText(text) {
   return { text, hasSeparatorLine };
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/symbols.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/symbols.js
 var MicrotaskDelay = /* @__PURE__ */ Symbol("MicrotaskDelay");
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/async.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/async.js
 function isThenable(obj) {
   return !!obj && typeof obj.then === "function";
 }
@@ -16806,7 +16806,7 @@ var AsyncIterableProducer = class _AsyncIterableProducer {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/prefixSumComputer.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/prefixSumComputer.js
 var PrefixSumComputer = class {
   constructor(values) {
     this.values = values;
@@ -17019,7 +17019,7 @@ var PrefixSumIndexOfResult = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/mirrorTextModel.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/model/mirrorTextModel.js
 var MirrorTextModel = class {
   constructor(uri, lines, eol, versionId) {
     this._uri = uri;
@@ -17110,7 +17110,7 @@ var MirrorTextModel = class {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/textModelSync/textModelSync.impl.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/textModelSync/textModelSync.impl.js
 var STOP_SYNC_MODEL_DELTA_TIME_MS = 60 * 1e3;
 var WorkerTextModelSyncClient = class extends Disposable {
   constructor(proxy, modelService, keepIdleModels = false) {
@@ -17391,7 +17391,7 @@ var MirrorModel = class extends MirrorTextModel {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/editorWebWorker.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/editorWebWorker.js
 var EditorWorker = class _EditorWorker {
   constructor(_foreignModule = null) {
     this._foreignModule = _foreignModule;
@@ -17675,7 +17675,7 @@ function resolveLinesDiffComputer(algorithm) {
   }
 }
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/editorWorkerHost.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/editor/common/services/editorWorkerHost.js
 var EditorWorkerHost = class _EditorWorkerHost {
   static {
     this.CHANNEL_NAME = "editorWorkerHost";
@@ -17688,7 +17688,7 @@ var EditorWorkerHost = class _EditorWorkerHost {
   }
 };
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/worker/webWorker.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/base/common/worker/webWorker.js
 var DEFAULT_CHANNEL = "default";
 var INITIALIZE = "$initialize";
 var webWorkerWarningLogged = false;

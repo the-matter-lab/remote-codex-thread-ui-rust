@@ -126,6 +126,40 @@ describe('ThreadWorkspaceLayout', () => {
     ).toBeTruthy();
   });
 
+  it('keeps host navigation in the sidebar and supplies its collapsed state', () => {
+    const element = render(
+      <ThreadWorkspaceLayout threads={[]} navigationTitle="ElAgente"
+        renderNavigationHeader={({collapsed}) => <nav aria-label="Agents">{collapsed ? 'G' : 'Grafico'}</nav>}>
+        <div>Chat</div>
+      </ThreadWorkspaceLayout>,
+    );
+    expect(element.querySelector('.thread-topbar-row [aria-label="Agents"]')).toBeNull();
+    expect(element.querySelector('[aria-label="Agents"]')?.textContent).toBe('Grafico');
+    flushSync(() => element.querySelector<HTMLButtonElement>('[aria-label="Collapse rooms"]')!.click());
+    expect(element.querySelector('[aria-label="Agents"]')?.textContent).toBe('G');
+  });
+
+  it('lets host navigation close the mobile drawer', () => {
+    mockViewport(true);
+    const selectAgent = vi.fn();
+    const element = render(
+      <ThreadWorkspaceLayout threads={[]} renderNavigationHeader={({closeNavigation}) => (
+        <button onClick={() => {selectAgent(); closeNavigation();}}>Choose Grafico</button>
+      )}><div>Chat</div></ThreadWorkspaceLayout>,
+    );
+    const open = element.querySelector<HTMLButtonElement>('[aria-label="Open rooms"]')!;
+    expect(element.querySelector('aside')?.hasAttribute('inert')).toBe(true);
+    open.focus();
+    flushSync(() => open.click());
+    expect(element.querySelector('aside')?.hasAttribute('inert')).toBe(false);
+    expect(document.activeElement?.getAttribute('aria-label')).toBe('Close rooms');
+    const agent = Array.from(element.querySelectorAll('button')).find(button => button.textContent === 'Choose Grafico')!;
+    flushSync(() => agent.click());
+    expect(selectAgent).toHaveBeenCalledOnce();
+    expect(open.getAttribute('aria-expanded')).toBe('false');
+    expect(document.activeElement).toBe(open);
+  });
+
   it('reveals the desktop workspace when a file focus request arrives', async () => {
     const status = {
       state: 'ready' as const,

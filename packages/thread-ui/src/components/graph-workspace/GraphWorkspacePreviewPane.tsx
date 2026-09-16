@@ -687,7 +687,7 @@ export function GraphWorkspacePreviewPane({
             <GraphMoleculeViewer
               source={moleculeSnapshot}
               moleculeId={moleculeSnapshot.uuid ?? selectedTarget.node.path}
-              title="PyMOL-style (PDB/CIF)"
+              title={selectedTarget.node.name}
             />
           </div>
         ) : selectedTarget.kind === 'workspace-file' && imageUrl ? (

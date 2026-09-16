@@ -1,4 +1,4 @@
-export const agentBackendIds = ['codex', 'claude', 'opencode'] as const;
+export const agentBackendIds = ['codex', 'claude', 'opencode', 'elagente'] as const;
 
 export type AgentBackendIdDto = (typeof agentBackendIds)[number];
 
@@ -15,6 +15,15 @@ export interface AgentBackendMetadata {
 }
 
 export const agentBackendMetadata: Record<AgentBackendIdDto, AgentBackendMetadata> = {
+  elagente: {
+    displayName: 'ElAgente',
+    description: 'ElAgente app-server with native scientific runtimes.',
+    defaultTransport: 'stdio',
+    homeEnvVar: 'ELAGENTE_STATE_DIR',
+    commandEnvVar: 'ELAGENTE_APP_COMMAND',
+    defaultHomeDir: '.elagente',
+    defaultCommand: '',
+  },
   codex: {
     displayName: 'Codex',
     description: 'Local Codex app-server runtime.',

@@ -1,7 +1,16 @@
 // src/agent-providers.ts
-var agentBackendIds = ["codex", "claude", "opencode"];
+var agentBackendIds = ["codex", "claude", "opencode", "elagente"];
 var defaultAgentBackendId = "codex";
 var agentBackendMetadata = {
+  elagente: {
+    displayName: "ElAgente",
+    description: "ElAgente app-server with native scientific runtimes.",
+    defaultTransport: "stdio",
+    homeEnvVar: "ELAGENTE_STATE_DIR",
+    commandEnvVar: "ELAGENTE_APP_COMMAND",
+    defaultHomeDir: ".elagente",
+    defaultCommand: ""
+  },
   codex: {
     displayName: "Codex",
     description: "Local Codex app-server runtime.",

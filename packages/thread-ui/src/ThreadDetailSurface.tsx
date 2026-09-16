@@ -168,6 +168,8 @@ export interface ThreadDetailSurfaceProps {
   mobileHeaderAction?: ReactNode;
   appMenuButton?: ReactNode;
   appNavigationMenu?: ReactNode;
+  navigationTitle?: string;
+  renderNavigationHeader?: (input: { collapsed: boolean; closeNavigation: () => void }) => ReactNode;
   workspaceReturnHref?: string;
   onWorkspaceReturn?: () => void;
   threadActionsButton?: ReactNode;
@@ -188,6 +190,7 @@ export interface ThreadDetailSurfaceProps {
   workspaceMissingContent?: ReactNode;
   dialogs?: ReactNode;
   currentThreadId?: string;
+  /** null shows all supplied navigation threads, regardless of their file workspace. */
   currentWorkspaceId?: string | null;
   currentWorkspaceLabel?: string | null;
   onCloseAppNavigation?: () => void;
@@ -244,6 +247,8 @@ export function ThreadDetailSurface({
   mobileHeaderAction,
   appMenuButton,
   appNavigationMenu,
+  navigationTitle,
+  renderNavigationHeader,
   workspaceReturnHref,
   onWorkspaceReturn,
   threadActionsButton,
@@ -494,7 +499,7 @@ export function ThreadDetailSurface({
       viewportConstrained
       currentThreadId={currentThreadId ?? detail?.thread.id}
       currentThreadLabel={detail?.thread.title}
-      currentWorkspaceId={currentWorkspaceId ?? detail?.thread.workspaceId}
+      currentWorkspaceId={currentWorkspaceId !== undefined ? currentWorkspaceId : detail?.thread.workspaceId}
       currentWorkspaceLabel={currentWorkspaceLabel ?? detail?.workspace.label}
       harnessLabel={composerProps?.agentLabel}
       sessionLabel={detail?.thread.providerSessionId ?? detail?.thread.id}
@@ -511,6 +516,8 @@ export function ThreadDetailSurface({
       themeMode={shellThemeMode}
       appMenuButton={appMenuButton}
       appNavigationMenu={appNavigationMenu}
+      {...(navigationTitle ? { navigationTitle } : {})}
+      {...(renderNavigationHeader ? { renderNavigationHeader } : {})}
       workspaceReturnHref={workspaceReturnHref}
       {...(onWorkspaceReturn ? { onWorkspaceReturn } : {})}
       showMobileAppMenu={Boolean(appMenuButton)}

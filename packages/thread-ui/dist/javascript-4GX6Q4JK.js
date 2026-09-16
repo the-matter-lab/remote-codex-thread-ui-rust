@@ -1,12 +1,12 @@
 import {
   conf,
   language
-} from "./chunk-VBC7CVAO.js";
-import "./chunk-M7OM543P.js";
+} from "./chunk-ML7OERYK.js";
+import "./chunk-JXQIYSAV.js";
 import "./chunk-7O5E2ZHX.js";
-import "./chunk-NDPKTSNE.js";
+import "./chunk-SSOM5P4O.js";
 
-// ../../../../remoteCodex-thread-messaging/remote-codex-thread-ui/node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/languages/definitions/javascript/javascript.js
+// ../../node_modules/.pnpm/monaco-editor@0.56.0/node_modules/monaco-editor/esm/vs/languages/definitions/javascript/javascript.js
 var conf2 = conf;
 var language2 = {
   // Set defaultToken to invalid to see what you do not tokenize yet

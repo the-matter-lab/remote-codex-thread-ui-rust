@@ -1062,6 +1062,7 @@ export const GraphChatArtifactHistoryItem = memo(
     item,
     onSelect,
     timeMeta,
+    presentation = 'activity',
   }: {
     item: ThreadHistoryItemDto & { kind: 'artifact' };
     onSelect?: (
@@ -1069,10 +1070,13 @@ export const GraphChatArtifactHistoryItem = memo(
       artifact: NonNullable<ThreadHistoryItemDto['artifact']>,
     ) => void;
     timeMeta?: ReactNode;
+    presentation?: 'activity' | 'output';
   }) {
     const plugins = usePlugins();
-    const [expanded, setExpanded] = useState(false);
     const artifact = item.artifact;
+    const [expanded, setExpanded] = useState(
+      () => presentation === 'output' && Boolean(artifact && plugins.hasRendererForArtifact(artifact)),
+    );
     const rendered = artifact
       ? plugins.renderArtifact({
           artifact,

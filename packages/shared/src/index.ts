@@ -399,6 +399,7 @@ export interface ThreadHistoryItemDto {
   transcriptOrder?: number | null;
   sourceTurnId?: string | null;
   createdAt?: string | null;
+  updatedAt?: string | null;
   status?: string | null;
   assetPath?: string | null;
   changedFiles?: number | null;

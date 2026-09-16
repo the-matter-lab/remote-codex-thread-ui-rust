@@ -5,6 +5,10 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
+    "./scientific-viewer": {
+      "types": "./dist/scientific-viewer.d.ts",
+      "import": "./dist/scientific-viewer.js"
+    },
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"

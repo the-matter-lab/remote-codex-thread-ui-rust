@@ -9,6 +9,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { ThreadTurnDto } from '@remote-codex/shared';
 
 import { ThreadTimeline } from './ThreadTimeline';
+import { createDefaultPluginContextValue, PluginContext } from '../plugins/plugin-context';
 import {
   formatPreciseMessageTimestamp,
   formatShortTimestamp,
@@ -50,6 +51,61 @@ function completedTurn(items: ThreadTurnDto['items']): ThreadTurnDto {
 }
 
 describe('ThreadTimeline', () => {
+  it.each(['completed', 'inProgress', 'failed'] as const)(
+    'keeps rendered artifacts below the reply and mounted while toggling %s work',
+    (status) => {
+      const plugins = {
+        ...createDefaultPluginContextValue(),
+        hasRendererForArtifact: () => true,
+        renderArtifact: () => <div data-testid="structure-view">Interactive structure</div>,
+      };
+      const turn = {
+        ...completedTurn([
+          {id: 'prompt', kind: 'userMessage', text: 'Show the molecule'},
+          {id: 'tool', kind: 'commandExecution', text: 'generate_structure', status: 'completed'},
+          // Native streams may publish an artifact either before or after the answer.
+          {id: 'structure', kind: 'artifact', text: 'water.xyz', artifact: {
+            id: 'water', type: 'chem.structure', pluginId: 'xyz', title: 'water.xyz',
+            createdAt: '2026-07-03T20:11:00.000Z', payload: {},
+          }},
+          {id: 'answer', kind: 'agentMessage', text: 'Here is your molecule.'},
+        ]),
+        status,
+      };
+      const element = render(
+        <PluginContext.Provider value={plugins}>
+          <ThreadTimeline autoCollapseCompletedTurns liveOutput="" turns={[turn]} />
+        </PluginContext.Provider>,
+      );
+      const viewer = element.querySelector('[data-testid="structure-view"]');
+      expect(viewer).not.toBeNull();
+      expect(element.textContent!.indexOf('Here is your molecule.')).toBeLessThan(
+        element.textContent!.indexOf('Interactive structure'),
+      );
+      expect(viewer?.closest('.thread-graph-turn-collapsed-summary')).toBeNull();
+      const toggle = element.querySelector<HTMLButtonElement>('[aria-label*="turn 1"]')!;
+      expect(toggle.getAttribute('aria-expanded')).toBe(status === 'inProgress' ? 'true' : 'false');
+      flushSync(() => toggle.click());
+      expect(element.querySelector('[data-testid="structure-view"]')).toBe(viewer);
+      expect(element.querySelectorAll('[data-testid="structure-view"]')).toHaveLength(1);
+      flushSync(() => toggle.click());
+      expect(element.querySelector('[data-testid="structure-view"]')).toBe(viewer);
+    },
+  );
+
+  it('shows an artifact without a final reply and keeps unknown payloads inspectable', () => {
+    const element = render(<ThreadTimeline autoCollapseCompletedTurns liveOutput="" turns={[
+      completedTurn([{id: 'unknown', kind: 'artifact', text: 'Result', artifact: {
+        id: 'result', type: 'custom.result', pluginId: 'custom', title: 'Result',
+        createdAt: '2026-07-03T20:11:00.000Z', payload: {result: 'retained payload'},
+      }}]),
+    ]} />);
+    expect(element.querySelector('[aria-label="Agent artifacts"]')?.textContent).toContain('No renderer');
+    expect(element.textContent).not.toContain('retained payload');
+    flushSync(() => element.querySelector<HTMLButtonElement>('[aria-label="Expand artifact Result"]')!.click());
+    expect(element.textContent).toContain('retained payload');
+  });
+
   it('lazy-loads a complete collapsed turn and keeps Worked below the user message', async () => {
     let resolveTurn!: (turn: ThreadTurnDto) => void;
     const onLoadTurnDetail = vi.fn(
