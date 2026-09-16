@@ -4,6 +4,20 @@ Standalone workspace for the Remote Codex thread surface, app shell, built-in UI
 
 The shared packages remain UI-only. Runtime integrations translate provider events into the shared thread DTOs consumed by `@remote-codex/thread-ui`. The Treer recipe is a separate app boundary that hosts an ACP runtime and exposes the same surface through `treer.agent-interface/v1`.
 
+## ElAgente validation fork
+
+The `app-server/elagente-validation` branch in
+[`the-matter-lab/remote-codex-thread-ui-rust`](https://github.com/the-matter-lab/remote-codex-thread-ui-rust/tree/app-server/elagente-validation)
+contains the ElAgente app-server host, shared sidebar extensions and inline
+scientific artifacts. Upstream remains
+[`dufangshi/remote-codex-thread-ui-rust`](https://github.com/dufangshi/remote-codex-thread-ui-rust).
+Despite the repository name, this workspace uses React and TypeScript.
+
+See the [ElAgente host runbook](apps/elagente-web/README.md) and
+[XYZ plugin contract](packages/plugin-xyz/README.md). Agent scientific runtimes
+and the app-server backend remain in their respective repositories. This branch
+validates local integration; it is not a hosted production release.
+
 ## Packages
 
 - `@remote-codex/thread-ui`: React thread/chat/artifact/settings surface.

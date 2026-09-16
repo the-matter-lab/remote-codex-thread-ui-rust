@@ -1,0 +1,8 @@
+{
+  "name": "@elagente/plugin-xyz",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {".": "./src/index.tsx"},
+  "dependencies": {"@remote-codex/shared": "workspace:*", "@remote-codex/thread-ui": "workspace:*", "react": "^19.1.0"}
+}

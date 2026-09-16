@@ -131,6 +131,30 @@ importers:
         specifier: ^6.3.2
         version: 6.4.3(@types/node@22.19.20)(jiti@2.7.0)(lightningcss@1.32.0)(tsx@4.22.4)
 
+  apps/elagente-web:
+    dependencies:
+      '@elagente/plugin-xyz':
+        specifier: workspace:*
+        version: link:../../packages/plugin-xyz
+      '@remote-codex/plugin-runtime':
+        specifier: workspace:*
+        version: link:../../packages/plugin-runtime
+      '@remote-codex/plugin-terminal':
+        specifier: workspace:*
+        version: link:../../packages/plugin-terminal
+      '@remote-codex/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+      '@remote-codex/thread-ui':
+        specifier: workspace:*
+        version: link:../../packages/thread-ui
+      react:
+        specifier: ^19.1.0
+        version: 19.2.7
+      react-dom:
+        specifier: ^19.1.0
+        version: 19.2.7(react@19.2.7)
+
   apps/playground:
     dependencies:
       '@remote-codex/plugin-runtime':
@@ -180,6 +204,18 @@ importers:
       typescript:
         specifier: ^5.8.3
         version: 5.9.3
+
+  packages/plugin-xyz:
+    dependencies:
+      '@remote-codex/shared':
+        specifier: workspace:*
+        version: link:../shared
+      '@remote-codex/thread-ui':
+        specifier: workspace:*
+        version: link:../thread-ui
+      react:
+        specifier: ^19.1.0
+        version: 19.2.7
 
   packages/shared: {}
 

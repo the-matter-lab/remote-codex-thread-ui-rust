@@ -1,0 +1,5 @@
+{
+  "name": "@elagente/web", "version": "0.1.0", "private": true, "type": "module",
+  "scripts": {"build": "vite build", "dev": "vite", "typecheck": "tsc -p tsconfig.json --noEmit"},
+  "dependencies": {"@elagente/plugin-xyz": "workspace:*", "@remote-codex/thread-ui": "workspace:*", "@remote-codex/shared": "workspace:*", "@remote-codex/plugin-runtime": "workspace:*", "@remote-codex/plugin-terminal": "workspace:*", "react": "^19.1.0", "react-dom": "^19.1.0"}
+}

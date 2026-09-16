@@ -1,0 +1,39 @@
+@import 'tailwindcss';
+@import '@remote-codex/thread-ui/styles.css';
+@source '../../../packages/thread-ui/src';
+@source '../../../packages/plugin-xyz/src';
+
+html, body, #root { height: 100%; margin: 0; }
+body { overflow: hidden; background: #161614; color: #e8e7e3; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+.elagente-app { height: 100%; display: flex; flex-direction: column; }
+.row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.welcome button, .interaction button, .interaction input, .executions button { border: 1px solid var(--theme-border); background: var(--theme-surface); padding: 8px 12px; border-radius: 7px; color: var(--theme-fg); font: inherit; font-size: 13px; }
+button:disabled { opacity: .5; }
+.agent-navigation { flex-shrink: 0; padding: 12px; border-bottom: 1px solid var(--theme-border); }
+.agent-navigation-label { margin: 0 8px 8px; font-size: 12px; color: var(--theme-fg-muted); }
+.agent-navigation-item { display: flex; width: 100%; min-height: 48px; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; color: var(--theme-fg-soft); text-align: left; transition: background .15s, color .15s; }
+.agent-navigation-item:hover { background: var(--theme-hover); color: var(--theme-fg); }
+.agent-navigation-item[aria-pressed="true"] { background: var(--theme-accent-soft); color: var(--theme-fg); }
+.agent-navigation-item:focus-visible, .welcome button:focus-visible { outline: 2px solid var(--theme-accent-strong); outline-offset: 2px; }
+.agent-monogram { display: grid; place-items: center; flex-shrink: 0; width: 28px; height: 28px; border: 1px solid var(--theme-border); border-radius: 7px; font-size: 12px; font-weight: 600; }
+.agent-navigation-copy { display: grid; gap: 2px; min-width: 0; }
+.agent-navigation-copy strong { font-size: 13px; font-weight: 500; }
+.agent-navigation-copy > span { font-size: 11px; color: var(--theme-fg-muted); }
+.agent-navigation.is-collapsed { padding: 8px; }
+.agent-navigation.is-collapsed .agent-navigation-item { justify-content: center; padding: 4px; }
+.connection { margin: 12px 8px 0; color: var(--theme-fg-muted); font-size: 11px; }
+.agent-details { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; }
+.agent-details dt { color: var(--theme-fg-muted); }
+.agent-details dd { margin: 0; }
+.elagente-surface { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.welcome { margin: auto; max-width: 600px; padding: 32px 24px; }
+.welcome h1 { font-size: clamp(22px, 2vw, 28px); line-height: 1.3; letter-spacing: -.025em; margin: 16px 0; }
+.welcome p { color: var(--theme-fg-muted); line-height: 1.7; }
+.welcome button { margin-top: 20px; }
+.interaction, .executions { padding: 16px; margin: 12px; border: 1px solid var(--theme-border); border-radius: 8px; background: var(--theme-surface); }
+.interaction form, .interaction .row { margin-top: 12px; }
+.interaction pre { white-space: pre-wrap; font-size: 12px; }
+.xyz-plugin { min-width: 0; width: 100%; }
+.xyz-plugin a { display: inline-block; font-size: 12px; margin: 8px 0; color: var(--theme-accent-strong); }
+.recovery { margin: 0; padding: 12px 20px; color: #f4d492; background: #352c1c; font-size: 13px; }
+@media (prefers-reduced-motion: reduce) { .agent-navigation-item { transition: none; } }
