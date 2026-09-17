@@ -26,6 +26,12 @@ Choose an agent in the left sidebar, then open one of its conversations or use
 drawer. Unsaved composer drafts are retained in memory when changing conversations.
 The standalone host has no per-user identity and is not the hosted product shell.
 
+**Settings → Appearance** offers Light, Dark and Follow system. The host stores
+the preference in this browser, restores it on refresh and follows live OS
+changes in system mode. On mobile, open the navigation drawer to reach Settings.
+The theme state is supplied through the shared surface's existing theme callback;
+it applies to the workspace and portalled settings dialogs together.
+
 XYZ artifacts are visible directly below the reply with **Worked for…** collapsed.
 The artifact view stays mounted when that work disclosure is toggled. The file
 browser remains independently available through **Expand workspace** on desktop

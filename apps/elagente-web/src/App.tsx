@@ -3,6 +3,7 @@ import { PluginProvider, ThreadDetailSurface, type PromptAttachmentUpload, type 
 import { StructureView, xyzPlugin } from '@elagente/plugin-xyz';
 import { artifactUrl, fileUrl, rpc, subscribe, upload, workspace } from './api';
 import { capabilities, project, projectThread, type Agent, type Interaction, type NativeThread, type Snapshot } from './projection';
+import { useTheme } from './theme';
 
 const plugins = [xyzPlugin];
 type Draft = {prompt: string; attachments: PromptAttachmentUpload[]};
@@ -48,6 +49,7 @@ function PendingInteraction({ interaction, threadId, refreshed }: {interaction: 
 }
 
 export function App() {
+  const { themeMode, effectiveTheme, changeThemeMode } = useTheme();
   const [agents, setAgents] = useState<Agent[]>([]);
   const [agentId, setAgentId] = useState('seguro');
   const [threads, setThreads] = useState<NativeThread[]>([]);
@@ -181,7 +183,7 @@ export function App() {
         <ThreadDetailSurface presentation="workspace" threads={threads.filter(value => value.agentId === agentId).map(projectThread)} detail={detail} loading={Boolean(threadId && !snapshot)} error={error}
           adapter={adapter} capabilities={capabilities} currentThreadId={threadId || undefined} currentWorkspaceId={null}
           currentWorkspaceLabel="ElAgente" workspaceFocusPathRequest={focusFile}
-          shellEffectiveTheme="dark" shellThemeMode="dark" timelineProps={{autoCollapseCompletedTurns: true}}
+          shellEffectiveTheme={effectiveTheme} shellThemeMode={themeMode} onShellThemeModeChange={changeThemeMode} timelineProps={{autoCollapseCompletedTurns: true}}
           navigationTitle="ElAgente" onNewThreadTitle={createThread}
           renderNavigationHeader={({collapsed, closeNavigation}) => <nav className={`agent-navigation${collapsed ? ' is-collapsed' : ''}`} aria-label="Agents">
             {!collapsed && <p className="agent-navigation-label">Agents</p>}
