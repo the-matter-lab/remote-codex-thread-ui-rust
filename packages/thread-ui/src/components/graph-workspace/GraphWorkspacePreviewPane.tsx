@@ -432,6 +432,7 @@ export function GraphWorkspacePreviewPane({
     ? plugins.renderArtifact({
         artifact: activeNode.artifact,
         expanded: true,
+        presentation: 'workspace',
         onToggleExpanded: () => undefined,
       })
     : null;

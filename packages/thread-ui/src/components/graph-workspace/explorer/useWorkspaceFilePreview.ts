@@ -6,6 +6,7 @@ import type {
 } from '../../../adapters';
 import {
   IMAGE_EXTENSIONS,
+  MOLECULAR_EXTENSIONS,
   PDF_EXTENSIONS,
   extensionOf,
 } from '../workspaceTree';
@@ -15,6 +16,7 @@ import type { WorkspaceExplorerIdentity } from './useWorkspaceExplorerPersistenc
 import { isBinaryPreview, isDownloadOnlyPath } from './filePreviewPolicy';
 
 const PREVIEW_CHUNK_BYTES = 24_000;
+const MAX_MOLECULAR_PREVIEW_BYTES = 10 * 1024 * 1024;
 
 export function useWorkspaceFilePreview({
   activeNode,
@@ -80,11 +82,32 @@ export function useWorkspaceFilePreview({
           }
           return;
         }
-        const file = await currentAdapter.readFile({
+        let file = await currentAdapter.readFile({
           ...identity,
           path: currentPath,
           limit: PREVIEW_CHUNK_BYTES,
         });
+        // Molecular parsers need complete frames, not a partial text preview.
+        if (MOLECULAR_EXTENSIONS.has(extension)) {
+          while (!cancelled) {
+            if (file.size > MAX_MOLECULAR_PREVIEW_BYTES ||
+                (file.truncated && file.nextOffset >= MAX_MOLECULAR_PREVIEW_BYTES)) {
+              setDownloadOnly(true);
+              return;
+            }
+            if (!file.truncated) break;
+            const chunk = await currentAdapter.readFile({
+              ...identity,
+              path: currentPath,
+              offset: file.nextOffset,
+              limit: Math.min(256 * 1024, MAX_MOLECULAR_PREVIEW_BYTES - file.nextOffset),
+            });
+            if (chunk.nextOffset <= file.nextOffset) {
+              throw new Error('Unable to load the complete molecular file: the read made no progress.');
+            }
+            file = { ...chunk, content: file.content + chunk.content };
+          }
+        }
         if (!cancelled) {
           if (isBinaryPreview(file.content)) setDownloadOnly(true);
           else setPreviewFile(file);

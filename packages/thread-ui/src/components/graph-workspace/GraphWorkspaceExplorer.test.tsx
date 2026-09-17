@@ -22,13 +22,15 @@ vi.mock('./GraphWorkspacePreviewPane', () => ({
     onCollapse,
     onExpandExplorer,
     previewFile,
+    downloadOnly,
   }: {
     focusLine?: number | null;
     onCollapse?: () => void;
     onExpandExplorer?: () => void;
     previewFile?: ThreadWorkspaceFilePreview | null;
+    downloadOnly?: boolean;
   }) => (
-    <div data-testid="preview-file" data-focus-line={focusLine ?? undefined}>
+    <div data-testid="preview-file" data-focus-line={focusLine ?? undefined} data-content={previewFile?.content} data-download-only={downloadOnly}>
       {previewFile?.path ?? 'none'}
       {onCollapse ? (
         <button type="button" aria-label="Hide Editor" onClick={onCollapse} />
@@ -202,6 +204,29 @@ describe('GraphWorkspaceExplorer', () => {
     window.localStorage.clear();
     vi.useRealTimers();
     vi.restoreAllMocks();
+  });
+
+  it('loads all XYZ pages before publishing a molecular preview', async () => {
+    const path = 'trajectory.xyz';
+    const tail = deferred<ThreadWorkspaceFilePreview>();
+    const readFile = vi.fn<ThreadWorkspaceAdapter['readFile']>(async ({offset}) =>
+      offset ? tail.promise : {...filePreview(path), content: 'first frame\n', size: 48_000, truncated: true, nextOffset: 24_000});
+    await renderExplorer({listTree: vi.fn(async () => directory('', [file(path)])), readFile});
+    await vi.waitFor(() => expect(readFile).toHaveBeenCalledTimes(2));
+    expect(readFile.mock.calls[1]?.[0]).toMatchObject({path, offset: 24_000, limit: 256 * 1024});
+    expect(host?.querySelector('[data-testid="preview-file"]')?.getAttribute('data-content')).toBeNull();
+    await act(async () => tail.resolve({...filePreview(path), content: 'last frame\n', size: 48_000, nextOffset: 48_000}));
+    await vi.waitFor(() => expect(host?.querySelector('[data-testid="preview-file"]')?.getAttribute('data-content')).toBe('first frame\nlast frame\n'));
+  });
+
+  it('offers download instead of a partial molecular preview above the size limit', async () => {
+    const path = 'large.xyz';
+    const readFile = vi.fn<ThreadWorkspaceAdapter['readFile']>(async () =>
+      ({...filePreview(path), size: 11 * 1024 * 1024, truncated: true, nextOffset: 24_000}));
+    await renderExplorer({listTree: vi.fn(async () => directory('', [file(path)])), readFile});
+    await vi.waitFor(() => expect(host?.querySelector('[data-testid="preview-file"]')?.getAttribute('data-download-only')).toBe('true'));
+    expect(readFile).toHaveBeenCalledTimes(1);
+    expect(host?.querySelector('[data-testid="preview-file"]')?.getAttribute('data-content')).toBeNull();
   });
 
   it('loads the root, previews the first file, and preserves expanded directories on refresh', async () => {

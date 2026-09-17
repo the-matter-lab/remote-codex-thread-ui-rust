@@ -169,6 +169,7 @@ export const HistoryItemRow = memo(function HistoryItemRow({
   if (item.kind === 'artifact') {
     return (
       <ArtifactHistoryItem
+        {...(adapter?.onOpenWorkspaceFile ? {onOpenWorkspaceFile: adapter.onOpenWorkspaceFile} : {})}
         item={
           item as ThreadHistoryItemDto & {
             kind: 'artifact';
@@ -901,6 +902,7 @@ export const ThreadTurnRow = memo(function ThreadTurnRow({
         <div className="thread-graph-turn-outputs mt-3 space-y-3" role="group" aria-label="Agent artifacts">
           {outputItems.map((item) => (
             <ArtifactHistoryItem
+              {...(adapter?.onOpenWorkspaceFile ? {onOpenWorkspaceFile: adapter.onOpenWorkspaceFile} : {})}
               key={item.id}
               item={item}
               presentation="output"

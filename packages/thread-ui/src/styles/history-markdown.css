@@ -407,27 +407,57 @@
   color: inherit;
 }
 
-.thread-ui-shell .thread-graph-molecule-trajectory input {
-  accent-color: var(--theme-accent-solid);
-}
+/* Chat output grows with its controls so nothing is clipped below the canvas. */
+.thread-ui-shell .thread-graph-molecule-viewer.is-timeline { height: auto; }
+.thread-ui-shell .is-timeline .thread-graph-molecule-body { flex: none; overflow: visible; }
+.thread-ui-shell .is-timeline .thread-graph-molecule-stage { flex: none; height: clamp(240px, 30vw, 360px); }
+.thread-ui-shell .is-timeline .thread-graph-molecule-controls { max-height: none; overflow: visible; }
 
-.thread-ui-shell .thread-graph-molecule-live-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  border: 1px solid var(--theme-border);
-  border-radius: 0.375rem;
-  background: var(--theme-surface);
-  padding: 0.125rem 0.5rem;
-  color: var(--theme-fg-muted);
-  transition:
-    background-color 140ms ease,
-    color 140ms ease;
+.thread-ui-shell .thread-graph-artifact-file-link,
+.thread-ui-shell .thread-graph-molecule-file-link { color: var(--theme-fg); text-decoration: none; }
+.thread-ui-shell .thread-graph-molecule-file-link {
+  display: inline-flex; max-width: 100%; align-items: center; gap: 0.5rem; vertical-align: bottom;
 }
-
-.thread-ui-shell .thread-graph-molecule-live-button:hover {
-  background: var(--theme-hover);
-  color: var(--theme-fg);
+.thread-ui-shell .thread-graph-artifact-file-link:hover,
+.thread-ui-shell .thread-graph-molecule-file-link:hover {
+  color: var(--theme-accent-strong); text-decoration: underline; text-underline-offset: 3px;
+}
+.thread-ui-shell .thread-graph-molecule-playback-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.thread-ui-shell .thread-graph-molecule-play-button {
+  display: inline-flex; height: 2rem; min-width: 4.75rem; align-items: center; justify-content: center;
+  gap: 0.375rem; border: 1px solid var(--theme-border); border-radius: 0.375rem; padding: 0.25rem 0.625rem;
+  background: var(--theme-accent-soft); color: var(--theme-accent-strong); font-size: 0.75rem;
+}
+.thread-ui-shell .thread-graph-molecule-play-button:hover { background: var(--theme-hover); }
+.thread-ui-shell .thread-graph-molecule-frame-count {
+  color: var(--theme-fg-muted); font-size: 0.75rem; font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.thread-ui-shell .thread-graph-molecule-frame-count strong { color: var(--theme-fg); }
+.thread-ui-shell .thread-graph-molecule-frame-buttons { display: inline-flex; gap: 0.125rem; margin-left: auto; }
+.thread-ui-shell .thread-graph-molecule-scrubber {
+  display: block; appearance: none; width: 100%; height: 24px; margin: 0.5rem 0 0; border: 0; border-radius: 3px;
+  background-color: transparent;
+  background-image: linear-gradient(var(--theme-accent-solid), var(--theme-accent-solid));
+  background-repeat: no-repeat; background-position: left center; cursor: pointer;
+}
+.thread-ui-shell .thread-graph-molecule-scrubber::-webkit-slider-runnable-track {
+  height: 6px; border-radius: 3px; background: color-mix(in srgb, var(--theme-fg-muted) 24%, transparent);
+}
+.thread-ui-shell .thread-graph-molecule-scrubber::-moz-range-track {
+  height: 6px; border-radius: 3px; background: color-mix(in srgb, var(--theme-fg-muted) 24%, transparent);
+}
+.thread-ui-shell .thread-graph-molecule-scrubber::-webkit-slider-thumb {
+  appearance: none; width: 16px; height: 16px; margin-top: -5px; border: 2px solid var(--theme-surface);
+  border-radius: 50%; background: var(--theme-accent-solid); box-shadow: 0 0 0 1px var(--theme-accent-solid);
+}
+.thread-ui-shell .thread-graph-molecule-scrubber::-moz-range-thumb {
+  width: 12px; height: 12px; border: 2px solid var(--theme-surface); border-radius: 50%;
+  background: var(--theme-accent-solid); box-shadow: 0 0 0 1px var(--theme-accent-solid);
+}
+.thread-ui-shell .thread-graph-molecule-scrubber:focus-visible,
+.thread-ui-shell .thread-graph-molecule-file-link:focus-visible { outline: 2px solid var(--theme-accent-solid); outline-offset: 3px; }
+.thread-ui-shell .thread-graph-molecule-frame-scale {
+  display: flex; justify-content: space-between; color: var(--theme-fg-muted); font-size: 0.625rem; font-variant-numeric: tabular-nums;
 }
 
 .thread-ui-shell .thread-graph-molecule-camera {

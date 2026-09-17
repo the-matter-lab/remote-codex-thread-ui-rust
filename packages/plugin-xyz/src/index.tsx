@@ -9,13 +9,14 @@ export interface StructureAsset {
   name: string;
 }
 
-export function StructureView({ asset, onReady }: {
+export function StructureView({ asset, onReady, onOpenFile, presentation = 'timeline' }: {
   asset: StructureAsset;
+  presentation?: 'timeline' | 'workspace';
+  onOpenFile?: () => void;
   onReady?: (view: { captureScreenshot: () => string; trajectoryIndex: number }) => void;
 }) {
   const [content, setContent] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [selection, setSelection] = useState<number[]>([]);
   useEffect(() => {
     const controller = new AbortController();
     setContent(null); setError(null);
@@ -35,10 +36,8 @@ export function StructureView({ asset, onReady }: {
   if (content === null) return <p>Loading molecular structure…</p>;
   return <div className="xyz-plugin" data-testid="xyz-plugin">
     <GraphMoleculeViewer source={{content: [content], format: asset.format, uuid: asset.checksum}}
-      moleculeId={asset.name} title={asset.name} className="h-[420px] min-h-[320px]"
-      onReady={onReady} onSelectionChange={value => setSelection(value.atoms)} />
-    {selection.length > 0 && <p className="text-xs">Selected atom serials: {selection.join(', ')}</p>}
-    <a href={asset.url} download={asset.name}>Download published structure</a>
+      moleculeId={asset.name} title={asset.name} presentation={presentation} {...(onOpenFile ? {onOpenFile} : {})}
+      onReady={onReady} />
   </div>;
 }
 
@@ -48,5 +47,5 @@ export const xyzPlugin: FrontendPluginModule = {
     description: 'XYZ and extXYZ structures, trajectories, atom selection and screenshots.', remoteCodex: '*',
     capabilities: {artifactTypes: [{type: 'chem.structure', title: 'Molecular structure', fileExtensions: ['xyz', 'extxyz']}], timelineRenderers: ['chem.structure'], threadPanels: []},
   },
-  renderArtifact: ({artifact}) => <StructureView asset={artifact.payload as StructureAsset} />,
+  renderArtifact: ({artifact, presentation, onOpenFile}) => <StructureView asset={artifact.payload as StructureAsset} {...(presentation ? {presentation} : {})} {...(onOpenFile ? {onOpenFile} : {})} />,
 };

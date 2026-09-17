@@ -431,6 +431,8 @@ export interface ThreadArtifactDto {
   pluginId: string;
   type: string;
   title: string;
+  /** Relative workspace file backing this artifact, when available. */
+  workspacePath?: string;
   summaryText?: string | null;
   payload: unknown;
   assets?: Array<{

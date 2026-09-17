@@ -8,6 +8,8 @@ import type {
 export interface ArtifactRenderContext {
   artifact: ThreadArtifactDto;
   expanded: boolean;
+  presentation?: 'timeline' | 'workspace';
+  onOpenFile?: () => void;
   onToggleExpanded: () => void;
 }
 

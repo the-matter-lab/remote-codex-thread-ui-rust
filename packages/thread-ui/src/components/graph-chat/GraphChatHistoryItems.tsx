@@ -29,6 +29,8 @@ import {
 } from 'lucide-react';
 
 import type { ThreadHistoryItemDto } from '@remote-codex/shared';
+import { WorkspaceFileLink } from '../WorkspaceFileLink';
+import type { ThreadTimelineAdapter } from '../../adapters';
 import { usePlugins } from '../../plugins/usePlugins';
 import {
   GraphChatLinkifiedPlainText,
@@ -1063,6 +1065,7 @@ export const GraphChatArtifactHistoryItem = memo(
     onSelect,
     timeMeta,
     presentation = 'activity',
+    onOpenWorkspaceFile,
   }: {
     item: ThreadHistoryItemDto & { kind: 'artifact' };
     onSelect?: (
@@ -1071,6 +1074,7 @@ export const GraphChatArtifactHistoryItem = memo(
     ) => void;
     timeMeta?: ReactNode;
     presentation?: 'activity' | 'output';
+    onOpenWorkspaceFile?: ThreadTimelineAdapter['onOpenWorkspaceFile'];
   }) {
     const plugins = usePlugins();
     const artifact = item.artifact;
@@ -1081,6 +1085,8 @@ export const GraphChatArtifactHistoryItem = memo(
       ? plugins.renderArtifact({
           artifact,
           expanded,
+          presentation: 'timeline',
+          ...(artifact.workspacePath && onOpenWorkspaceFile ? {onOpenFile: () => onOpenWorkspaceFile({path: artifact.workspacePath!})} : {}),
           onToggleExpanded: () => setExpanded((current) => !current),
         })
       : null;
@@ -1109,27 +1115,21 @@ export const GraphChatArtifactHistoryItem = memo(
         }
         className="thread-graph-event-artifact"
         headerMeta={
-          <button
-            type="button"
-            aria-expanded={expanded}
-            aria-label={`${expanded ? 'Collapse' : 'Expand'} artifact ${artifact?.title ?? item.text}`}
-            onClick={() => setExpanded((current) => !current)}
-            className="thread-graph-artifact-inline-toggle flex min-w-0 flex-1 items-center gap-2 text-left"
-          >
-            <span className="thread-graph-history-detail-text min-w-0 truncate text-sm">
-              {artifact?.title ?? item.text}
-            </span>
-            <span className="thread-graph-history-event-secondary min-w-0 truncate">
-              {artifact?.summaryText ?? item.previewText ?? artifact?.type ?? ''}
-            </span>
-            <span className="thread-graph-history-group-chevron inline-flex shrink-0" aria-hidden="true">
-              {expanded ? (
-                <ChevronDown className="h-3.5 w-3.5" />
-              ) : (
-                <ChevronRight className="h-3.5 w-3.5" />
-              )}
-            </span>
-          </button>
+          <div className="flex min-w-0 flex-1 items-center gap-2">
+            {artifact?.workspacePath && onOpenWorkspaceFile ? (
+              <WorkspaceFileLink path={artifact.workspacePath} onOpen={onOpenWorkspaceFile}
+                className="thread-graph-artifact-file-link min-w-0 truncate text-sm">
+                {artifact.title}
+              </WorkspaceFileLink>
+            ) : <span className="thread-graph-history-detail-text min-w-0 truncate text-sm">{artifact?.title ?? item.text}</span>}
+            <span className="thread-graph-history-event-secondary min-w-0 truncate">{artifact?.summaryText ?? item.previewText ?? artifact?.type ?? ''}</span>
+            <button type="button" aria-expanded={expanded}
+              aria-label={`${expanded ? 'Collapse' : 'Expand'} artifact ${artifact?.title ?? item.text}`}
+              onClick={() => setExpanded(current => !current)}
+              className="thread-graph-artifact-inline-toggle inline-flex shrink-0 items-center justify-center p-2">
+              {expanded ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+            </button>
+          </div>
         }
         icon={<PackageOpen className="h-4 w-4" />}
         item={item}

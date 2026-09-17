@@ -13,7 +13,7 @@ import {
 } from "./chunk-MJXXSQ3O.js";
 import {
   GraphMoleculeViewer
-} from "./chunk-X4YHTK2Q.js";
+} from "./chunk-P5VNU6PI.js";
 import "./chunk-TZBWAOOO.js";
 
 // src/components/ThreadGraphWorkspacePanel.tsx
@@ -1226,6 +1226,7 @@ function isBinaryPreview(content) {
 
 // src/components/graph-workspace/explorer/useWorkspaceFilePreview.ts
 var PREVIEW_CHUNK_BYTES = 24e3;
+var MAX_MOLECULAR_PREVIEW_BYTES = 10 * 1024 * 1024;
 function useWorkspaceFilePreview({
   activeNode,
   adapter,
@@ -1281,11 +1282,30 @@ function useWorkspaceFilePreview({
           }
           return;
         }
-        const file = await currentAdapter.readFile({
+        let file = await currentAdapter.readFile({
           ...identity,
           path: currentPath,
           limit: PREVIEW_CHUNK_BYTES
         });
+        if (MOLECULAR_EXTENSIONS.has(extension)) {
+          while (!cancelled) {
+            if (file.size > MAX_MOLECULAR_PREVIEW_BYTES || file.truncated && file.nextOffset >= MAX_MOLECULAR_PREVIEW_BYTES) {
+              setDownloadOnly(true);
+              return;
+            }
+            if (!file.truncated) break;
+            const chunk = await currentAdapter.readFile({
+              ...identity,
+              path: currentPath,
+              offset: file.nextOffset,
+              limit: Math.min(256 * 1024, MAX_MOLECULAR_PREVIEW_BYTES - file.nextOffset)
+            });
+            if (chunk.nextOffset <= file.nextOffset) {
+              throw new Error("Unable to load the complete molecular file: the read made no progress.");
+            }
+            file = { ...chunk, content: file.content + chunk.content };
+          }
+        }
         if (!cancelled) {
           if (isBinaryPreview(file.content)) setDownloadOnly(true);
           else setPreviewFile(file);
@@ -2777,6 +2797,7 @@ function GraphWorkspacePreviewPane({
   const renderedArtifact = activeNode?.artifact ? plugins.renderArtifact({
     artifact: activeNode.artifact,
     expanded: true,
+    presentation: "workspace",
     onToggleExpanded: () => void 0
   }) : null;
   const moleculeSnapshot = buildMoleculePreviewSnapshot(previewFile ?? null);

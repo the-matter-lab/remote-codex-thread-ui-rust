@@ -76,8 +76,8 @@ function readGraphMoleculeViewerData(source) {
 }
 
 // src/components/graph-workspace/GraphMoleculeViewer.tsx
-import { Pause, Play } from "lucide-react";
-import { useCallback, useEffect, useMemo as useMemo2, useRef, useState } from "react";
+import { Pause, Play, SkipBack, SkipForward, ChevronLeft, ChevronRight, PanelRightOpen } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 // src/components/graph-workspace/GraphMoleculeViewerLowerButtonGroup.tsx
 import {
@@ -519,65 +519,8 @@ async function load3Dmol() {
   return threeDmolPromise;
 }
 
-// src/components/graph-ui/Slider.tsx
-import * as SliderPrimitive from "@radix-ui/react-slider";
-import { useMemo } from "react";
-import { jsx as jsx6, jsxs as jsxs4 } from "react/jsx-runtime";
-function Slider({
-  className,
-  defaultValue,
-  max = 100,
-  min = 0,
-  value,
-  ...props
-}) {
-  const values = useMemo(
-    () => Array.isArray(value) ? value : Array.isArray(defaultValue) ? defaultValue : [min, max],
-    [defaultValue, max, min, value]
-  );
-  return /* @__PURE__ */ jsxs4(
-    SliderPrimitive.Root,
-    {
-      "data-slot": "slider",
-      ...defaultValue !== void 0 ? { defaultValue } : {},
-      ...value !== void 0 ? { value } : {},
-      min,
-      max,
-      className: cn(
-        "relative flex w-full touch-none select-none items-center data-[disabled]:opacity-50 data-[orientation=vertical]:h-full data-[orientation=vertical]:min-h-44 data-[orientation=vertical]:w-auto data-[orientation=vertical]:flex-col",
-        className
-      ),
-      ...props,
-      children: [
-        /* @__PURE__ */ jsx6(
-          SliderPrimitive.Track,
-          {
-            "data-slot": "slider-track",
-            className: "relative grow overflow-hidden rounded-full bg-muted data-[orientation=horizontal]:h-1.5 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1.5",
-            children: /* @__PURE__ */ jsx6(
-              SliderPrimitive.Range,
-              {
-                "data-slot": "slider-range",
-                className: "absolute bg-primary data-[orientation=horizontal]:h-full data-[orientation=vertical]:w-full"
-              }
-            )
-          }
-        ),
-        Array.from({ length: values.length }, (_, index) => /* @__PURE__ */ jsx6(
-          SliderPrimitive.Thumb,
-          {
-            "data-slot": "slider-thumb",
-            className: "block size-4 shrink-0 rounded-full border border-primary bg-white shadow-sm transition-[color,box-shadow] hover:ring-4 focus-visible:outline-hidden focus-visible:ring-4 disabled:pointer-events-none disabled:opacity-50"
-          },
-          index
-        ))
-      ]
-    }
-  );
-}
-
 // src/components/graph-workspace/GraphMoleculeViewer.tsx
-import { jsx as jsx7, jsxs as jsxs5 } from "react/jsx-runtime";
+import { jsx as jsx6, jsxs as jsxs4 } from "react/jsx-runtime";
 function GraphMoleculeViewer({
   className = "",
   moleculeId = null,
@@ -585,7 +528,9 @@ function GraphMoleculeViewer({
   onSelectionChange,
   onReady,
   source,
-  title = "Molecular structure"
+  title = "Molecular structure",
+  presentation = "workspace",
+  onOpenFile
 }) {
   const viewerHostRef = useRef(null);
   const viewerRef = useRef(null);
@@ -607,11 +552,10 @@ function GraphMoleculeViewer({
   const [unitCellAvailable, setUnitCellAvailable] = useState(false);
   const [unitCellVisible, setUnitCellVisible] = useState(false);
   const [viewerInitError, setViewerInitError] = useState(null);
-  const viewerData = useMemo2(() => readGraphMoleculeViewerData(source), [source]);
+  const viewerData = useMemo(() => readGraphMoleculeViewerData(source), [source]);
   const xyzArray = viewerData.frames;
   const xyzFormat = viewerData.format;
   const xyzContent = xyzArray[currentIndex] ?? null;
-  const isLive = xyzArray.length > 0 && currentIndex === xyzArray.length - 1;
   const moleculeKey = moleculeId ?? "current";
   const stagedAtoms = Object.values(stagedSelections).reduce(
     (sum, atoms) => sum + atoms.length,
@@ -898,27 +842,30 @@ function GraphMoleculeViewer({
       };
     });
   }
-  return /* @__PURE__ */ jsxs5(
+  return /* @__PURE__ */ jsxs4(
     "div",
     {
-      className: `thread-graph-molecule-viewer flex h-full min-h-0 flex-col bg-white ${className}`,
+      className: `thread-graph-molecule-viewer is-${presentation} flex h-full min-h-0 flex-col bg-white ${className}`,
       children: [
-        /* @__PURE__ */ jsxs5("div", { className: "thread-graph-molecule-header flex shrink-0 items-center justify-between gap-3 border-b border-slate-200 px-3 py-2 sm:px-4 sm:py-3", children: [
-          /* @__PURE__ */ jsxs5("div", { className: "min-w-0", children: [
-            /* @__PURE__ */ jsx7("h2", { className: "truncate text-sm font-semibold text-slate-900", children: title }),
-            /* @__PURE__ */ jsx7("p", { className: "mt-1 hidden text-[11px] text-slate-400 sm:block", children: "Structure and trajectory" })
+        /* @__PURE__ */ jsxs4("div", { className: "thread-graph-molecule-header flex shrink-0 items-center justify-between gap-3 border-b border-slate-200 px-3 py-2 sm:px-4 sm:py-3", children: [
+          /* @__PURE__ */ jsxs4("div", { className: "min-w-0", children: [
+            /* @__PURE__ */ jsx6("h2", { className: "truncate text-sm font-semibold text-slate-900", children: onOpenFile ? /* @__PURE__ */ jsxs4("button", { type: "button", onClick: onOpenFile, className: "thread-graph-molecule-file-link", title: "Open in workspace", children: [
+              /* @__PURE__ */ jsx6("span", { className: "truncate", children: title }),
+              /* @__PURE__ */ jsx6(PanelRightOpen, { className: "size-4 shrink-0" })
+            ] }) : title }),
+            /* @__PURE__ */ jsx6("p", { className: "mt-1 hidden text-[11px] text-slate-400 sm:block", children: "Structure and trajectory" })
           ] }),
-          /* @__PURE__ */ jsx7("span", { className: "shrink-0 text-[11px] text-slate-400", children: "workspace preview" })
+          /* @__PURE__ */ jsx6("span", { className: "shrink-0 text-[11px] text-slate-400", children: presentation === "timeline" ? "3D structure" : "workspace preview" })
         ] }),
-        /* @__PURE__ */ jsxs5("div", { className: "thread-graph-molecule-body min-h-0 flex-1", children: [
-          /* @__PURE__ */ jsxs5(
+        /* @__PURE__ */ jsxs4("div", { className: "thread-graph-molecule-body min-h-0 flex-1", children: [
+          /* @__PURE__ */ jsxs4(
             "div",
             {
               ref: viewerHostRef,
               "data-testid": "molecule-viewer",
               className: "thread-graph-molecule-stage relative min-h-0 flex-1 overflow-hidden",
               children: [
-                viewerInitError ? /* @__PURE__ */ jsx7(
+                viewerInitError ? /* @__PURE__ */ jsx6(
                   "div",
                   {
                     "data-testid": "molecule-viewer-error",
@@ -926,24 +873,24 @@ function GraphMoleculeViewer({
                     children: viewerInitError
                   }
                 ) : null,
-                !viewerInitError && !xyzContent ? /* @__PURE__ */ jsx7("div", { className: "thread-graph-molecule-empty absolute inset-0 flex items-center justify-center p-4 text-sm text-slate-400", children: "No molecule data available." }) : null,
-                hoveredAtom ? /* @__PURE__ */ jsxs5(
+                !viewerInitError && !xyzContent ? /* @__PURE__ */ jsx6("div", { className: "thread-graph-molecule-empty absolute inset-0 flex items-center justify-center p-4 text-sm text-slate-400", children: "No molecule data available." }) : null,
+                hoveredAtom ? /* @__PURE__ */ jsxs4(
                   "div",
                   {
                     className: "thread-graph-molecule-tooltip pointer-events-none fixed z-[1000] rounded-md border border-gray-300 bg-white/95 px-2 py-1.5 text-[10px] text-gray-800 shadow-md",
                     style: { left: hoveredAtom.x - 20, top: hoveredAtom.y - 50 },
                     children: [
-                      /* @__PURE__ */ jsx7("div", { className: "mb-0.5 font-semibold text-gray-900", children: hoveredAtom.label }),
-                      /* @__PURE__ */ jsxs5("div", { className: "space-x-2 text-gray-600", children: [
-                        /* @__PURE__ */ jsxs5("span", { children: [
+                      /* @__PURE__ */ jsx6("div", { className: "mb-0.5 font-semibold text-gray-900", children: hoveredAtom.label }),
+                      /* @__PURE__ */ jsxs4("div", { className: "space-x-2 text-gray-600", children: [
+                        /* @__PURE__ */ jsxs4("span", { children: [
                           "x: ",
                           hoveredAtom.coords.x
                         ] }),
-                        /* @__PURE__ */ jsxs5("span", { children: [
+                        /* @__PURE__ */ jsxs4("span", { children: [
                           "y: ",
                           hoveredAtom.coords.y
                         ] }),
-                        /* @__PURE__ */ jsxs5("span", { children: [
+                        /* @__PURE__ */ jsxs4("span", { children: [
                           "z: ",
                           hoveredAtom.coords.z
                         ] })
@@ -954,13 +901,13 @@ function GraphMoleculeViewer({
               ]
             }
           ),
-          /* @__PURE__ */ jsxs5("div", { className: "thread-graph-molecule-controls shrink-0", children: [
-            /* @__PURE__ */ jsxs5("div", { className: "thread-graph-molecule-control-row", children: [
-              /* @__PURE__ */ jsxs5("div", { className: "min-w-0", children: [
-                /* @__PURE__ */ jsx7("p", { className: "thread-graph-molecule-control-title", children: "Ball & Stick" }),
-                /* @__PURE__ */ jsx7("p", { className: "thread-graph-molecule-control-subtitle", children: "XYZ / PDB / CIF preview" })
+          /* @__PURE__ */ jsxs4("div", { className: "thread-graph-molecule-controls shrink-0", children: [
+            /* @__PURE__ */ jsxs4("div", { className: "thread-graph-molecule-control-row", children: [
+              /* @__PURE__ */ jsxs4("div", { className: "min-w-0", children: [
+                /* @__PURE__ */ jsx6("p", { className: "thread-graph-molecule-control-title", children: "Ball & Stick" }),
+                /* @__PURE__ */ jsx6("p", { className: "thread-graph-molecule-control-subtitle", children: "XYZ / PDB / CIF preview" })
               ] }),
-              /* @__PURE__ */ jsx7(
+              /* @__PURE__ */ jsx6(
                 GraphMoleculeViewerUpperButtonGroup,
                 {
                   currentIndex,
@@ -973,66 +920,81 @@ function GraphMoleculeViewer({
                 }
               )
             ] }),
-            xyzArray.length > 1 ? /* @__PURE__ */ jsxs5("div", { className: "thread-graph-molecule-trajectory", children: [
-              /* @__PURE__ */ jsxs5("div", { className: "mb-2 flex justify-between gap-3 text-xs", children: [
-                /* @__PURE__ */ jsxs5("span", { className: "flex min-w-0 items-center gap-2", children: [
-                  "Trajectory ",
-                  currentIndex + 1,
-                  " / ",
-                  xyzArray.length,
-                  /* @__PURE__ */ jsx7(
-                    Button,
-                    {
-                      type: "button",
-                      variant: "ghost",
-                      size: "icon",
-                      className: "thread-graph-molecule-button h-5 w-5",
-                      onClick: () => {
-                        setIsPlaying((previous) => {
-                          const next = !previous;
-                          if (next && currentIndex === xyzArray.length - 1) {
-                            setCurrentIndex(0);
-                          }
-                          return next;
-                        });
-                      },
-                      "aria-label": isPlaying ? "Pause trajectory" : "Play trajectory",
-                      title: isPlaying ? "Pause trajectory" : "Play trajectory",
-                      children: isPlaying && currentIndex !== xyzArray.length - 1 ? /* @__PURE__ */ jsx7(Pause, { className: "h-3 w-3" }) : /* @__PURE__ */ jsx7(Play, { className: "h-3 w-3" })
-                    }
-                  )
-                ] }),
-                /* @__PURE__ */ jsxs5(
+            xyzArray.length > 1 ? /* @__PURE__ */ jsxs4("div", { className: "thread-graph-molecule-trajectory", role: "group", "aria-label": "Trajectory controls", children: [
+              /* @__PURE__ */ jsxs4("div", { className: "thread-graph-molecule-playback-row", children: [
+                /* @__PURE__ */ jsxs4(
                   Button,
                   {
                     type: "button",
                     variant: "ghost",
-                    onClick: () => setCurrentIndex(xyzArray.length - 1),
-                    className: "thread-graph-molecule-live-button",
+                    className: "thread-graph-molecule-play-button",
+                    "aria-label": isPlaying ? "Pause trajectory" : "Play trajectory",
+                    onClick: () => {
+                      if (!isPlaying && currentIndex === xyzArray.length - 1) setCurrentIndex(0);
+                      setIsPlaying((current) => !current);
+                    },
                     children: [
-                      /* @__PURE__ */ jsx7(
-                        "span",
-                        {
-                          className: `h-2.5 w-2.5 rounded-full ${isLive ? "animate-pulse bg-red-600" : "bg-gray-300"}`
-                        }
-                      ),
-                      "Live"
+                      isPlaying ? /* @__PURE__ */ jsx6(Pause, { className: "size-4" }) : /* @__PURE__ */ jsx6(Play, { className: "size-4" }),
+                      isPlaying ? "Pause" : "Play"
                     ]
                   }
-                )
+                ),
+                /* @__PURE__ */ jsxs4("span", { className: "thread-graph-molecule-frame-count", children: [
+                  "Frame ",
+                  /* @__PURE__ */ jsx6("strong", { children: currentIndex + 1 }),
+                  " / ",
+                  xyzArray.length
+                ] }),
+                /* @__PURE__ */ jsx6("div", { className: "thread-graph-molecule-frame-buttons", children: [
+                  { label: "First frame", index: 0, Icon: SkipBack, disabled: currentIndex === 0 },
+                  { label: "Previous frame", index: currentIndex - 1, Icon: ChevronLeft, disabled: currentIndex === 0 },
+                  { label: "Next frame", index: currentIndex + 1, Icon: ChevronRight, disabled: currentIndex === xyzArray.length - 1 },
+                  { label: "Last frame", index: xyzArray.length - 1, Icon: SkipForward, disabled: currentIndex === xyzArray.length - 1 }
+                ].map(({ label, index, Icon, disabled }) => /* @__PURE__ */ jsx6(
+                  Button,
+                  {
+                    type: "button",
+                    variant: "ghost",
+                    className: "thread-graph-molecule-button",
+                    "aria-label": label,
+                    title: label,
+                    disabled,
+                    onClick: () => {
+                      setIsPlaying(false);
+                      setCurrentIndex(index);
+                    },
+                    children: /* @__PURE__ */ jsx6(Icon, { className: "size-4" })
+                  },
+                  label
+                )) })
               ] }),
-              /* @__PURE__ */ jsx7(
-                Slider,
+              /* @__PURE__ */ jsx6(
+                "input",
                 {
-                  value: [currentIndex],
-                  max: xyzArray.length - 1,
+                  type: "range",
+                  className: "thread-graph-molecule-scrubber",
+                  min: 1,
+                  max: xyzArray.length,
                   step: 1,
-                  onValueChange: (value) => setCurrentIndex(value[0] ?? 0),
-                  "aria-label": "Trajectory frame"
+                  value: currentIndex + 1,
+                  "aria-label": "Trajectory frame",
+                  "aria-valuetext": `Frame ${currentIndex + 1} of ${xyzArray.length}`,
+                  style: { backgroundSize: `${currentIndex / (xyzArray.length - 1) * 100}% 6px` },
+                  onChange: (event) => {
+                    setIsPlaying(false);
+                    setCurrentIndex(Number(event.target.value) - 1);
+                  }
                 }
-              )
+              ),
+              /* @__PURE__ */ jsxs4("div", { className: "thread-graph-molecule-frame-scale", "aria-hidden": "true", children: [
+                /* @__PURE__ */ jsx6("span", { children: "1" }),
+                /* @__PURE__ */ jsxs4("span", { children: [
+                  xyzArray.length,
+                  " frames"
+                ] })
+              ] })
             ] }) : null,
-            /* @__PURE__ */ jsx7(
+            presentation === "workspace" && /* @__PURE__ */ jsx6(
               GraphMoleculeViewerLowerButtonGroup,
               {
                 cameraInfo,

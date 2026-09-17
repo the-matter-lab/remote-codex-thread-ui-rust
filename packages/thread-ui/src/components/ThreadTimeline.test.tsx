@@ -93,6 +93,33 @@ describe('ThreadTimeline', () => {
     },
   );
 
+  it('opens the backing workspace path from both artifact filename and plugin without collapsing', () => {
+    const onOpenWorkspaceFile = vi.fn();
+    const plugins = {
+      ...createDefaultPluginContextValue(),
+      hasRendererForArtifact: () => true,
+      renderArtifact: ({ onOpenFile }: { onOpenFile?: () => void }) =>
+        <button data-testid="structure-view" onClick={onOpenFile}>Open structure</button>,
+    };
+    const element = render(<PluginContext.Provider value={plugins}>
+      <ThreadTimeline liveOutput="" adapter={{onOpenWorkspaceFile}} turns={[
+        completedTurn([{ id: 'structure', kind: 'artifact', text: 'trajectory.xyz', artifact: {
+          id: 'trajectory', type: 'chem.structure', pluginId: 'xyz', title: 'trajectory.xyz',
+          workspacePath: 'results/trajectory.xyz', createdAt: '2026-07-03T20:11:00.000Z', payload: {},
+        }}]),
+      ]} />
+    </PluginContext.Provider>);
+    const viewer = element.querySelector<HTMLButtonElement>('[data-testid="structure-view"]')!;
+    flushSync(() => element.querySelector<HTMLAnchorElement>('.thread-graph-artifact-file-link')!.click());
+    expect(onOpenWorkspaceFile).toHaveBeenLastCalledWith({path: 'results/trajectory.xyz'});
+    expect(element.querySelector('[data-testid="structure-view"]')).toBe(viewer);
+    flushSync(() => viewer.click());
+    expect(onOpenWorkspaceFile).toHaveBeenCalledTimes(2);
+    flushSync(() => element.querySelector<HTMLButtonElement>('[aria-label="Collapse artifact trajectory.xyz"]')!.click());
+    expect(element.querySelector('[data-testid="structure-view"]')).toBeNull();
+    expect(onOpenWorkspaceFile).toHaveBeenCalledTimes(2);
+  });
+
   it('shows an artifact without a final reply and keeps unknown payloads inspectable', () => {
     const element = render(<ThreadTimeline autoCollapseCompletedTurns liveOutput="" turns={[
       completedTurn([{id: 'unknown', kind: 'artifact', text: 'Result', artifact: {

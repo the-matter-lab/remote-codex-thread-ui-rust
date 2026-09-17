@@ -31,7 +31,7 @@ export function project(snapshot: Snapshot, agent?: Agent): ThreadDetailDto {
       items: turn.items.map(item => {
         const {artifact, ...rest} = item;
         if (!artifact) return rest;
-        return {...rest, artifact: {id: artifact.id, type: artifact.kind, pluginId: artifact.kind === 'chem.structure' ? 'elagente.xyz' : '', title: artifact.name, createdAt: artifact.createdAt,
+        return {...rest, artifact: {id: artifact.id, type: artifact.kind, pluginId: artifact.kind === 'chem.structure' ? 'elagente.xyz' : '', title: artifact.name, workspacePath: artifact.path, createdAt: artifact.createdAt,
           payload: {url: artifactUrl(thread.id, artifact.id), checksum: artifact.checksum, name: artifact.name, format: artifact.name.endsWith('.extxyz') ? 'extxyz' : 'xyz'}}};
       }),
     }))};

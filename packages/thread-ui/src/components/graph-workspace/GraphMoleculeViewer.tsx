@@ -1,11 +1,10 @@
-import { Pause, Play } from 'lucide-react';
+import { Pause, Play, SkipBack, SkipForward, ChevronLeft, ChevronRight, PanelRightOpen } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import GraphMoleculeViewerLowerButtonGroup from './GraphMoleculeViewerLowerButtonGroup';
 import GraphMoleculeViewerUpperButtonGroup from './GraphMoleculeViewerUpperButtonGroup';
 import type { GraphMoleculeCameraInfo } from './GraphMoleculeViewerControls';
 import { load3Dmol, type GLModel, type GLViewer } from './load3Dmol';
 import { Button } from '../graph-ui/Button';
-import { Slider } from '../graph-ui/Slider';
 import {
   readGraphMoleculeViewerData,
   type GraphMoleculeViewerSource,
@@ -50,8 +49,12 @@ export function GraphMoleculeViewer({
   onReady,
   source,
   title = 'Molecular structure',
+  presentation = 'workspace',
+  onOpenFile,
 }: {
   className?: string;
+  presentation?: 'timeline' | 'workspace';
+  onOpenFile?: () => void;
   moleculeId?: string | null;
   onScreenshot?: (screenshot: GraphMoleculeScreenshot) => void;
   onSelectionChange?: (selection: GraphMoleculeAtomSelection) => void;
@@ -89,7 +92,6 @@ export function GraphMoleculeViewer({
   const xyzArray = viewerData.frames;
   const xyzFormat = viewerData.format;
   const xyzContent = xyzArray[currentIndex] ?? null;
-  const isLive = xyzArray.length > 0 && currentIndex === xyzArray.length - 1;
   const moleculeKey = moleculeId ?? 'current';
   const stagedAtoms = Object.values(stagedSelections).reduce(
     (sum, atoms) => sum + atoms.length,
@@ -452,19 +454,21 @@ export function GraphMoleculeViewer({
 
   return (
     <div
-      className={`thread-graph-molecule-viewer flex h-full min-h-0 flex-col bg-white ${className}`}
+      className={`thread-graph-molecule-viewer is-${presentation} flex h-full min-h-0 flex-col bg-white ${className}`}
     >
       <div className="thread-graph-molecule-header flex shrink-0 items-center justify-between gap-3 border-b border-slate-200 px-3 py-2 sm:px-4 sm:py-3">
         <div className="min-w-0">
           <h2 className="truncate text-sm font-semibold text-slate-900">
-            {title}
+            {onOpenFile ? <button type="button" onClick={onOpenFile} className="thread-graph-molecule-file-link" title="Open in workspace">
+              <span className="truncate">{title}</span><PanelRightOpen className="size-4 shrink-0" />
+            </button> : title}
           </h2>
           <p className="mt-1 hidden text-[11px] text-slate-400 sm:block">
             Structure and trajectory
           </p>
         </div>
         <span className="shrink-0 text-[11px] text-slate-400">
-          workspace preview
+          {presentation === 'timeline' ? '3D structure' : 'workspace preview'}
         </span>
       </div>
 
@@ -524,61 +528,39 @@ export function GraphMoleculeViewer({
           </div>
 
           {xyzArray.length > 1 ? (
-            <div className="thread-graph-molecule-trajectory">
-              <div className="mb-2 flex justify-between gap-3 text-xs">
-                <span className="flex min-w-0 items-center gap-2">
-                  Trajectory {currentIndex + 1} / {xyzArray.length}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="thread-graph-molecule-button h-5 w-5"
-                    onClick={() => {
-                      setIsPlaying((previous) => {
-                        const next = !previous;
-                        if (next && currentIndex === xyzArray.length - 1) {
-                          setCurrentIndex(0);
-                        }
-                        return next;
-                      });
-                    }}
-                    aria-label={isPlaying ? 'Pause trajectory' : 'Play trajectory'}
-                    title={isPlaying ? 'Pause trajectory' : 'Play trajectory'}
-                  >
-                    {isPlaying && currentIndex !== xyzArray.length - 1 ? (
-                      <Pause className="h-3 w-3" />
-                    ) : (
-                      <Play className="h-3 w-3" />
-                    )}
-                  </Button>
-                </span>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => setCurrentIndex(xyzArray.length - 1)}
-                  className="thread-graph-molecule-live-button"
-                >
-                  <span
-                    className={`h-2.5 w-2.5 rounded-full ${
-                      isLive ? 'animate-pulse bg-red-600' : 'bg-gray-300'
-                    }`}
-                  />
-                  Live
+            <div className="thread-graph-molecule-trajectory" role="group" aria-label="Trajectory controls">
+              <div className="thread-graph-molecule-playback-row">
+                <Button type="button" variant="ghost" className="thread-graph-molecule-play-button"
+                  aria-label={isPlaying ? 'Pause trajectory' : 'Play trajectory'}
+                  onClick={() => {
+                    if (!isPlaying && currentIndex === xyzArray.length - 1) setCurrentIndex(0);
+                    setIsPlaying(current => !current);
+                  }}>
+                  {isPlaying ? <Pause className="size-4" /> : <Play className="size-4" />}
+                  {isPlaying ? 'Pause' : 'Play'}
                 </Button>
+                <span className="thread-graph-molecule-frame-count">Frame <strong>{currentIndex + 1}</strong> / {xyzArray.length}</span>
+                <div className="thread-graph-molecule-frame-buttons">
+                  {[
+                    {label: 'First frame', index: 0, Icon: SkipBack, disabled: currentIndex === 0},
+                    {label: 'Previous frame', index: currentIndex - 1, Icon: ChevronLeft, disabled: currentIndex === 0},
+                    {label: 'Next frame', index: currentIndex + 1, Icon: ChevronRight, disabled: currentIndex === xyzArray.length - 1},
+                    {label: 'Last frame', index: xyzArray.length - 1, Icon: SkipForward, disabled: currentIndex === xyzArray.length - 1},
+                  ].map(({label, index, Icon, disabled}) => <Button key={label} type="button" variant="ghost"
+                    className="thread-graph-molecule-button" aria-label={label} title={label} disabled={disabled}
+                    onClick={() => {setIsPlaying(false); setCurrentIndex(index);}}><Icon className="size-4" /></Button>)}
+                </div>
               </div>
-              <Slider
-                value={[currentIndex]}
-                max={xyzArray.length - 1}
-                step={1}
-                onValueChange={(value: number[]) =>
-                  setCurrentIndex(value[0] ?? 0)
-                }
-                aria-label="Trajectory frame"
-              />
+              <input type="range" className="thread-graph-molecule-scrubber"
+                min={1} max={xyzArray.length} step={1} value={currentIndex + 1}
+                aria-label="Trajectory frame" aria-valuetext={`Frame ${currentIndex + 1} of ${xyzArray.length}`}
+                style={{backgroundSize: `${currentIndex / (xyzArray.length - 1) * 100}% 6px`}}
+                onChange={event => {setIsPlaying(false); setCurrentIndex(Number(event.target.value) - 1);}} />
+              <div className="thread-graph-molecule-frame-scale" aria-hidden="true"><span>1</span><span>{xyzArray.length} frames</span></div>
             </div>
           ) : null}
 
-          <GraphMoleculeViewerLowerButtonGroup
+          {presentation === 'workspace' && <GraphMoleculeViewerLowerButtonGroup
             cameraInfo={cameraInfo}
             onClearSelection={() => setSelectedSerials([])}
             onClearStaged={() => setStagedSelections({})}
@@ -601,7 +583,7 @@ export function GraphMoleculeViewer({
             stagedMolecules={stagedMolecules}
             unitCellAvailable={unitCellAvailable}
             unitCellVisible={unitCellVisible}
-          />
+          />}
         </div>
       </div>
     </div>

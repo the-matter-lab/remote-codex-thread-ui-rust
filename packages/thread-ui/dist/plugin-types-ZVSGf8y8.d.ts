@@ -4,6 +4,8 @@ import { PluginManifestDto, ThreadArtifactDto } from '@remote-codex/shared';
 interface ArtifactRenderContext {
     artifact: ThreadArtifactDto;
     expanded: boolean;
+    presentation?: 'timeline' | 'workspace';
+    onOpenFile?: () => void;
     onToggleExpanded: () => void;
 }
 interface InlineCodeRenderContext {

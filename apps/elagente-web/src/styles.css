@@ -36,6 +36,5 @@ button:disabled { opacity: .5; }
 .interaction form, .interaction .row { margin-top: 12px; }
 .interaction pre { white-space: pre-wrap; font-size: 12px; }
 .xyz-plugin { min-width: 0; width: 100%; }
-.xyz-plugin a { display: inline-block; font-size: 12px; margin: 8px 0; color: var(--theme-accent-strong); }
 .recovery { margin: 0; padding: 12px 20px; color: var(--host-warning-fg); background: var(--host-warning-bg); font-size: 13px; }
 @media (prefers-reduced-motion: reduce) { .agent-navigation-item { transition: none; } }

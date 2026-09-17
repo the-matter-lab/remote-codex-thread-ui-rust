@@ -22,8 +22,10 @@ type GraphMoleculeAtomSelection = {
     moleculeId: string | null;
     atoms: number[];
 };
-declare function GraphMoleculeViewer({ className, moleculeId, onScreenshot, onSelectionChange, onReady, source, title, }: {
+declare function GraphMoleculeViewer({ className, moleculeId, onScreenshot, onSelectionChange, onReady, source, title, presentation, onOpenFile, }: {
     className?: string;
+    presentation?: 'timeline' | 'workspace';
+    onOpenFile?: () => void;
     moleculeId?: string | null;
     onScreenshot?: (screenshot: GraphMoleculeScreenshot) => void;
     onSelectionChange?: (selection: GraphMoleculeAtomSelection) => void;
