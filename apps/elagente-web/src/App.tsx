@@ -112,6 +112,7 @@ export function App() {
     if (threadId) void rpc<Snapshot>('thread/read', {threadId}).then(value => {
       if (disposed) return;
       setSnapshot(value);
+      setThreads(previous => previous.map(thread => thread.id === value.thread.id ? value.thread : thread));
       setAgentId(value.thread.agentId);
       lastAgentThread.current.set(value.thread.agentId, threadId);
       unsubscribe = subscribe(threadId, value.seq, () => {
