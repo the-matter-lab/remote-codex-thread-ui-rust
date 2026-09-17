@@ -10750,15 +10750,12 @@ var GraphChatArtifactHistoryItem = memo4(
     item,
     onSelect,
     timeMeta,
-    presentation = "activity",
     onOpenWorkspaceFile
   }) {
     const plugins = usePlugins();
     const artifact = item.artifact;
-    const [expanded, setExpanded] = useState22(
-      () => presentation === "output" && Boolean(artifact && plugins.hasRendererForArtifact(artifact))
-    );
-    const rendered = artifact ? plugins.renderArtifact({
+    const [expanded, setExpanded] = useState22(false);
+    const rendered = expanded && artifact ? plugins.renderArtifact({
       artifact,
       expanded,
       presentation: "timeline",
@@ -10792,7 +10789,7 @@ var GraphChatArtifactHistoryItem = memo4(
               path: artifact.workspacePath,
               onOpen: onOpenWorkspaceFile,
               className: "thread-graph-artifact-file-link min-w-0 truncate text-sm",
-              children: artifact.title
+              children: artifact.workspacePath
             }
           ) : /* @__PURE__ */ jsx40("span", { className: "thread-graph-history-detail-text min-w-0 truncate text-sm", children: artifact?.title ?? item.text }),
           /* @__PURE__ */ jsx40("span", { className: "thread-graph-history-event-secondary min-w-0 truncate", children: artifact?.summaryText ?? item.previewText ?? artifact?.type ?? "" }),

@@ -1064,7 +1064,6 @@ export const GraphChatArtifactHistoryItem = memo(
     item,
     onSelect,
     timeMeta,
-    presentation = 'activity',
     onOpenWorkspaceFile,
   }: {
     item: ThreadHistoryItemDto & { kind: 'artifact' };
@@ -1078,10 +1077,8 @@ export const GraphChatArtifactHistoryItem = memo(
   }) {
     const plugins = usePlugins();
     const artifact = item.artifact;
-    const [expanded, setExpanded] = useState(
-      () => presentation === 'output' && Boolean(artifact && plugins.hasRendererForArtifact(artifact)),
-    );
-    const rendered = artifact
+    const [expanded, setExpanded] = useState(false);
+    const rendered = expanded && artifact
       ? plugins.renderArtifact({
           artifact,
           expanded,
@@ -1119,7 +1116,7 @@ export const GraphChatArtifactHistoryItem = memo(
             {artifact?.workspacePath && onOpenWorkspaceFile ? (
               <WorkspaceFileLink path={artifact.workspacePath} onOpen={onOpenWorkspaceFile}
                 className="thread-graph-artifact-file-link min-w-0 truncate text-sm">
-                {artifact.title}
+                {artifact.workspacePath}
               </WorkspaceFileLink>
             ) : <span className="thread-graph-history-detail-text min-w-0 truncate text-sm">{artifact?.title ?? item.text}</span>}
             <span className="thread-graph-history-event-secondary min-w-0 truncate">{artifact?.summaryText ?? item.previewText ?? artifact?.type ?? ''}</span>

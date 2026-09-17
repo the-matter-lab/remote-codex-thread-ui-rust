@@ -77,6 +77,8 @@ describe('ThreadTimeline', () => {
           <ThreadTimeline autoCollapseCompletedTurns liveOutput="" turns={[turn]} />
         </PluginContext.Provider>,
       );
+      expect(element.querySelector('[data-testid="structure-view"]')).toBeNull();
+      flushSync(() => element.querySelector<HTMLButtonElement>('[aria-label="Expand artifact water.xyz"]')!.click());
       const viewer = element.querySelector('[data-testid="structure-view"]');
       expect(viewer).not.toBeNull();
       expect(element.textContent!.indexOf('Here is your molecule.')).toBeLessThan(
@@ -109,6 +111,8 @@ describe('ThreadTimeline', () => {
         }}]),
       ]} />
     </PluginContext.Provider>);
+    expect(element.querySelector('[data-testid="structure-view"]')).toBeNull();
+    flushSync(() => element.querySelector<HTMLButtonElement>('[aria-label="Expand artifact trajectory.xyz"]')!.click());
     const viewer = element.querySelector<HTMLButtonElement>('[data-testid="structure-view"]')!;
     flushSync(() => element.querySelector<HTMLAnchorElement>('.thread-graph-artifact-file-link')!.click());
     expect(onOpenWorkspaceFile).toHaveBeenLastCalledWith({path: 'results/trajectory.xyz'});
@@ -118,6 +122,31 @@ describe('ThreadTimeline', () => {
     flushSync(() => element.querySelector<HTMLButtonElement>('[aria-label="Collapse artifact trajectory.xyz"]')!.click());
     expect(element.querySelector('[data-testid="structure-view"]')).toBeNull();
     expect(onOpenWorkspaceFile).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not add Created rows when toggling same-name files from different directories', () => {
+    const renderArtifact = vi.fn(() => <div data-testid="structure-view">Viewer</div>);
+    const plugins = {...createDefaultPluginContextValue(), hasRendererForArtifact: () => true, renderArtifact};
+    const element = render(<PluginContext.Provider value={plugins}>
+      <ThreadTimeline liveOutput="" adapter={{onOpenWorkspaceFile: vi.fn()}} turns={[
+        completedTurn(['stage03_cis.xyz', 'published/stage03_cis.xyz'].map((path, index) => ({
+          id: `item-${index}`, kind: 'artifact' as const, text: 'stage03_cis.xyz', artifact: {
+            id: `artifact-${index}`, type: 'chem.structure', pluginId: 'xyz', title: 'stage03_cis.xyz',
+            workspacePath: path, createdAt: '2026-07-03T20:11:00.000Z', payload: {},
+          },
+        }))),
+      ]} />
+    </PluginContext.Provider>);
+    expect(renderArtifact).not.toHaveBeenCalled();
+    const rows = [...element.querySelectorAll('.thread-graph-event-artifact')];
+    expect(rows).toHaveLength(2);
+    expect(rows[1]?.textContent).toContain('published/stage03_cis.xyz');
+    for (let iteration = 0; iteration < 6; iteration++) {
+      flushSync(() => rows[0]!.querySelector<HTMLButtonElement>('.thread-graph-artifact-inline-toggle')!.click());
+      expect([...element.querySelectorAll('.thread-graph-event-artifact')]).toEqual(rows);
+      expect(element.querySelectorAll('[data-testid="structure-view"]')).toHaveLength(iteration % 2 === 0 ? 1 : 0);
+      expect(rows[1]!.querySelector('[data-testid="structure-view"]')).toBeNull();
+    }
   });
 
   it('shows an artifact without a final reply and keeps unknown payloads inspectable', () => {
