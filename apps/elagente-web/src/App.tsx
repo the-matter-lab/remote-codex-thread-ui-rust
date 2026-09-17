@@ -10,6 +10,14 @@ type Draft = {prompt: string; attachments: PromptAttachmentUpload[]};
 const emptyDraft = (): Draft => ({prompt: '', attachments: []});
 const agentDescriptions: Record<string, string> = {seguro: 'Lab safety', grafico: 'Molecular modeling', quntur: 'Molecular workflows'};
 
+async function readThread(threadId: string): Promise<Snapshot | null> {
+  try { return await rpc<Snapshot>('thread/read', {threadId}); }
+  catch (reason) {
+    if (reason && typeof reason === 'object' && 'code' in reason && reason.code === 'THREAD_NOT_FOUND') return null;
+    throw reason;
+  }
+}
+
 function PendingInteraction({ interaction, threadId, refreshed }: {interaction: Interaction; threadId: string; refreshed: () => void}) {
   const [answer, setAnswer] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -87,10 +95,13 @@ export function App() {
     const current = activeRef.current;
     const [listing, next] = await Promise.all([
       rpc<{threads: NativeThread[]}>('thread/list'),
-      current ? rpc<Snapshot>('thread/read', {threadId: current}) : Promise.resolve(null),
+      current ? readThread(current) : Promise.resolve(null),
     ]);
     setThreads(listing.threads);
-    if (current === activeRef.current) setSnapshot(next);
+    if (current === activeRef.current) {
+      setSnapshot(next);
+      if (current && !next) { activeRef.current = ''; setThreadId(''); setError(null); }
+    }
   }, []);
   const refreshSafely = useCallback(() => { void refresh().catch(reason => setError(String(reason))); }, [refresh]);
   useEffect(() => {
@@ -109,8 +120,9 @@ export function App() {
     let timer: ReturnType<typeof setTimeout> | undefined;
     setSnapshot(null); setConnected(false); setFocusFile(null); setDraft(drafts.current.get(threadId) ?? emptyDraft());
     localStorage.setItem('elagente.thread', threadId);
-    if (threadId) void rpc<Snapshot>('thread/read', {threadId}).then(value => {
+    if (threadId) void readThread(threadId).then(value => {
       if (disposed) return;
+      if (!value) { activeRef.current = ''; setThreadId(''); setError(null); refreshSafely(); return; }
       setSnapshot(value);
       setThreads(previous => previous.map(thread => thread.id === value.thread.id ? value.thread : thread));
       setAgentId(value.thread.agentId);
