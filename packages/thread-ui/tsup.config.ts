@@ -12,6 +12,7 @@ export default defineConfig({
   },
   format: ['esm'],
   injectStyle: true,
-  noExternal: ['monaco-editor'],
+  // Preserve Monaco's module-relative worker URLs for the host bundler (Vite/Next).
+  external: ['monaco-editor'],
   splitting: true,
 });

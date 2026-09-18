@@ -2512,7 +2512,7 @@ function WorkspaceFileTabs({
 // src/components/graph-workspace/GraphWorkspacePreviewPane.tsx
 import { Fragment as Fragment2, jsx as jsx6, jsxs as jsxs5 } from "react/jsx-runtime";
 var GraphWorkspaceMonacoEditor = lazy(
-  () => import("./GraphWorkspaceMonacoEditor-ZJOINQI6.js")
+  () => import("./GraphWorkspaceMonacoEditor-THUABSPG.js")
 );
 function DownloadFilePreview({ node, onDownload }) {
   const [pending, setPending] = useState7(false);
