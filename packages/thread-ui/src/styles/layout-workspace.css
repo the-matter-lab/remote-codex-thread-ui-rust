@@ -679,3 +679,26 @@
 }
 .thread-graph-download-preview button:hover { background: var(--theme-bg); }
 .thread-graph-download-preview button:disabled { opacity: .6; cursor: wait; }
+
+/* Conversation navigation is a compact list, with one selection surface. */
+.thread-ui-shell .thread-graph-room-card { border-color: transparent; border-radius: 8px; min-height: 52px; gap: 8px; }
+.thread-ui-shell .thread-graph-room-card-icon,
+.thread-ui-shell .thread-graph-room-card-icon.is-active { border: 0; background: transparent; box-shadow: none; border-radius: 6px; }
+.thread-ui-shell .thread-graph-room-card-title { font-size: 13px; line-height: 1.45; }
+.thread-ui-shell .thread-room-state { font-size: 10px; line-height: 1.4; border: 0; background: transparent; padding: 0; }
+.thread-ui-shell .thread-card-quiet-button,
+.thread-ui-shell .thread-card-danger-button { opacity: 0; border-radius: 5px; }
+.thread-ui-shell .thread-graph-room-card:hover .thread-card-quiet-button,
+.thread-ui-shell .thread-graph-room-card:hover .thread-card-danger-button,
+.thread-ui-shell .thread-graph-room-card:focus-within .thread-card-quiet-button,
+.thread-ui-shell .thread-graph-room-card:focus-within .thread-card-danger-button { opacity: 1; }
+.thread-ui-rail-collapsed .thread-graph-room-card { min-height: 38px; height: 38px; border-radius: 7px; }
+.thread-ui-rail-collapsed .thread-graph-room-card-icon { width: 28px; height: 28px; }
+@media (hover: none) {
+  .thread-ui-shell .thread-card-quiet-button, .thread-ui-shell .thread-card-danger-button { opacity: 1; }
+}
+.thread-ui-shell[data-theme-effective] .thread-graph-room-card-icon,
+.thread-ui-shell[data-theme-effective] .thread-graph-room-card-icon.is-active { border: 0; background: transparent; box-shadow: none; }
+.thread-ui-shell[data-theme-effective] .thread-graph-new-room-button { border-radius: 7px; background: var(--theme-fg); color: var(--theme-bg); min-height: 32px; font-size: 12px; }
+.thread-ui-shell[data-theme-effective] .thread-graph-new-room-button:hover { opacity: .85; }
+.thread-ui-rail-collapsed .thread-graph-new-room-button { width: 32px; height: 32px; }

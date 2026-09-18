@@ -224,12 +224,12 @@ function ThreadCard({
   const openThread = () => onOpenThread(thread.id);
   const cardClassName = `thread-graph-room-card group flex w-full items-center gap-3 rounded-xl border text-left transition ${
     isCurrentThread ? "is-active" : ""
-  } ${collapsed ? "justify-center px-2 py-2" : "px-3 py-2.5"}`;
+  } ${collapsed ? "justify-center px-2 py-2" : "px-2 py-2"}`;
   const cardContent = (
     <>
       <div
         data-thread-status={thread.status}
-        className={`thread-graph-room-card-icon flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+        className={`thread-graph-room-card-icon flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${
           isCurrentThread ? "is-active" : ""
         }`}
       >
@@ -299,16 +299,14 @@ function ThreadCard({
           ) : (
             <span className="min-w-0 flex-1" aria-hidden="true" />
           )}
-          <span
-            className={`shrink-0 rounded-full border px-1.5 py-0.5 text-[9px] uppercase tracking-normal ${threadStatusClassName(thread.status)}`}
-          >
-            {threadStatusLabel(thread.status)}
-          </span>
+          {thread.status !== 'idle' && <span className={`thread-room-state ${threadStatusClassName(thread.status)}`}>
+            {thread.status === 'recovering' ? 'Checking status' : threadStatusLabel(thread.status)}
+          </span>}
           <time
             className="shrink-0 text-[11px] text-[var(--theme-fg-muted)]"
             dateTime={thread.lastTurnStartedAt ?? thread.updatedAt}
           >
-            {formatShortTimestamp(thread.lastTurnStartedAt ?? thread.updatedAt)}
+            {new Date(thread.lastTurnStartedAt ?? thread.updatedAt).toLocaleDateString(undefined, {month:'short',day:'numeric'})}
           </time>
         </div>
       </div>
@@ -338,8 +336,8 @@ function ThreadCard({
       {cardContent}
     </a>
   ) : (
-    <div role="link" tabIndex={0} onClick={openThread} onKeyDown={(event) => {
-      if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openThread(); }
+    <div role="link" aria-label={thread.title} title={collapsed ? thread.title : undefined} tabIndex={0} onClick={openThread} onKeyDown={(event) => {
+      if (event.target === event.currentTarget && (event.key === "Enter" || event.key === " ")) { event.preventDefault(); openThread(); }
     }} className={cardClassName}>{cardContent}</div>
   );
   return collapsed ? (
@@ -926,7 +924,7 @@ export function ThreadWorkspaceLayout({
             }`}
           >
             <Rows3 className="h-3.5 w-3.5" />
-            <span className={collapsed ? "sr-only" : ""}>Rooms</span>
+            <span className={collapsed ? "sr-only" : ""}>Conversations</span>
             {!collapsed && loading ? (
               <span className="ml-auto text-xs text-[var(--theme-fg-muted)]">
                 Refreshing...
