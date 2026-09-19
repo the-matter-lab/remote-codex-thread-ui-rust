@@ -498,3 +498,16 @@
 
 .thread-ui-shell .shell-chat-return { position: absolute; right: 20px; bottom: 20px; z-index: 30; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--theme-border); color: var(--theme-fg); background: var(--theme-panel); box-shadow: 0 3px 12px #0002; }
 .thread-ui-shell .shell-chat-return:hover { background: var(--theme-hover); }
+
+.thread-ui-shell .thread-graph-turn-error {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid oklch(0.62 0.15 28 / 0.35);
+  border-radius: 8px;
+  background: oklch(0.62 0.15 28 / 0.07);
+  color: inherit;
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.thread-ui-shell .thread-graph-turn-error p { margin: 4px 0 0; white-space: pre-wrap; }

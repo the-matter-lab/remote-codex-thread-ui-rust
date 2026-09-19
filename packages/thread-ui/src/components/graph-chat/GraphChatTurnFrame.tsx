@@ -52,23 +52,18 @@ export function GraphChatTurnFrame({
               {timeLabel}
             </time>
             {headerStatus}
-            {error ? (
-              <p className="hidden truncate text-[11px] text-rose-200 sm:block">
-                {error}
-              </p>
-            ) : null}
           </div>
           {tokenSummary}
         </div>
       </div>
 
-      {error ? (
-        <p className="mt-1 text-[11px] text-rose-200 sm:hidden">{error}</p>
-      ) : null}
-
       <div className="thread-graph-turn-body mt-2 space-y-2">
         {collapsed ? collapsedBody : body}
         {!collapsed ? footer : null}
+        {error ? <div className="thread-graph-turn-error" role="alert">
+          <strong>Run needs attention</strong>
+          <p>{error}</p>
+        </div> : null}
       </div>
     </article>
   );
