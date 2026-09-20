@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { FrontendPluginModule } from '@remote-codex/thread-ui';
 import { GraphMoleculeViewer } from '@remote-codex/thread-ui/scientific-viewer';
 
@@ -7,6 +7,9 @@ export interface StructureAsset {
   checksum: string;
   format: 'xyz' | 'extxyz';
   name: string;
+  streamId?: string;
+  frameCount?: number;
+  streaming?: boolean;
 }
 
 export function StructureView({ asset, onReady, onOpenFile, presentation = 'timeline' }: {
@@ -19,7 +22,8 @@ export function StructureView({ asset, onReady, onOpenFile, presentation = 'time
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     const controller = new AbortController();
-    setContent(null); setError(null);
+    // Keep the viewer and camera mounted while the next acknowledged frame loads.
+    setError(null);
     void (async () => {
       const url = new URL(asset.url, window.location.href);
       if (url.origin !== window.location.origin) throw new Error('Structure assets must come from this app-server');
@@ -35,7 +39,7 @@ export function StructureView({ asset, onReady, onOpenFile, presentation = 'time
   if (error) return <p role="alert">{error}</p>;
   if (content === null) return <p>Loading molecular structure…</p>;
   return <div className="xyz-plugin" data-testid="xyz-plugin">
-    <GraphMoleculeViewer source={{content: [content], format: asset.format, uuid: asset.checksum}}
+    <GraphMoleculeViewer source={{content: [content], format: asset.format, uuid: asset.streamId ?? asset.checksum}}
       moleculeId={asset.name} title={asset.name} presentation={presentation} {...(onOpenFile ? {onOpenFile} : {})}
       onReady={onReady} />
   </div>;
