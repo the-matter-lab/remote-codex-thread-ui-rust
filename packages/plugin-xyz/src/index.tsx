@@ -5,7 +5,7 @@ import { GraphMoleculeViewer } from '@remote-codex/thread-ui/scientific-viewer';
 export interface StructureAsset {
   url: string;
   checksum: string;
-  format: 'xyz' | 'extxyz';
+  format: 'xyz' | 'extxyz' | 'cif' | 'pdb' | 'sdf' | 'mol';
   name: string;
   streamId?: string;
   frameCount?: number;
@@ -47,9 +47,9 @@ export function StructureView({ asset, onReady, onOpenFile, presentation = 'time
 
 export const xyzPlugin: FrontendPluginModule = {
   manifest: {
-    id: 'elagente.xyz', name: 'Molecular structures', version: '0.1.0',
-    description: 'XYZ and extXYZ structures, trajectories, atom selection and screenshots.', remoteCodex: '*',
-    capabilities: {artifactTypes: [{type: 'chem.structure', title: 'Molecular structure', fileExtensions: ['xyz', 'extxyz']}], timelineRenderers: ['chem.structure'], threadPanels: []},
+    id: 'elagente.xyz', name: 'Molecular structures', version: '0.1.1',
+    description: 'Molecular and crystal structures, trajectories, atom selection and screenshots.', remoteCodex: '*',
+    capabilities: {artifactTypes: [{type: 'chem.structure', title: 'Molecular structure', fileExtensions: ['xyz', 'extxyz', 'cif', 'pdb', 'sdf', 'mol']}], timelineRenderers: ['chem.structure'], threadPanels: []},
   },
   renderArtifact: ({artifact, presentation, onOpenFile}) => <StructureView asset={artifact.payload as StructureAsset} {...(presentation ? {presentation} : {})} {...(onOpenFile ? {onOpenFile} : {})} />,
 };

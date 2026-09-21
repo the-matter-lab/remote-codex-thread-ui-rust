@@ -17,3 +17,5 @@ Register `xyzPlugin` through `PluginProvider.builtinPlugins`, as shown by
 `/vendor/3Dmol-min.js`; the ElAgente Vite configuration packages it from the
 workspace dependency. Future structure/report plugins can use the same artifact
 renderer registry without changing the app-server's conversation protocol.
+
+The same plugin also accepts CIF (including unit-cell controls), PDB, SDF, and MOL artifacts. The host must preserve the file format in the artifact payload; do not label these files as XYZ. All formats retain checksum verification and same-origin downloads.
