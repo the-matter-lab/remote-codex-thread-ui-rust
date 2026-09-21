@@ -26,7 +26,7 @@ import {
   workspaceDisplayPath,
   workspaceRelativeFocusPath,
   workspaceTreeNodeToGraphNode
-} from "./chunk-EIYY5M5B.js";
+} from "./chunk-EPQHWJV4.js";
 import {
   GraphMoleculeViewer
 } from "./chunk-P5VNU6PI.js";

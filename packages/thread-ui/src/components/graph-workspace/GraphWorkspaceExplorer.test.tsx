@@ -206,8 +206,8 @@ describe('GraphWorkspaceExplorer', () => {
     vi.restoreAllMocks();
   });
 
-  it('loads all XYZ pages before publishing a molecular preview', async () => {
-    const path = 'trajectory.xyz';
+  it.each(['xyz', 'sdf', 'mol', 'cif', 'pdb'])('loads all %s pages before publishing a molecular preview', async (extension) => {
+    const path = `structure.${extension}`;
     const tail = deferred<ThreadWorkspaceFilePreview>();
     const readFile = vi.fn<ThreadWorkspaceAdapter['readFile']>(async ({offset}) =>
       offset ? tail.promise : {...filePreview(path), content: 'first frame\n', size: 48_000, truncated: true, nextOffset: 24_000});

@@ -113,7 +113,7 @@ function workspaceDisplayPath(path, root) {
 }
 
 // src/components/graph-workspace/workspaceTree.ts
-var MOLECULAR_EXTENSIONS = /* @__PURE__ */ new Set(["xyz", "extxyz", "cif", "pdb"]);
+var MOLECULAR_EXTENSIONS = /* @__PURE__ */ new Set(["xyz", "extxyz", "cif", "pdb", "sdf", "mol"]);
 var IMAGE_EXTENSIONS = /* @__PURE__ */ new Set([
   "png",
   "jpg",

@@ -42,7 +42,7 @@ export interface WorkspaceTreeNode {
   workspaceNode?: ThreadWorkspaceTreeNode;
 }
 
-export const MOLECULAR_EXTENSIONS = new Set(['xyz', 'extxyz', 'cif', 'pdb']);
+export const MOLECULAR_EXTENSIONS = new Set(['xyz', 'extxyz', 'cif', 'pdb', 'sdf', 'mol']);
 export const IMAGE_EXTENSIONS = new Set([
   'png',
   'jpg',
