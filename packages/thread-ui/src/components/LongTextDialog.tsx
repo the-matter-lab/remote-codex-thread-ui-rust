@@ -1,10 +1,12 @@
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { DiffDetail } from './DiffDetail';
 
 interface LongTextDialogProps {
   open: boolean;
   title: string;
   text: string;
+  kind?: string | undefined;
   onClose: () => void;
 }
 
@@ -12,6 +14,7 @@ export function LongTextDialog({
   open,
   title,
   text,
+  kind,
   onClose,
 }: LongTextDialogProps) {
   useEffect(() => {
@@ -47,15 +50,15 @@ export function LongTextDialog({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="relative z-[1] flex max-h-[min(82vh,52rem)] w-full max-w-4xl flex-col overflow-hidden rounded-[1.8rem] border border-stone-700 bg-stone-900 shadow-2xl shadow-stone-950/40"
+        className="thread-detail-dialog relative z-[1] flex max-h-[min(82vh,52rem)] w-full max-w-4xl flex-col overflow-hidden rounded-xl border border-[var(--theme-border)] bg-[var(--theme-panel)] text-[var(--theme-fg)] shadow-2xl"
       >
-        <div className="flex items-center justify-between gap-3 border-b border-stone-800 px-4 py-3 sm:px-5">
-          <p className="truncate text-sm font-medium text-stone-100">{title}</p>
+        <div className="flex items-center justify-between gap-3 border-b border-[var(--theme-border)] px-4 py-3 sm:px-5">
+          <p className="truncate text-sm font-medium">{title}</p>
           <button
             type="button"
             aria-label="Close dialog"
             onClick={onClose}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-stone-700 text-stone-300 transition hover:bg-stone-800"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-[var(--theme-fg-muted)] transition hover:bg-[var(--theme-hover)]"
           >
             <svg
               aria-hidden="true"
@@ -67,9 +70,9 @@ export function LongTextDialog({
           </button>
         </div>
         <div className="min-h-0 flex-1 overflow-auto px-4 py-4 sm:px-5">
-          <pre className="whitespace-pre-wrap break-words text-sm leading-6 text-stone-200">
+          {kind === 'fileChange' && /^@@ /m.test(text) ? <DiffDetail text={text} /> : <pre className="whitespace-pre-wrap break-words text-sm leading-6">
             {text}
-          </pre>
+          </pre>}
         </div>
       </div>
     </div>,

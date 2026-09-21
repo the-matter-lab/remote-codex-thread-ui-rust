@@ -793,6 +793,15 @@
   outline-offset: 3px;
 }
 
+/* Inline previews stay compact; the lightbox retains full-size zoom. */
+.thread-ui-shell .thread-graph-zoomable-image-trigger > img {
+  max-width: min(100%, 28rem);
+  max-height: min(24rem, 50dvh);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
 .thread-graph-image-lightbox {
   position: fixed;
   z-index: 120;

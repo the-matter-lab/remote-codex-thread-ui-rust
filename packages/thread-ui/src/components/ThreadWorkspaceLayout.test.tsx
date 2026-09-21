@@ -225,7 +225,7 @@ describe('ThreadWorkspaceLayout', () => {
   it('puts mobile navigation first and settings in the expanded rail header', () => {
     mockViewport(true);
     const element = render(
-      <ThreadWorkspaceLayout threads={[]} currentThreadLabel="A long thread title" globalSettingsContent={<div>Host settings</div>}>
+      <ThreadWorkspaceLayout threads={[]} status={{ state: 'ready', transport: 'sdk', lastStartedAt: null, lastError: null, restartCount: 0 }} currentThreadLabel="A long thread title" globalSettingsContent={<div>Host settings</div>}>
         <div>Chat</div>
       </ThreadWorkspaceLayout>,
     );
@@ -244,7 +244,7 @@ describe('ThreadWorkspaceLayout', () => {
 
   it('keeps desktop settings in the topbar', () => {
     const element = render(
-      <ThreadWorkspaceLayout threads={[]} globalSettingsContent={<div>Host settings</div>}>
+      <ThreadWorkspaceLayout threads={[]} status={{ state: 'ready', transport: 'sdk', lastStartedAt: null, lastError: null, restartCount: 0 }} globalSettingsContent={<div>Host settings</div>}>
         <div>Chat</div>
       </ThreadWorkspaceLayout>,
     );

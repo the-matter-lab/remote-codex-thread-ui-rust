@@ -25,6 +25,7 @@ import {
 } from "./plugins/plugin-context";
 import { usePlugins } from "./plugins/usePlugins";
 import { ThreadWorkspaceLayout } from "./components/ThreadWorkspaceLayout";
+import type { MatterWorkbenchOptions } from './components/MatterWorkbench';
 import {
   ThreadTimeline,
   type ThreadTimelineProps,
@@ -163,6 +164,7 @@ export interface ThreadDetailSurfaceProps {
   metaContent?: ReactNode;
   settingsContent?: ReactNode;
   globalSettingsContent?: ReactNode;
+  settingsSections?: import("./components/SettingsPanels").SettingsSection[];
   settingsDialogOpen?: boolean;
   onSettingsDialogOpenChange?: (open: boolean) => void;
   mobileHeaderAction?: ReactNode;
@@ -174,6 +176,7 @@ export interface ThreadDetailSurfaceProps {
   onWorkspaceReturn?: () => void;
   threadActionsButton?: ReactNode;
   surfaceActions?: ReactNode;
+  workbench?: MatterWorkbenchOptions;
   floatingPanel?: ReactNode;
   workspaceContent?: ReactNode;
   workspaceTitle?: string;
@@ -242,6 +245,7 @@ export function ThreadDetailSurface({
   metaContent,
   settingsContent,
   globalSettingsContent,
+  settingsSections,
   settingsDialogOpen,
   onSettingsDialogOpenChange,
   mobileHeaderAction,
@@ -253,6 +257,7 @@ export function ThreadDetailSurface({
   onWorkspaceReturn,
   threadActionsButton,
   surfaceActions,
+  workbench,
   floatingPanel,
   workspaceContent,
   workspaceTitle,
@@ -422,6 +427,7 @@ export function ThreadDetailSurface({
           liveOutput={liveOutput}
           transcriptItemCount={transcriptItemCount}
           useFloatingMobileComposer={useFloatingMobileComposer}
+          floatingDesktopComposer={Boolean(workbench)}
           floatingMobileComposerBottomOffset={
             floatingMobileComposerBottomOffset
           }
@@ -492,6 +498,7 @@ export function ThreadDetailSurface({
 
   const surface = (
     <ThreadWorkspaceLayout
+      {...(workbench ? { workbench } : {})}
       threads={threads}
       status={status}
       loading={loading}
@@ -509,6 +516,7 @@ export function ThreadDetailSurface({
       metaContent={metaContent}
       settingsContent={settingsContent}
       globalSettingsContent={globalSettingsContent}
+      settingsSections={settingsSections}
       {...(settingsDialogOpen !== undefined ? { settingsDialogOpen } : {})}
       {...(onSettingsDialogOpenChange ? { onSettingsDialogOpenChange } : {})}
       mobileHeaderAction={mobileHeaderAction}

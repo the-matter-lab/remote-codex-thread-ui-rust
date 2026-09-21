@@ -20,6 +20,8 @@ export interface AppShellNavContextValue {
   setDefaultBackend: (backend: AgentBackendId) => void;
   autoCollapseCompletedTurns?: boolean;
   setAutoCollapseCompletedTurns?: (enabled: boolean) => void;
+  showReasoningSummaries?: boolean;
+  setShowReasoningSummaries?: (enabled: boolean) => void;
 }
 
 export const AppShellNavContext = createContext<AppShellNavContextValue | null>(

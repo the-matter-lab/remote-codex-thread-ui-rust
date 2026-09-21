@@ -75,8 +75,10 @@ export function GraphChatMessageFrame({
   status,
   timeLabel,
   timeTitle,
+  messageId,
 }: {
   children: ReactNode;
+  messageId?: string;
   copyButton?: ReactNode;
   kind: GraphChatMessageKind;
   metaControl?: ReactNode;
@@ -114,6 +116,7 @@ export function GraphChatMessageFrame({
   return (
     <div
       data-testid="chat-message"
+      data-message-id={messageId}
       data-role={isUser ? 'user' : 'assistant'}
       className={`thread-graph-message flex ${isUser ? 'justify-end' : 'justify-start'}`}
     >

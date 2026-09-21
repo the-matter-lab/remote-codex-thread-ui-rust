@@ -219,10 +219,9 @@ describe('ThreadActionsDialog', () => {
     } satisfies ExportThreadTranscriptInput);
   });
 
-  it('creates and revokes relay shares from share mode', () => {
+  it('creates and revokes relay shares from share mode', async () => {
     const onCreateShare = vi.fn();
     const onRevokeShare = vi.fn();
-    const onOpenDeviceSharing = vi.fn();
     renderDialog({
       initialMode: 'share',
       shareAvailable: true,
@@ -242,12 +241,12 @@ describe('ThreadActionsDialog', () => {
       },
       onCreateShare,
       onRevokeShare,
-      onOpenDeviceSharing,
+      deviceShareAvailable: true,
     });
 
     expect(text('Share this thread')).toBe(true);
-    click(exportButton('Share whole device'));
-    expect(onOpenDeviceSharing).toHaveBeenCalledTimes(1);
+    click(checkedInput('Share whole device'));
+    expect(exportButton('Share whole device')).toBeNull();
 
     const relayIdentifier = [...document.body.querySelectorAll('input')]
       .find((input) => input.getAttribute('placeholder') === 'username or email') as HTMLInputElement;
@@ -257,9 +256,10 @@ describe('ThreadActionsDialog', () => {
     const label = [...document.body.querySelectorAll('input')]
       .find((input) => input.getAttribute('placeholder') === 'optional') as HTMLInputElement;
     changeInput(label, 'Pairing');
-    click(exportButton('Share this thread'));
+    await act(async () => { click(exportButton('Share device')); });
 
     expect(onCreateShare).toHaveBeenCalledWith({
+      scope: 'device',
       targetIdentifier: 'bob@example.test',
       threadAccess: 'control',
       workspaceAccess: 'write',

@@ -63,6 +63,7 @@ export function useTimelineScroll({
   const previousBottomSpacerRef = useRef(bottomSpacer);
   const lastObservedScrollHeightRef = useRef(0);
   const lastScrollTopRef = useRef(0);
+  const scrollIntentRevisionRef = useRef(0);
   const pendingPrependScrollRef = useRef<{
     scrollHeight: number;
     scrollTop: number;
@@ -209,6 +210,7 @@ export function useTimelineScroll({
   }, []);
 
   const preserveScrollPositionForResize = useCallback(() => {
+    scrollIntentRevisionRef.current += 1;
     const container = scrollContainerRef.current;
     if (!container) {
       return;
@@ -303,8 +305,9 @@ export function useTimelineScroll({
   }, [turnsLength]);
 
   useLayoutEffect(() => {
+    const intent = scrollIntentRevisionRef.current;
     const frame = window.requestAnimationFrame(() => {
-      scrollToBottom();
+      if (intent === scrollIntentRevisionRef.current) scrollToBottom();
     });
 
     return () => {
@@ -393,8 +396,9 @@ export function useTimelineScroll({
       return;
     }
 
+    const intent = scrollIntentRevisionRef.current;
     const frame = window.requestAnimationFrame(() => {
-      scrollToBottom();
+      if (intent === scrollIntentRevisionRef.current) scrollToBottom();
     });
 
     if (scrollRequestKey !== lastHandledScrollRequestKeyRef.current) {
@@ -439,7 +443,7 @@ export function useTimelineScroll({
       }
 
       window.requestAnimationFrame(() => {
-        scrollToBottom();
+        if (!userScrolledAwayFromTailRef.current) scrollToBottom();
       });
     });
 
@@ -461,7 +465,7 @@ export function useTimelineScroll({
 
     previousBottomSpacerRef.current = bottomSpacer;
     const frame = window.requestAnimationFrame(() => {
-      scrollToBottom();
+      if (!userScrolledAwayFromTailRef.current) scrollToBottom();
     });
 
     return () => {

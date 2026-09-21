@@ -65,6 +65,7 @@ export interface ThreadTimelineProps {
   ) => Promise<void> | void;
   liveOutput: string;
   scrollRequestKey?: number;
+  searchTarget?: { turnId: string; itemId: string; key: number };
   previousTurnScrollRequestKey?: number;
   nextTurnScrollRequestKey?: number;
   bottomSpacer?: number;
@@ -161,6 +162,7 @@ function ThreadTimelineComponent({
   onRespondToRequest,
   liveOutput,
   scrollRequestKey = 0,
+  searchTarget,
   previousTurnScrollRequestKey = 0,
   nextTurnScrollRequestKey = 0,
   bottomSpacer = 0,
@@ -194,8 +196,11 @@ function ThreadTimelineComponent({
   const [cancelingSteerIds, setCancelingSteerIds] = useState<Set<string>>(
     () => new Set(),
   );
-  const lastPreviousTurnTargetIdRef = useRef<string | null>(null);
-  const lastNextTurnTargetIdRef = useRef<string | null>(null);
+  const navigationTargetRef = useRef<string | null>(null);
+  const pendingPreviousNavigationRef = useRef(false);
+  const navigationResetRef = useRef({ threadId, scrollRequestKey, searchKey: searchTarget?.key });
+  const handledNavigationRef = useRef({ previous: previousTurnScrollRequestKey, next: nextTurnScrollRequestKey });
+  const lastSearchKeyRef = useRef<number | null>(null);
   const loadHistoryItemDetail =
     adapter?.onLoadHistoryItemDetail ?? onLoadHistoryItemDetail;
   const loadTurnDetail = adapter?.onLoadTurnDetail ?? onLoadTurnDetail;
@@ -209,6 +214,9 @@ function ThreadTimelineComponent({
     Record<string, string | undefined>
   >({});
   const openLinkedThread = adapter?.onOpenLinkedThread;
+  useEffect(() => {
+    if (searchTarget) setCollapsedTurnOverrides(current => ({ ...current, [searchTarget.turnId]: false }));
+  }, [searchTarget]);
   const {
     expandedText,
     openExpandedText: handleOpenExpandedText,
@@ -272,6 +280,22 @@ function ThreadTimelineComponent({
     setLoadingTurnDetailIds(new Set());
     setTurnDetailErrors({});
   }, [threadId]);
+
+  useEffect(() => {
+    if (!searchTarget || lastSearchKeyRef.current === searchTarget.key || collapsedTurnOverrides[searchTarget.turnId] !== false) return;
+    preserveScrollPositionForResize();
+    const frame = requestAnimationFrame(() => {
+      const container = scrollContainerRef.current;
+      const turn = Array.from(container?.querySelectorAll<HTMLElement>('[data-turn-id]') ?? []).find(node => node.dataset.turnId === searchTarget.turnId);
+      const message = Array.from(turn?.querySelectorAll<HTMLElement>('[data-message-id]') ?? []).find(node => node.dataset.messageId === searchTarget.itemId);
+      const target = message ?? turn;
+      if (!container || !target) return;
+      lastSearchKeyRef.current = searchTarget.key;
+      container.scrollTo({ top: container.scrollTop + target.getBoundingClientRect().top - container.getBoundingClientRect().top - 24, behavior: 'instant' });
+      target.animate([{ backgroundColor: 'var(--theme-accent-soft)' }, { backgroundColor: 'transparent' }], { duration: 1400 });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [searchTarget, collapsedTurnOverrides, preserveScrollPositionForResize]);
 
   const handleToggleCollapse = useCallback((
     turn: TimelineTurn,
@@ -476,85 +500,70 @@ function ThreadTimelineComponent({
     [activityNotes, optimisticTurn, visibleTurns],
   );
 
-  const findNextTurn = useCallback(() => {
+  const findTurn = useCallback((direction: -1 | 1) => {
     const container = scrollContainerRef.current;
     if (!container) return null;
-    const containerTop = container.getBoundingClientRect().top;
-    return Array.from(
-      container.querySelectorAll<HTMLElement>('[data-timeline-turn]'),
-    ).find((element) => element.getBoundingClientRect().top > containerTop + 8) ?? null;
+    const elements = Array.from(container.querySelectorAll<HTMLElement>('[data-timeline-turn]'));
+    const selected = elements.findIndex(element => element.dataset.turnId === navigationTargetRef.current);
+    if (selected >= 0) return elements[selected + direction] ?? null;
+    const anchor = container.getBoundingClientRect().top + 8;
+    return direction < 0
+      ? elements.findLast(element => element.getBoundingClientRect().top < anchor - 10) ?? null
+      : elements.find(element => element.getBoundingClientRect().top > anchor + 2) ?? null;
   }, [scrollContainerRef]);
-
-  const findPreviousTurn = useCallback(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return null;
-    const containerTop = container.getBoundingClientRect().top;
-    return Array.from(
-      container.querySelectorAll<HTMLElement>('[data-timeline-turn]'),
-    ).findLast((element) => element.getBoundingClientRect().top < containerTop - 8) ?? null;
-  }, [scrollContainerRef]);
-
-  const updatePreviousTurnAvailability = useCallback(() => {
-    onPreviousTurnAvailabilityChange?.(Boolean(findPreviousTurn()));
-  }, [findPreviousTurn, onPreviousTurnAvailabilityChange]);
-
-  const updateNextTurnAvailability = useCallback(() => {
-    onNextTurnAvailabilityChange?.(Boolean(findNextTurn()));
-  }, [findNextTurn, onNextTurnAvailabilityChange]);
-
+  const updateNavigationAvailability = useCallback(() => {
+    onPreviousTurnAvailabilityChange?.(!loadingEarlier && (Boolean(findTurn(-1)) || hiddenCount > 0));
+    onNextTurnAvailabilityChange?.(Boolean(findTurn(1)));
+  }, [findTurn, hiddenCount, loadingEarlier, onPreviousTurnAvailabilityChange, onNextTurnAvailabilityChange]);
+  const resetNavigation = useCallback(() => {
+    navigationTargetRef.current = null;
+    pendingPreviousNavigationRef.current = false;
+    updateNavigationAvailability();
+  }, [updateNavigationAvailability]);
   const handleTimelineScroll = useCallback(() => {
     handleScroll();
-    updatePreviousTurnAvailability();
-    updateNextTurnAvailability();
-  }, [handleScroll, updateNextTurnAvailability, updatePreviousTurnAvailability]);
-
+    updateNavigationAvailability();
+  }, [handleScroll, updateNavigationAvailability]);
   useEffect(() => {
-    updatePreviousTurnAvailability();
-    updateNextTurnAvailability();
-  }, [updateNextTurnAvailability, updatePreviousTurnAvailability, visibleTurns]);
-
-  useEffect(() => {
-    if (previousTurnScrollRequestKey === 0) return;
+    const previous = navigationResetRef.current;
+    if (previous.threadId === threadId && previous.scrollRequestKey === scrollRequestKey && previous.searchKey === searchTarget?.key) return;
+    navigationResetRef.current = { threadId, scrollRequestKey, searchKey: searchTarget?.key };
+    resetNavigation();
+  }, [threadId, scrollRequestKey, searchTarget?.key, resetNavigation]);
+  useEffect(() => { updateNavigationAvailability(); }, [visibleTurns, updateNavigationAvailability]);
+  const navigateToTurn = useCallback((target: HTMLElement) => {
     const container = scrollContainerRef.current;
-    const firstCandidate = findPreviousTurn();
-    const turns = container
-      ? Array.from(container.querySelectorAll<HTMLElement>('[data-timeline-turn]'))
-      : [];
-    const firstCandidateIndex = firstCandidate ? turns.indexOf(firstCandidate) : -1;
-    const previousTurn =
-      firstCandidate && firstCandidate.dataset.turnId === lastPreviousTurnTargetIdRef.current
-        ? turns[firstCandidateIndex - 1] ?? null
-        : firstCandidate;
-    if (!container || !previousTurn) return;
-    lastPreviousTurnTargetIdRef.current = previousTurn.dataset.turnId ?? null;
-    const offset = previousTurn.getBoundingClientRect().top - container.getBoundingClientRect().top;
-    container.scrollTo({ top: container.scrollTop + offset - 8, behavior: 'smooth' });
-    if (turns.indexOf(previousTurn) === 0) {
-      onPreviousTurnAvailabilityChange?.(false);
-    }
-  }, [findPreviousTurn, onPreviousTurnAvailabilityChange, previousTurnScrollRequestKey, scrollContainerRef]);
-
+    if (!container) return;
+    navigationTargetRef.current = target.dataset.turnId ?? null;
+    preserveScrollPositionForResize();
+    const top = container.scrollTop + target.getBoundingClientRect().top - container.getBoundingClientRect().top - 8;
+    container.scrollTo({ top, behavior: 'smooth' });
+    updateNavigationAvailability();
+  }, [scrollContainerRef, preserveScrollPositionForResize, updateNavigationAvailability]);
   useEffect(() => {
-    if (nextTurnScrollRequestKey === 0) return;
+    if (!pendingPreviousNavigationRef.current || loadingEarlier) return;
+    const target = findTurn(-1);
+    if (!target) return;
+    pendingPreviousNavigationRef.current = false;
+    navigateToTurn(target);
+  }, [visibleTurns, loadingEarlier, findTurn, navigateToTurn]);
+  useEffect(() => {
+    const previousChanged = handledNavigationRef.current.previous !== previousTurnScrollRequestKey;
+    const nextChanged = handledNavigationRef.current.next !== nextTurnScrollRequestKey;
+    handledNavigationRef.current = { previous: previousTurnScrollRequestKey, next: nextTurnScrollRequestKey };
+    if (!previousChanged && !nextChanged) return;
+    const target = findTurn(previousChanged ? -1 : 1);
     const container = scrollContainerRef.current;
-    const firstCandidate = findNextTurn();
-    const turns = container
-      ? Array.from(container.querySelectorAll<HTMLElement>('[data-timeline-turn]'))
-      : [];
-    const firstCandidateIndex = firstCandidate ? turns.indexOf(firstCandidate) : -1;
-    const nextTurn =
-      firstCandidate && firstCandidate.dataset.turnId === lastNextTurnTargetIdRef.current
-        ? turns[firstCandidateIndex + 1] ?? null
-        : firstCandidate;
-    if (!container || !nextTurn) return;
-    lastNextTurnTargetIdRef.current = nextTurn.dataset.turnId ?? null;
-    const offset = nextTurn.getBoundingClientRect().top - container.getBoundingClientRect().top;
-    container.scrollTo({ top: container.scrollTop + offset - 8, behavior: 'smooth' });
-    if (turns.indexOf(nextTurn) === turns.length - 1) {
-      onNextTurnAvailabilityChange?.(false);
+    if (!target && previousChanged && hiddenCount > 0 && !loadingEarlier && container) {
+      navigationTargetRef.current = container.querySelector<HTMLElement>('[data-timeline-turn]')?.dataset.turnId ?? null;
+      pendingPreviousNavigationRef.current = true;
+      handleLoadEarlierClick();
+      return;
     }
-  }, [findNextTurn, nextTurnScrollRequestKey, onNextTurnAvailabilityChange, scrollContainerRef]);
-
+    if (!target || !container) return;
+    pendingPreviousNavigationRef.current = false;
+    navigateToTurn(target);
+  }, [previousTurnScrollRequestKey, nextTurnScrollRequestKey, findTurn, scrollContainerRef, hiddenCount, loadingEarlier, handleLoadEarlierClick, navigateToTurn]);
   return (
     <>
       <section className={`flex min-h-0 flex-1 flex-col ${className}`.trim()}>
@@ -562,8 +571,10 @@ function ThreadTimelineComponent({
           ref={scrollContainerRef}
           data-testid="thread-scroll-container"
           onScroll={handleTimelineScroll}
-          onWheel={handleWheel}
-          onTouchStart={handleTouchStart}
+          onWheel={(event) => { resetNavigation(); handleWheel(event); }}
+          onTouchStart={(event) => { resetNavigation(); handleTouchStart(event); }}
+          onPointerDown={resetNavigation}
+          onKeyDown={(event) => { if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(event.key)) resetNavigation(); }}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
           onTouchCancel={handleTouchEnd}
@@ -953,6 +964,7 @@ function ThreadTimelineComponent({
         open={expandedText !== null}
         title={expandedText?.title ?? 'Full text'}
         text={expandedText?.text ?? ''}
+        kind={expandedText?.kind}
         onClose={closeExpandedText}
       />
     </>

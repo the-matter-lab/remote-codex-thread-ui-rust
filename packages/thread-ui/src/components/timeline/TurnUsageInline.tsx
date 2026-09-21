@@ -66,7 +66,7 @@ export function TurnUsageInline({ turn, readOnly = false }: { turn: TimelineTurn
         className="thread-turn-usage-model"
         title={formatTurnRuntimeSummary(turn)}
       >
-        {turn.model?.trim() || 'Model unavailable'}
+        <span className="thread-turn-usage-model-name">{turn.model?.trim() || 'Model unavailable'}</span>
         {turn.reasoningEffort?.trim() ? <span className="thread-turn-usage-effort"> · {turn.reasoningEffort.trim()}</span> : null}
       </span>
       {counts.length > 0 ? (

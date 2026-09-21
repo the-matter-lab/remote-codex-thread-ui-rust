@@ -21,7 +21,8 @@
       "types": "./dist/workspace-panel.d.ts",
       "import": "./dist/workspace-panel.js"
     },
-    "./styles.css": "./src/styles.css"
+    "./styles.css": "./src/styles.css",
+    "./settings.css": "./src/styles/settings.css"
   },
   "files": [
     "dist/",

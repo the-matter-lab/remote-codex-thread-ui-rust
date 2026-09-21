@@ -28,6 +28,9 @@ export interface PublicTranscriptSnapshot {
   turns: PublicTranscriptTurn[];
   theme?: 'light' | 'dark';
   images?: Record<string, string>;
+  live?: boolean;
+  stale?: boolean;
+  updatedAt?: string;
 }
 
 export function transcriptSnapshot(title: string, turns: ThreadTurnDto[], theme: 'light' | 'dark'): PublicTranscriptSnapshot {
@@ -59,7 +62,7 @@ export function PublicTranscript({snapshot}: {snapshot: PublicTranscriptSnapshot
   </GraphChatMessageFrame>;
   return <main className="public-transcript thread-ui-shell" data-theme-effective={snapshot.theme ?? 'dark'}>
     <div className="public-transcript-content">
-      <header className="public-transcript-header"><h1>{snapshot.title}</h1><p>Read-only snapshot · {snapshot.turnCount} turns</p></header>
+      <header className="public-transcript-header"><h1>{snapshot.title}</h1><p>{snapshot.live ? 'Live read-only thread' : 'Read-only snapshot'} · {snapshot.turnCount} turns{snapshot.live && snapshot.updatedAt ? ` · Updated ${new Date(snapshot.updatedAt).toLocaleString()}` : ''}</p>{snapshot.stale && <p role="status">The device is unavailable. Showing the last published version.</p>}</header>
       {snapshot.turns.map((turn, index) => {
         const displayTurn: ThreadTurnDto = {id:`snapshot-${index}`,status:'completed',error:null,items:[],startedAt:turn.startedAt ?? null,completedAt:turn.completedAt ?? null,model:turn.model ?? null,reasoningEffort:turn.reasoningEffort ?? null,tokenUsage:turn.tokenUsage ?? null,priceEstimate:turn.priceEstimate ?? null};
         return <section key={index} className="thread-graph-turn public-transcript-turn">

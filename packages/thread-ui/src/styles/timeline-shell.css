@@ -450,12 +450,17 @@
 @media (max-width: 640px) {
   .thread-ui-shell .thread-turn-usage { flex-wrap: nowrap; gap: 0.4rem; }
   .thread-ui-shell .thread-turn-usage-model {
+    display: flex;
+    min-width: 0;
+  }
+  .thread-ui-shell .thread-turn-usage-model-name {
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow-wrap: normal;
   }
-  .thread-ui-shell .thread-turn-usage-effort,
+  .thread-ui-shell .thread-turn-usage-effort { flex-shrink: 0; white-space: pre; }
   .thread-ui-shell .thread-turn-usage-tokens > span:not(:first-child) { display: none; }
   .thread-ui-shell .thread-turn-usage-tokens,
   .thread-ui-shell .thread-turn-usage-price { flex-shrink: 0; }

@@ -214,6 +214,7 @@ export const GraphChatCompactMessageItem = memo(
 
     return (
       <GraphChatMessageFrame
+        messageId={item.id}
         kind={item.kind}
         status={
           queuedLikeStatus

@@ -1,6 +1,7 @@
 import {
   memo,
   useCallback,
+  useContext,
   useMemo,
   useState,
   type RefCallback,
@@ -58,6 +59,8 @@ import {
 import { TurnTokenSummary } from './tokenFormatting';
 import { deriveDisplayedLivePlan, TurnStatusBar } from './turnStatus';
 import { TurnUsageInline } from './TurnUsageInline';
+import { WorkbenchContext } from '../WorkbenchContext';
+import { useAppShellNav } from '../../app-shell/AppShellNavContext';
 
 type LivePlan = {
   turnId: string;
@@ -132,6 +135,8 @@ export const HistoryItemRow = memo(function HistoryItemRow({
   timeMeta,
   autoOpenToolDetails = false,
 }: HistoryItemRowProps) {
+  const shellNav = useAppShellNav();
+  if (item.kind === 'reasoning' && !shellNav?.showReasoningSummaries) return null;
   if (isCompactChatItem(item.kind)) {
     return (
       <CompactMessageItem
@@ -478,83 +483,7 @@ export function formatWorkedDuration(
   return `Worked for ${seconds}s`;
 }
 
-function formatRelativeTurnTime(
-  startedAt: string | null | undefined,
-  timestamp: string | null | undefined,
-) {
-  const startMillis = Date.parse(startedAt ?? '');
-  const itemMillis = Date.parse(timestamp ?? '');
-  if (!Number.isFinite(startMillis) || !Number.isFinite(itemMillis)) {
-    return timestamp ? formatShortTimestamp(timestamp) : 'Time unavailable';
-  }
-
-  const totalSeconds = Math.max(
-    0,
-    Math.round((itemMillis - startMillis) / 1000),
-  );
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-
-  if (hours > 0) {
-    return `${hours}h ${minutes}m`;
-  }
-  if (minutes > 0) {
-    return `${minutes}m ${seconds}s`;
-  }
-  return `${seconds}s`;
-}
-
-function TimelineTimeToggle({
-  absoluteLabel,
-  className = '',
-  timestamp,
-  endTimestamp,
-  turnStartedAt,
-}: {
-  absoluteLabel: string;
-  endTimestamp?: string | null | undefined;
-  className?: string;
-  timestamp: string | null | undefined;
-  turnStartedAt: string | null | undefined;
-}) {
-  const [showAbsolute, setShowAbsolute] = useState(false);
-  if (!timestamp) {
-    return null;
-  }
-
-  const absoluteTitle = formatLongTimestamp(timestamp);
-  const relativeLabel = formatRelativeTurnTime(turnStartedAt, timestamp);
-  const hasRange = endTimestamp && endTimestamp !== timestamp;
-  const label = showAbsolute
-    ? absoluteLabel + (hasRange ? ` – ${formatShortTimestamp(endTimestamp)}` : '')
-    : relativeLabel + (hasRange ? ` – ${formatRelativeTurnTime(turnStartedAt, endTimestamp)}` : '');
-
-  return (
-    <span
-      role="button"
-      tabIndex={0}
-      className={`thread-graph-relative-time rounded-full px-1.5 py-0.5 ${className}`}
-      title={showAbsolute ? relativeLabel : absoluteTitle}
-      aria-label={`Toggle timestamp, currently ${label}`}
-      onClick={(event) => {
-        event.stopPropagation();
-        setShowAbsolute((value) => !value);
-      }}
-      onKeyDown={(event) => {
-        if (event.key !== 'Enter' && event.key !== ' ') {
-          return;
-        }
-        event.preventDefault();
-        event.stopPropagation();
-        setShowAbsolute((value) => !value);
-      }}
-    >
-      <time dateTime={timestamp}>{label}</time>
-    </span>
-  );
-}
-
+import { TimelineTimeToggle } from './TimelineTimeToggle';
 function firstHistoryEntryTimestamp(
   entry: TimelineHistoryEntry,
 ): string | null {
@@ -640,6 +569,7 @@ export const ThreadTurnRow = memo(function ThreadTurnRow({
   articleRef,
   isLatestVisibleTurn = false,
 }: ThreadTurnRowProps) {
+  const showReasoningSummaries = useAppShellNav()?.showReasoningSummaries ?? false;
   const hasLiveActivity =
     Boolean(livePlan) ||
     Boolean(liveOutput) ||
@@ -673,8 +603,8 @@ export const ThreadTurnRow = memo(function ThreadTurnRow({
     [liveOutput, mergedItems],
   );
   const preparedItems = useMemo(
-    () => prepareTurnItemsForRendering(mergedItems, activeForRendering),
-    [activeForRendering, mergedItems],
+    () => prepareTurnItemsForRendering(mergedItems, activeForRendering).filter(item => showReasoningSummaries || item.kind !== 'reasoning'),
+    [activeForRendering, mergedItems, showReasoningSummaries],
   );
   const groupedItems = useMemo(
     // Published results belong below the reply, outside the work disclosure.
@@ -696,6 +626,7 @@ export const ThreadTurnRow = memo(function ThreadTurnRow({
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(
     {},
   );
+  const workbench = useContext(WorkbenchContext);
 
   const toggleGroupedItem = useCallback((groupKey: string) => {
     setExpandedGroups((current) => ({
@@ -706,7 +637,7 @@ export const ThreadTurnRow = memo(function ThreadTurnRow({
 
   const renderHistoryEntries = (entries: TimelineHistoryEntry[]) => (
     <TimelineHistoryEntries
-      entries={entries}
+      entries={workbench ? entries.flatMap(entry => entry.kind === 'agentActivityGroup' ? entry.entries : [entry]) : entries}
       expandedGroups={expandedGroups}
       onToggleGroupedItem={toggleGroupedItem}
       threadId={threadId}
@@ -849,13 +780,14 @@ export const ThreadTurnRow = memo(function ThreadTurnRow({
           {interruptedLabel}
           <ChevronRight className={`h-4 w-4 shrink-0 transition ${effectiveCollapsed ? '' : 'rotate-90'}`} />
           </button>
+          <span className="thread-execution-step-count">{turn.deferredItemCount ?? collapsedSummary.hiddenEntries.length} steps</span>
           <TurnUsageInline turn={turn} />
           <span
             className="thread-graph-worked-rule h-px min-w-0 flex-1"
             aria-hidden="true"
           />
         </div>
-        {!effectiveCollapsed ? renderHistoryEntries(collapsedSummary.hiddenEntries) : null}
+        {!effectiveCollapsed ? <div className="thread-execution-timeline">{renderHistoryEntries(collapsedSummary.hiddenEntries)}</div> : null}
         {visibleSummaryAgent ? (
           <CompactMessageItem
             threadId={threadId}
@@ -1001,6 +933,7 @@ function TimelineHistoryEntries({
           expanded={expanded}
           onToggleExpanded={onToggleExpanded}
           onOpen={onOpenCommandDetail}
+          renderItemTime={relativeTimeMeta}
           timeMeta={relativeTimeMeta(firstHistoryEntryTimestamp(entry), lastHistoryEntryTimestamp(entry))}
         />
       )}
@@ -1010,7 +943,8 @@ function TimelineHistoryEntries({
           items={entry.items}
           expanded={expanded}
           onToggleExpanded={onToggleExpanded}
-          onOpen={onOpenExpandedText}
+          onOpen={(item, title) => onOpenDeferredHistoryItemDetail(item, title, item.detailText ?? item.text, 'Loading file changes...', 'Unable to load file changes.')}
+          renderItemTime={relativeTimeMeta}
           timeMeta={relativeTimeMeta(firstHistoryEntryTimestamp(entry), lastHistoryEntryTimestamp(entry))}
         />
       )}
@@ -1095,7 +1029,7 @@ function TimelineHistoryEntries({
             threadId={threadId}
             item={entry.item}
             scrollRootRef={scrollRootRef}
-            timeLabel={timeLabel}
+            timeLabel={isAgentMessage ? relativeTimeMeta(timestamp) : timeLabel}
             timeTitle={
               entry.item.createdAt
                 ? formatLongTimestamp(timestamp)

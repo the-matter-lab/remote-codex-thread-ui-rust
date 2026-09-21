@@ -10,6 +10,7 @@ import type { ThreadTurnDto } from '@remote-codex/shared';
 
 import { ThreadTimeline } from './ThreadTimeline';
 import { createDefaultPluginContextValue, PluginContext } from '../plugins/plugin-context';
+vi.mock('../app-shell/AppShellNavContext', () => ({ useAppShellNav: () => ({ showReasoningSummaries: true }) }));
 import {
   formatPreciseMessageTimestamp,
   formatShortTimestamp,
@@ -748,7 +749,7 @@ describe('ThreadTimeline', () => {
     expect(commandToggle()?.getAttribute('aria-expanded')).toBe('true');
   });
 
-  it('auto-collapses a single tool item after newer live history arrives', () => {
+  it('shows file paths directly without opening a summary or details pane', () => {
     const startedAt = new Date(Date.UTC(2026, 6, 3, 20, 10, 0)).toISOString();
     const fileReadAt = new Date(Date.UTC(2026, 6, 3, 20, 10, 5)).toISOString();
     const laterAgentAt = new Date(
@@ -787,10 +788,10 @@ describe('ThreadTimeline', () => {
     expect(
       Array.from(element.querySelectorAll('button'))
         .find((button) =>
-          button.getAttribute('aria-label')?.includes('Read history item'),
+          button.getAttribute('aria-label') === 'Show full file path',
         )
         ?.getAttribute('aria-expanded'),
-    ).toBe('true');
+    ).toBe('false');
 
     flushSync(() => {
       root?.render(
@@ -823,7 +824,7 @@ describe('ThreadTimeline', () => {
     expect(
       Array.from(element.querySelectorAll('button'))
         .find((button) =>
-          button.getAttribute('aria-label')?.includes('Read history item'),
+          button.getAttribute('aria-label') === 'Show full file path',
         )
         ?.getAttribute('aria-expanded'),
     ).toBe('false');

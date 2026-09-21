@@ -1,3 +1,4 @@
+import { SettingsPanels } from "./SettingsPanels";
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
@@ -7,6 +8,7 @@ import {
   Copy,
   Folder,
   MessageSquare,
+  MoreHorizontal,
   LoaderCircle,
   CircleAlert,
   Monitor,
@@ -17,6 +19,7 @@ import {
   Plus,
   Rows3,
   Settings,
+  Star,
   Sun,
   Trash2,
   X,
@@ -30,6 +33,7 @@ import {
   threadStatusLabel,
 } from "./threadPresentation";
 import { RenameDialog } from "./RenameDialog";
+import { MatterWorkbench, type MatterWorkbenchOptions } from './MatterWorkbench';
 import type { ThemeMode } from "../app-shell/AppShellNavContext";
 import {
   GraphChatMainShell,
@@ -67,6 +71,7 @@ const THEME_MODE_OPTIONS: Array<{
 ];
 
 interface ThreadWorkspaceLayoutProps {
+  workbench?: MatterWorkbenchOptions;
   threads: ThreadDto[];
   status?: AgentRuntimeStatusDto | null;
   loading?: boolean;
@@ -98,6 +103,7 @@ interface ThreadWorkspaceLayoutProps {
   metaContent?: ReactNode;
   settingsContent?: ReactNode;
   globalSettingsContent?: ReactNode;
+  settingsSections?: import("./SettingsPanels").SettingsSection[];
   appMenuButton?: ReactNode;
   appNavigationMenu?: ReactNode;
   workspaceReturnHref?: string;
@@ -397,6 +403,7 @@ export function ThreadCards({
 }
 
 export function ThreadWorkspaceLayout({
+  workbench,
   threads,
   status,
   loading = false,
@@ -425,6 +432,7 @@ export function ThreadWorkspaceLayout({
   metaContent,
   settingsContent,
   globalSettingsContent,
+  settingsSections,
   workspaceLabels = {},
   workspaceReturnHref,
   onWorkspaceReturn,
@@ -494,9 +502,17 @@ export function ThreadWorkspaceLayout({
   const [newThreadTitleDraft, setNewThreadTitleDraft] = useState("");
   const [creatingThread, setCreatingThread] = useState(false);
   const [topbarDetailsOpen, setTopbarDetailsOpen] = useState(false);
-  const [settingsTab, setSettingsTab] = useState<"session" | "global">(
-    "session",
-  );
+
+  const [sessionCopyNotice, setSessionCopyNotice] = useState('');
+  useEffect(() => setSessionCopyNotice(''), [currentThreadId]);
+  async function copySessionValue(value: string, label: string) {
+    try {
+      await navigator.clipboard.writeText(value);
+      setSessionCopyNotice(`${label} copied`);
+    } catch {
+      setSessionCopyNotice('Copy failed. Clipboard access is unavailable.');
+    }
+  }
 
   useEffect(() => {
     if (workspaceRevealRequestKey === undefined) {
@@ -773,20 +789,16 @@ export function ThreadWorkspaceLayout({
       !settingsContent &&
       !metaContent &&
       !globalSettingsContent &&
+      !settingsSections?.length &&
       !canUpdateThemeMode
     ) {
       return null;
     }
 
-    const hasSessionSettings = Boolean(settingsContent || metaContent);
-    const hasGlobalSettings = Boolean(globalSettingsContent);
-    const showSettingsTabs = hasSessionSettings && hasGlobalSettings;
-    const activeSettingsTab =
-      settingsTab === "global" && hasGlobalSettings
-        ? "global"
-        : !hasSessionSettings && hasGlobalSettings
-          ? "global"
-          : "session";
+    const sections = [
+      ...(settingsContent || metaContent ? [{ id: "session", label: "Session", description: "Controls and details for this conversation.", content: <div className="space-y-5">{settingsContent}{metaContent && <details className="settings-detail"><summary>Session details</summary><div>{metaContent}</div></details>}</div> }] : []),
+      ...(settingsSections ?? (globalSettingsContent ? [{ id: "preferences", label: "Preferences", content: globalSettingsContent }] : [])),
+    ];
 
     return (
       <Dialog
@@ -811,15 +823,16 @@ export function ThreadWorkspaceLayout({
           data-testid="settings-dialog"
           data-theme-effective={effectiveTheme}
           data-theme-mode={themeMode}
-          className="thread-graph-settings-dialog thread-graph-dialog"
+          className={`thread-graph-settings-dialog thread-graph-dialog ${workbench ? 'matter-settings-dialog' : ''}`}
+          {...(workbench ? { overlayClassName: 'matter-settings-overlay' } : {})}
         >
           <DialogHeader>
             <DialogTitle>Settings</DialogTitle>
             <DialogDescription>
-              Manage this session and host-wide preferences.
+              Your workspace, connected device, and personal preferences.
             </DialogDescription>
           </DialogHeader>
-          {canUpdateThemeMode ? (
+          {canUpdateThemeMode && !settingsSections ? (
             <div className="thread-graph-settings-card rounded-lg border p-3">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0">
@@ -860,55 +873,7 @@ export function ThreadWorkspaceLayout({
               </div>
             </div>
           ) : null}
-          {showSettingsTabs ? (
-            <div className="thread-graph-settings-tabs grid grid-cols-2 gap-1 rounded-lg border p-1">
-              <button
-                type="button"
-                aria-pressed={activeSettingsTab === "session"}
-                onClick={() => setSettingsTab("session")}
-                className={`thread-graph-settings-tab-button rounded-md px-3 py-2 text-sm font-medium transition ${
-                  activeSettingsTab === "session" ? "is-active" : ""
-                }`}
-              >
-                Session
-              </button>
-              <button
-                type="button"
-                aria-pressed={activeSettingsTab === "global"}
-                onClick={() => setSettingsTab("global")}
-                className={`thread-graph-settings-tab-button rounded-md px-3 py-2 text-sm font-medium transition ${
-                  activeSettingsTab === "global" ? "is-active" : ""
-                }`}
-              >
-                Global
-              </button>
-            </div>
-          ) : null}
-          <div className="thread-graph-settings-body mt-2 min-h-0 pr-1 text-sm">
-            {activeSettingsTab === "session" ? (
-              <div className="grid gap-4">
-                {settingsContent ? (
-                  <div className="thread-graph-settings-card rounded-lg border p-3">
-                    {settingsContent}
-                  </div>
-                ) : null}
-                {metaContent ? (
-                  <div className="thread-graph-settings-card rounded-lg border p-3">
-                    {metaContent}
-                  </div>
-                ) : null}
-                {!hasSessionSettings ? (
-                  <div className="thread-graph-settings-card rounded-lg border p-3 text-[var(--theme-fg-muted)]">
-                    No session settings are available.
-                  </div>
-                ) : null}
-              </div>
-            ) : (
-              <div className="thread-graph-settings-global-content">
-                {globalSettingsContent}
-              </div>
-            )}
-          </div>
+          <SettingsPanels sections={sections} initialId="preferences" />
         </DialogContent>
       </Dialog>
     );
@@ -1070,6 +1035,43 @@ export function ThreadWorkspaceLayout({
       <ArrowLeft className="h-4 w-4" />
     </a>
   ) : null;
+
+  if (workbench) {
+    return <GraphChatShellRoot effectiveTheme={effectiveTheme} layoutMode={layoutMode} themeMode={themeMode} viewportConstrained={viewportConstrained}>
+      <MatterWorkbench options={{ ...workbench,
+        renderNavigationHeader: workbench.renderNavigationHeader ?? renderNavigationHeader,
+        renderThreadMenu: workbench.renderThreadMenu ?? (entry => {
+          const thread = threads.find(value => value.id === entry.key);
+          if (!thread) return null;
+          return <details className="matter-thread-menu">
+            <summary aria-label={`Actions for ${entry.title}`} title={`Actions for ${entry.title}`}><MoreHorizontal size={16} /></summary>
+            <div>
+              {onRenameThread && <button onClick={event => { beginRenameThread(thread); event.currentTarget.closest('details')?.removeAttribute('open'); }}><Pencil size={14} />Rename thread</button>}
+              {onDeleteThread && <button onClick={event => { onDeleteThread(thread); event.currentTarget.closest('details')?.removeAttribute('open'); }}><Trash2 size={14} />Delete thread</button>}
+            </div>
+          </details>;
+        }),
+      }} title={currentThreadLabel ?? 'New thread'} homeHref={workspaceReturnHref ?? '/workspaces'}
+        settings={renderSettingsDialog()} newThread={renderNewThreadDialogButton('matter-new-thread', true)}
+        actions={threadActionsButton} connection={topbarActions ?? mobileHeaderAction}
+        threadMenu={<details className="matter-thread-menu">
+          <summary aria-label="Thread actions" title="Thread actions"><MoreHorizontal size={16} /></summary>
+          <div>
+            {workbench.showShortcuts !== false && <button disabled={workbench.favoriteBusy} onClick={event => { workbench.onToggleFavorite(); event.currentTarget.closest('details')?.removeAttribute('open'); }}><Star size={14} fill={workbench.favorite ? 'currentColor' : 'none'} />{workbench.favorite ? 'Unstar thread' : 'Star thread'}</button>}
+            {onRenameThread && <button onClick={event => { const thread = threads.find(t => t.id === currentThreadId); if (thread) beginRenameThread(thread); event.currentTarget.closest('details')?.removeAttribute('open'); }}><Pencil size={14} />Rename thread</button>}
+            <button disabled={!currentThreadId} onClick={() => currentThreadId && void copySessionValue(currentThreadId, workbench.brandName ? 'Conversation ID' : 'Remote Codex session ID')}><Copy size={14} />{workbench.brandName ? 'Copy conversation ID' : 'Copy Remote Codex session ID'}</button>
+            {(!workbench.brandName || workbench.harnessSessionId) && <button disabled={!workbench.harnessSessionId} title={workbench.harnessSessionId ?? 'The harness has not assigned a session ID yet.'} onClick={() => workbench.harnessSessionId && void copySessionValue(workbench.harnessSessionId, 'Harness session ID')}><Copy size={14} />Copy harness session ID</button>}
+            {workbench.harnessSessionUrl && <button onClick={() => void copySessionValue(workbench.harnessSessionUrl!, 'Codex deeplink')}><Copy size={14} />Copy Codex deeplink</button>}
+            {onDeleteThread && <button onClick={event => { const thread = threads.find(t => t.id === currentThreadId); if (thread) onDeleteThread(thread); event.currentTarget.closest('details')?.removeAttribute('open'); }}><Trash2 size={14} />Delete thread</button>}
+            {sessionCopyNotice && <p role="status" className="matter-copy-notice">{sessionCopyNotice}</p>}
+          </div>
+        </details>}
+        explorer={workspaceContent} revealExplorer={workspaceRevealRequestKey ?? 0}>
+        {children}
+      </MatterWorkbench>
+      <RenameDialog open={editingThreadId !== null} title="Rename Thread" label="Thread Title" value={draftTitle} busy={renamingThreadId !== null} onChange={setDraftTitle} onCancel={cancelRenameThread} onSubmit={() => editingThreadId ? handleRenameThread(editingThreadId) : undefined} />
+    </GraphChatShellRoot>;
+  }
 
   return (
     <>

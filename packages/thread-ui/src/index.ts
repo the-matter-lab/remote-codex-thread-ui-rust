@@ -4,6 +4,7 @@ import './styles/layout-workspace.css';
 import './styles/history-markdown.css';
 import './styles/composer-plan.css';
 import './styles/export-dialog.css';
+import './styles/matter-workbench.css';
 
 export type {
   ShellSocketConnection,
@@ -95,6 +96,9 @@ export {
   type AppShellNavigationMenuProps,
   type AppShellSettingsDialogProps,
 } from './app-shell/AppShellNavigation';
+export type { MatterWorkbenchOptions, WorkbenchThread, WorkbenchNotification } from './components/MatterWorkbench';
+export { MatterWorkbench } from './components/MatterWorkbench';
 export { PublicTranscript, transcriptSnapshot, type PublicTranscriptSnapshot } from './components/PublicTranscript';
 
 export { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./components/graph-ui/Dialog";
+export { SettingsPanels, type SettingsSection } from './components/SettingsPanels';

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import type {
   ThreadHistoryItemDetailDto,
@@ -8,6 +8,7 @@ import type {
 export interface ExpandedTextState {
   title: string;
   text: string;
+  kind?: string;
 }
 
 type HistoryItemDetailLoader = (
@@ -57,8 +58,14 @@ export function useDeferredHistoryDetail({
   const [expandedText, setExpandedText] = useState<ExpandedTextState | null>(
     null,
   );
+  useEffect(() => {
+    requestIdRef.current += 1;
+    detailCacheRef.current.clear();
+    setExpandedText(null);
+  }, [loadHistoryItemDetail]);
 
   const openExpandedText = useCallback((title: string, text: string) => {
+    requestIdRef.current += 1;
     setExpandedText({ title, text });
   }, []);
 
@@ -72,7 +79,7 @@ export function useDeferredHistoryDetail({
         onSelectHistoryItemDetail({ item, detail });
         return;
       }
-      setExpandedText({ title: detail.title, text: detail.text });
+      setExpandedText({ title: detail.title, text: detail.text, ...(item.kind === 'fileChange' ? { kind: item.kind } : {}) });
     },
     [onSelectHistoryItemDetail],
   );
@@ -86,7 +93,8 @@ export function useDeferredHistoryDetail({
       errorText,
       useSelectionCallback,
     }: OpenDeferredDetailInput) => {
-      if (!item.hasDeferredDetail || !loadHistoryItemDetail) {
+      const requestId = ++requestIdRef.current;
+      if (!loadHistoryItemDetail || (!item.hasDeferredDetail && item.kind !== 'commandExecution' && item.kind !== 'fileChange')) {
         resolveDetail(
           item,
           inlineDetail(item, fallbackTitle, fallbackText),
@@ -95,21 +103,20 @@ export function useDeferredHistoryDetail({
         return;
       }
 
-      const cached = detailCacheRef.current.get(item.id);
+      const cacheKey = `${item.id}:${item.status ?? ''}`;
+      const cached = detailCacheRef.current.get(cacheKey);
       if (cached) {
         resolveDetail(item, cached, useSelectionCallback);
         return;
       }
 
-      const requestId = requestIdRef.current + 1;
-      requestIdRef.current = requestId;
       if (!(useSelectionCallback && onSelectHistoryItemDetail)) {
         setExpandedText({ title: fallbackTitle, text: loadingText });
       }
 
       try {
         const detail = await loadHistoryItemDetail(item.id);
-        detailCacheRef.current.set(item.id, detail);
+        if (!['running', 'in_progress', 'pending'].includes(item.status ?? '')) detailCacheRef.current.set(cacheKey, detail);
         if (requestIdRef.current !== requestId) {
           return;
         }

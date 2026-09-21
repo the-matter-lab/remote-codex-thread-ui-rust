@@ -1,16 +1,32 @@
 import {
+  IMAGE_EXTENSIONS,
+  MOLECULAR_EXTENSIONS,
+  PDF_EXTENSIONS,
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
   WorkspaceFileLink,
   ZoomableImage,
+  ancestorDirectoryPaths,
+  buildMoleculePreviewSnapshot,
+  collectAncestorPaths,
+  collectArtifacts,
+  collectWorkspaceItems,
+  extensionOf,
   externalLinkProps,
+  findFirstPreviewNode,
+  findFirstWorkspaceFile,
+  flattenWorkspaceNodes,
   getGraphChatHighlighter,
+  hasWorkspacePath,
+  languageForPath,
   localFileHref,
   normalizeFileSystemPath,
   relativeWorkspacePath,
-  workspaceDisplayPath
-} from "./chunk-MJXXSQ3O.js";
+  workspaceDisplayPath,
+  workspaceRelativeFocusPath,
+  workspaceTreeNodeToGraphNode
+} from "./chunk-EIYY5M5B.js";
 import {
   GraphMoleculeViewer
 } from "./chunk-P5VNU6PI.js";
@@ -31,298 +47,6 @@ import { useEffect as useEffect5, useLayoutEffect as useLayoutEffect2, useRef as
 
 // src/components/graph-workspace/explorer/useWorkspaceExplorerController.ts
 import { useCallback, useEffect, useMemo as useMemo2, useRef, useState } from "react";
-
-// src/components/graph-workspace/workspaceTree.ts
-var MOLECULAR_EXTENSIONS = /* @__PURE__ */ new Set(["xyz", "extxyz", "cif", "pdb"]);
-var IMAGE_EXTENSIONS = /* @__PURE__ */ new Set([
-  "png",
-  "jpg",
-  "jpeg",
-  "gif",
-  "webp",
-  "svg"
-]);
-var PDF_EXTENSIONS = /* @__PURE__ */ new Set(["pdf"]);
-function collectArtifacts(detail) {
-  const artifacts = [];
-  for (const turn of detail.turns) {
-    for (const item of turn.items) {
-      if (item.kind === "artifact" && item.artifact) {
-        artifacts.push(item.artifact);
-      }
-    }
-  }
-  for (const item of detail.liveItems?.items ?? []) {
-    if (item.kind === "artifact" && item.artifact) {
-      artifacts.push(item.artifact);
-    }
-  }
-  return artifacts;
-}
-function sanitizePathSegment(value) {
-  return value.trim().replace(/^\/+|\/+$/g, "").replace(/[^\w.-]+/g, "-").replace(/^-+|-+$/g, "").toLowerCase();
-}
-function extensionOf(path) {
-  return path.split(".").pop()?.toLowerCase() || "";
-}
-function fileNameFromPath(path) {
-  return path.split("/").filter(Boolean).at(-1) ?? path;
-}
-function workspaceTreeNodeToGraphNode(node) {
-  const kind = node.kind === "directory" ? "directory" : "file";
-  const normalized = normalizeFileSystemPath(node.path);
-  const path = normalized.startsWith("/") || /^[a-z]:\//i.test(normalized) ? normalized : relativeWorkspacePath(normalized, "") ?? normalized;
-  const children = (node.children ?? []).map(workspaceTreeNodeToGraphNode);
-  return {
-    id: `workspace:${path}`,
-    name: node.name,
-    path,
-    kind,
-    ...node.size !== void 0 ? { size: node.size } : {},
-    ...node.hasChildren !== void 0 ? { hasChildren: node.hasChildren } : kind === "directory" ? { hasChildren: children.length > 0 } : {},
-    ...node.childrenLoaded !== void 0 ? { childrenLoaded: node.childrenLoaded } : kind === "directory" ? { childrenLoaded: node.children !== void 0 } : {},
-    ...node.truncated !== void 0 ? { truncated: node.truncated } : {},
-    workspaceNode: { ...node, path },
-    children
-  };
-}
-function findFirstWorkspaceFile(node) {
-  if (node.kind === "file") {
-    return node;
-  }
-  for (const child of node.children) {
-    const found = findFirstWorkspaceFile(child);
-    if (found) {
-      return found;
-    }
-  }
-  return null;
-}
-function normalizeWorkspacePath(path) {
-  return path.trim().replace(/\\/g, "/").replace(/^\.\/+/, "").replace(/^\/+/, "");
-}
-function workspaceRelativeFocusPath(path, workspaceRootPath) {
-  return relativeWorkspacePath(path, workspaceRootPath) ?? normalizeFileSystemPath(path);
-}
-function ancestorDirectoryPaths(path) {
-  const normalized = normalizeWorkspacePath(path);
-  const segments = normalized.split("/").filter(Boolean);
-  segments.pop();
-  const paths = [];
-  let current = "";
-  for (const segment of segments) {
-    current = current ? `${current}/${segment}` : segment;
-    paths.push(current);
-  }
-  return paths;
-}
-function hasWorkspacePath(node, targetPath) {
-  if (!node || !targetPath) {
-    return false;
-  }
-  if (node.path === targetPath) {
-    return true;
-  }
-  return node.children.some((child) => hasWorkspacePath(child, targetPath));
-}
-function buildMoleculePreviewSnapshot(file) {
-  if (!file) {
-    return null;
-  }
-  const extension = extensionOf(file.path);
-  if (!MOLECULAR_EXTENSIONS.has(extension)) {
-    return null;
-  }
-  return {
-    content: [file.content.endsWith("\n") ? file.content : `${file.content}
-`],
-    format: extension === "extxyz" ? "xyz" : extension,
-    name: file.name,
-    uuid: file.path
-  };
-}
-function languageForPath(path) {
-  const extension = extensionOf(path);
-  if (extension === "tsx" || extension === "jsx") {
-    return "tsx";
-  }
-  if (extension === "yml") {
-    return "yaml";
-  }
-  return extension || "text";
-}
-function ensureDirectory(root, segments) {
-  let current = root;
-  let path = "";
-  for (const segment of segments) {
-    path = path ? `${path}/${segment}` : segment;
-    let child = current.children.find(
-      (node) => node.kind === "directory" && node.name === segment
-    );
-    if (!child) {
-      child = {
-        id: `dir:${path}`,
-        name: segment,
-        path,
-        kind: "directory",
-        children: []
-      };
-      current.children.push(child);
-    }
-    current = child;
-  }
-  return current;
-}
-function addPathNode(root, path, node) {
-  const segments = path.split("/").filter(Boolean);
-  const fileName = segments.pop() ?? node.name;
-  const parent = ensureDirectory(root, segments);
-  parent.children.push({
-    ...node,
-    name: node.name || fileName,
-    path
-  });
-}
-function compareWorkspaceNodes(left, right) {
-  if (left.kind === "directory" && right.kind !== "directory") {
-    return -1;
-  }
-  if (left.kind !== "directory" && right.kind === "directory") {
-    return 1;
-  }
-  return left.name.localeCompare(right.name);
-}
-function sortWorkspaceTree(node) {
-  node.children.sort(compareWorkspaceNodes);
-  for (const child of node.children) {
-    sortWorkspaceTree(child);
-  }
-  return node;
-}
-function collectWorkspaceItems(detail, artifacts, status, activeView) {
-  const root = {
-    id: "root",
-    name: detail.workspace.label ?? "Workspace",
-    path: "",
-    kind: "directory",
-    children: []
-  };
-  const artifactRoot = {
-    id: "artifacts",
-    name: "artifacts",
-    path: "artifacts",
-    kind: "directory",
-    children: []
-  };
-  for (const artifact of artifacts) {
-    const title = artifact.title || artifact.id;
-    const safeName = sanitizePathSegment(title) || artifact.id;
-    artifactRoot.children.push({
-      id: `artifact:${artifact.id}`,
-      name: `${safeName}.artifact`,
-      path: `artifacts/${safeName}.artifact`,
-      kind: "artifact",
-      artifact,
-      preview: artifact.summaryText ?? artifact.type,
-      detail: JSON.stringify(artifact.payload, null, 2),
-      children: []
-    });
-  }
-  const eventRoot = {
-    id: "thread-events",
-    name: "thread-events",
-    path: "thread-events",
-    kind: "directory",
-    children: []
-  };
-  const liveRoot = {
-    id: "live",
-    name: "live",
-    path: "live",
-    kind: "directory",
-    children: []
-  };
-  let sequence = 0;
-  const addEventNode = (turnId, item, live = false) => {
-    sequence += 1;
-    const label = item.kind.replace(/([A-Z])/g, "-$1").toLowerCase();
-    const eventPath = `${live ? "live" : `thread-events/${turnId}`}/${String(
-      sequence
-    ).padStart(3, "0")}-${label}.json`;
-    const preview = "text" in item && typeof item.text === "string" ? item.text.slice(0, 160) : item.kind;
-    const artifact = item.kind === "artifact" && item.artifact ? item.artifact : null;
-    const node = artifact && live ? {
-      id: `live-artifact:${artifact.id}`,
-      name: artifact.title || artifact.id,
-      path: eventPath,
-      kind: "live-artifact",
-      artifact,
-      item,
-      preview: artifact.summaryText ?? artifact.type,
-      detail: JSON.stringify(artifact.payload, null, 2),
-      children: []
-    } : {
-      id: `event:${item.id}`,
-      name: fileNameFromPath(eventPath),
-      path: eventPath,
-      kind: "event",
-      item,
-      preview,
-      detail: JSON.stringify(item, null, 2),
-      children: []
-    };
-    if (live) {
-      liveRoot.children.push(node);
-      return;
-    }
-    addPathNode(eventRoot, eventPath.replace(/^thread-events\//, ""), node);
-  };
-  for (const turn of detail.turns) {
-    for (const item of turn.items) {
-      if (item.kind === "commandExecution" || item.kind === "webSearch" || item.kind === "fileRead" || item.kind === "fileChange" || item.kind === "agentToolCall" || item.kind === "skillToolCall" || item.kind === "toolCall" || item.kind === "hook" || item.kind === "plan" || item.kind === "reasoning") {
-        addEventNode(turn.id, item);
-      }
-    }
-  }
-  for (const item of detail.liveItems?.items ?? []) {
-    addEventNode(detail.thread.activeTurnId ?? "live", item, true);
-  }
-  void status;
-  void activeView;
-  root.children.push(artifactRoot, eventRoot, liveRoot);
-  return sortWorkspaceTree(root);
-}
-function flattenWorkspaceNodes(root) {
-  const map = /* @__PURE__ */ new Map();
-  const visit = (node) => {
-    map.set(node.id, node);
-    for (const child of node.children) {
-      visit(child);
-    }
-  };
-  visit(root);
-  return map;
-}
-function findFirstPreviewNode(node) {
-  if (node.kind === "artifact" || node.kind === "live-artifact" || node.kind === "event" || node.kind === "file") {
-    return node;
-  }
-  for (const child of node.children) {
-    const found = findFirstPreviewNode(child);
-    if (found) {
-      return found;
-    }
-  }
-  return null;
-}
-function collectAncestorPaths(path) {
-  const segments = path.split("/").filter(Boolean);
-  const paths = [];
-  for (let index = 1; index <= segments.length; index += 1) {
-    paths.push(segments.slice(0, index).join("/"));
-  }
-  return paths;
-}
 
 // src/components/graph-workspace/explorer/workspaceExplorerModel.ts
 function sourceWithoutChildren(node) {

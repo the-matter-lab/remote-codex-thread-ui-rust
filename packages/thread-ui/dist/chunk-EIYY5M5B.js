@@ -112,6 +112,298 @@ function workspaceDisplayPath(path, root) {
   return relative === null ? null : `./${relative}`;
 }
 
+// src/components/graph-workspace/workspaceTree.ts
+var MOLECULAR_EXTENSIONS = /* @__PURE__ */ new Set(["xyz", "extxyz", "cif", "pdb"]);
+var IMAGE_EXTENSIONS = /* @__PURE__ */ new Set([
+  "png",
+  "jpg",
+  "jpeg",
+  "gif",
+  "webp",
+  "svg"
+]);
+var PDF_EXTENSIONS = /* @__PURE__ */ new Set(["pdf"]);
+function collectArtifacts(detail) {
+  const artifacts = [];
+  for (const turn of detail.turns) {
+    for (const item of turn.items) {
+      if (item.kind === "artifact" && item.artifact) {
+        artifacts.push(item.artifact);
+      }
+    }
+  }
+  for (const item of detail.liveItems?.items ?? []) {
+    if (item.kind === "artifact" && item.artifact) {
+      artifacts.push(item.artifact);
+    }
+  }
+  return artifacts;
+}
+function sanitizePathSegment(value) {
+  return value.trim().replace(/^\/+|\/+$/g, "").replace(/[^\w.-]+/g, "-").replace(/^-+|-+$/g, "").toLowerCase();
+}
+function extensionOf(path) {
+  return path.split(".").pop()?.toLowerCase() || "";
+}
+function fileNameFromPath(path) {
+  return path.split("/").filter(Boolean).at(-1) ?? path;
+}
+function workspaceTreeNodeToGraphNode(node) {
+  const kind = node.kind === "directory" ? "directory" : "file";
+  const normalized = normalizeFileSystemPath(node.path);
+  const path = normalized.startsWith("/") || /^[a-z]:\//i.test(normalized) ? normalized : relativeWorkspacePath(normalized, "") ?? normalized;
+  const children = (node.children ?? []).map(workspaceTreeNodeToGraphNode);
+  return {
+    id: `workspace:${path}`,
+    name: node.name,
+    path,
+    kind,
+    ...node.size !== void 0 ? { size: node.size } : {},
+    ...node.hasChildren !== void 0 ? { hasChildren: node.hasChildren } : kind === "directory" ? { hasChildren: children.length > 0 } : {},
+    ...node.childrenLoaded !== void 0 ? { childrenLoaded: node.childrenLoaded } : kind === "directory" ? { childrenLoaded: node.children !== void 0 } : {},
+    ...node.truncated !== void 0 ? { truncated: node.truncated } : {},
+    workspaceNode: { ...node, path },
+    children
+  };
+}
+function findFirstWorkspaceFile(node) {
+  if (node.kind === "file") {
+    return node;
+  }
+  for (const child of node.children) {
+    const found = findFirstWorkspaceFile(child);
+    if (found) {
+      return found;
+    }
+  }
+  return null;
+}
+function normalizeWorkspacePath(path) {
+  return path.trim().replace(/\\/g, "/").replace(/^\.\/+/, "").replace(/^\/+/, "");
+}
+function workspaceRelativeFocusPath(path, workspaceRootPath) {
+  return relativeWorkspacePath(path, workspaceRootPath) ?? normalizeFileSystemPath(path);
+}
+function ancestorDirectoryPaths(path) {
+  const normalized = normalizeWorkspacePath(path);
+  const segments = normalized.split("/").filter(Boolean);
+  segments.pop();
+  const paths = [];
+  let current = "";
+  for (const segment of segments) {
+    current = current ? `${current}/${segment}` : segment;
+    paths.push(current);
+  }
+  return paths;
+}
+function hasWorkspacePath(node, targetPath) {
+  if (!node || !targetPath) {
+    return false;
+  }
+  if (node.path === targetPath) {
+    return true;
+  }
+  return node.children.some((child) => hasWorkspacePath(child, targetPath));
+}
+function buildMoleculePreviewSnapshot(file) {
+  if (!file) {
+    return null;
+  }
+  const extension = extensionOf(file.path);
+  if (!MOLECULAR_EXTENSIONS.has(extension)) {
+    return null;
+  }
+  return {
+    content: [file.content.endsWith("\n") ? file.content : `${file.content}
+`],
+    format: extension === "extxyz" ? "xyz" : extension,
+    name: file.name,
+    uuid: file.path
+  };
+}
+function languageForPath(path) {
+  const extension = extensionOf(path);
+  if (extension === "tsx" || extension === "jsx") {
+    return "tsx";
+  }
+  if (extension === "yml") {
+    return "yaml";
+  }
+  return extension || "text";
+}
+function ensureDirectory(root, segments) {
+  let current = root;
+  let path = "";
+  for (const segment of segments) {
+    path = path ? `${path}/${segment}` : segment;
+    let child = current.children.find(
+      (node) => node.kind === "directory" && node.name === segment
+    );
+    if (!child) {
+      child = {
+        id: `dir:${path}`,
+        name: segment,
+        path,
+        kind: "directory",
+        children: []
+      };
+      current.children.push(child);
+    }
+    current = child;
+  }
+  return current;
+}
+function addPathNode(root, path, node) {
+  const segments = path.split("/").filter(Boolean);
+  const fileName = segments.pop() ?? node.name;
+  const parent = ensureDirectory(root, segments);
+  parent.children.push({
+    ...node,
+    name: node.name || fileName,
+    path
+  });
+}
+function compareWorkspaceNodes(left, right) {
+  if (left.kind === "directory" && right.kind !== "directory") {
+    return -1;
+  }
+  if (left.kind !== "directory" && right.kind === "directory") {
+    return 1;
+  }
+  return left.name.localeCompare(right.name);
+}
+function sortWorkspaceTree(node) {
+  node.children.sort(compareWorkspaceNodes);
+  for (const child of node.children) {
+    sortWorkspaceTree(child);
+  }
+  return node;
+}
+function collectWorkspaceItems(detail, artifacts, status, activeView) {
+  const root = {
+    id: "root",
+    name: detail.workspace.label ?? "Workspace",
+    path: "",
+    kind: "directory",
+    children: []
+  };
+  const artifactRoot = {
+    id: "artifacts",
+    name: "artifacts",
+    path: "artifacts",
+    kind: "directory",
+    children: []
+  };
+  for (const artifact of artifacts) {
+    const title = artifact.title || artifact.id;
+    const safeName = sanitizePathSegment(title) || artifact.id;
+    artifactRoot.children.push({
+      id: `artifact:${artifact.id}`,
+      name: `${safeName}.artifact`,
+      path: `artifacts/${safeName}.artifact`,
+      kind: "artifact",
+      artifact,
+      preview: artifact.summaryText ?? artifact.type,
+      detail: JSON.stringify(artifact.payload, null, 2),
+      children: []
+    });
+  }
+  const eventRoot = {
+    id: "thread-events",
+    name: "thread-events",
+    path: "thread-events",
+    kind: "directory",
+    children: []
+  };
+  const liveRoot = {
+    id: "live",
+    name: "live",
+    path: "live",
+    kind: "directory",
+    children: []
+  };
+  let sequence = 0;
+  const addEventNode = (turnId, item, live = false) => {
+    sequence += 1;
+    const label = item.kind.replace(/([A-Z])/g, "-$1").toLowerCase();
+    const eventPath = `${live ? "live" : `thread-events/${turnId}`}/${String(
+      sequence
+    ).padStart(3, "0")}-${label}.json`;
+    const preview = "text" in item && typeof item.text === "string" ? item.text.slice(0, 160) : item.kind;
+    const artifact = item.kind === "artifact" && item.artifact ? item.artifact : null;
+    const node = artifact && live ? {
+      id: `live-artifact:${artifact.id}`,
+      name: artifact.title || artifact.id,
+      path: eventPath,
+      kind: "live-artifact",
+      artifact,
+      item,
+      preview: artifact.summaryText ?? artifact.type,
+      detail: JSON.stringify(artifact.payload, null, 2),
+      children: []
+    } : {
+      id: `event:${item.id}`,
+      name: fileNameFromPath(eventPath),
+      path: eventPath,
+      kind: "event",
+      item,
+      preview,
+      detail: JSON.stringify(item, null, 2),
+      children: []
+    };
+    if (live) {
+      liveRoot.children.push(node);
+      return;
+    }
+    addPathNode(eventRoot, eventPath.replace(/^thread-events\//, ""), node);
+  };
+  for (const turn of detail.turns) {
+    for (const item of turn.items) {
+      if (item.kind === "commandExecution" || item.kind === "webSearch" || item.kind === "fileRead" || item.kind === "fileChange" || item.kind === "agentToolCall" || item.kind === "skillToolCall" || item.kind === "toolCall" || item.kind === "hook" || item.kind === "plan" || item.kind === "reasoning") {
+        addEventNode(turn.id, item);
+      }
+    }
+  }
+  for (const item of detail.liveItems?.items ?? []) {
+    addEventNode(detail.thread.activeTurnId ?? "live", item, true);
+  }
+  void status;
+  void activeView;
+  root.children.push(artifactRoot, eventRoot, liveRoot);
+  return sortWorkspaceTree(root);
+}
+function flattenWorkspaceNodes(root) {
+  const map = /* @__PURE__ */ new Map();
+  const visit = (node) => {
+    map.set(node.id, node);
+    for (const child of node.children) {
+      visit(child);
+    }
+  };
+  visit(root);
+  return map;
+}
+function findFirstPreviewNode(node) {
+  if (node.kind === "artifact" || node.kind === "live-artifact" || node.kind === "event" || node.kind === "file") {
+    return node;
+  }
+  for (const child of node.children) {
+    const found = findFirstPreviewNode(child);
+    if (found) {
+      return found;
+    }
+  }
+  return null;
+}
+function collectAncestorPaths(path) {
+  const segments = path.split("/").filter(Boolean);
+  const paths = [];
+  for (let index = 1; index <= segments.length; index += 1) {
+    paths.push(segments.slice(0, index).join("/"));
+  }
+  return paths;
+}
+
 // src/components/ZoomableImage.tsx
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -360,81 +652,6 @@ function ZoomableImage({
   ] });
 }
 
-// src/components/externalLinkProps.ts
-function externalLinkProps(href) {
-  if (!href) return {};
-  try {
-    const origin = typeof window === "undefined" ? void 0 : window.location.origin;
-    const url = new URL(href, origin);
-    if ((url.protocol === "http:" || url.protocol === "https:") && url.origin !== origin) {
-      return { target: "_blank", rel: "noopener noreferrer" };
-    }
-  } catch {
-  }
-  return {};
-}
-
-// src/components/WorkspaceFileLink.tsx
-import { useEffect as useEffect2, useRef as useRef2, useState as useState2 } from "react";
-import { createPortal as createPortal2 } from "react-dom";
-import { Fragment as Fragment2, jsx as jsx3, jsxs as jsxs2 } from "react/jsx-runtime";
-function WorkspaceFileLink({ path, line, children, onOpen, className = "thread-inline-link" }) {
-  const [menu, setMenu] = useState2(null);
-  const [copyError, setCopyError] = useState2(false);
-  const menuRef = useRef2(null);
-  const displayPath = path.startsWith("/") || /^[a-z]:/i.test(path) ? path : `./${path.replace(/^\.\//, "")}`;
-  const address = displayPath + (line ? `#L${line}` : "");
-  useEffect2(() => {
-    if (!menu) return;
-    const dismiss = (event) => {
-      if (!menuRef.current?.contains(event.target)) setMenu(null);
-    };
-    const key = (event) => {
-      if (event.key === "Escape") setMenu(null);
-    };
-    document.addEventListener("pointerdown", dismiss);
-    document.addEventListener("keydown", key);
-    window.addEventListener("scroll", dismiss, true);
-    menuRef.current?.querySelector("button")?.focus();
-    return () => {
-      document.removeEventListener("pointerdown", dismiss);
-      document.removeEventListener("keydown", key);
-      window.removeEventListener("scroll", dismiss, true);
-    };
-  }, [menu]);
-  const open = () => {
-    setMenu(null);
-    onOpen({ path, ...line ? { line } : {} });
-  };
-  return /* @__PURE__ */ jsxs2(Fragment2, { children: [
-    /* @__PURE__ */ jsx3(
-      "a",
-      {
-        href: displayPath.split("/").map(encodeURIComponent).join("/") + (line ? `#L${line}` : ""),
-        title: address,
-        className,
-        onClick: (event) => {
-          event.preventDefault();
-          open();
-        },
-        onContextMenu: (event) => {
-          event.preventDefault();
-          setCopyError(false);
-          setMenu({ x: Math.min(event.clientX, window.innerWidth - 190), y: Math.min(event.clientY, window.innerHeight - 100) });
-        },
-        children
-      }
-    ),
-    menu && createPortal2(/* @__PURE__ */ jsxs2("div", { ref: menuRef, role: "menu", "aria-label": "File link", className: "thread-workspace-link-menu", style: { left: Math.max(8, menu.x), top: Math.max(8, menu.y) }, children: [
-      /* @__PURE__ */ jsx3("button", { role: "menuitem", onClick: open, children: "Open file" }),
-      /* @__PURE__ */ jsx3("button", { role: "menuitem", onClick: () => {
-        void navigator.clipboard.writeText(address).then(() => setMenu(null)).catch(() => setCopyError(true));
-      }, children: "Copy link address" }),
-      copyError && /* @__PURE__ */ jsx3("span", { role: "alert", children: "Could not copy path" })
-    ] }), document.body)
-  ] });
-}
-
 // src/components/graph-chat/graphChatShiki.ts
 var graphChatHighlighterPromise = null;
 function getGraphChatHighlighter() {
@@ -528,17 +745,108 @@ function getGraphChatHighlighter() {
   return graphChatHighlighterPromise;
 }
 
+// src/components/externalLinkProps.ts
+function externalLinkProps(href) {
+  if (!href) return {};
+  try {
+    const origin = typeof window === "undefined" ? void 0 : window.location.origin;
+    const url = new URL(href, origin);
+    if ((url.protocol === "http:" || url.protocol === "https:") && url.origin !== origin) {
+      return { target: "_blank", rel: "noopener noreferrer" };
+    }
+  } catch {
+  }
+  return {};
+}
+
+// src/components/WorkspaceFileLink.tsx
+import { useEffect as useEffect2, useRef as useRef2, useState as useState2 } from "react";
+import { createPortal as createPortal2 } from "react-dom";
+import { Fragment as Fragment2, jsx as jsx3, jsxs as jsxs2 } from "react/jsx-runtime";
+function WorkspaceFileLink({ path, line, children, onOpen, className = "thread-inline-link" }) {
+  const [menu, setMenu] = useState2(null);
+  const [copyError, setCopyError] = useState2(false);
+  const menuRef = useRef2(null);
+  const displayPath = path.startsWith("/") || /^[a-z]:/i.test(path) ? path : `./${path.replace(/^\.\//, "")}`;
+  const address = displayPath + (line ? `#L${line}` : "");
+  useEffect2(() => {
+    if (!menu) return;
+    const dismiss = (event) => {
+      if (!menuRef.current?.contains(event.target)) setMenu(null);
+    };
+    const key = (event) => {
+      if (event.key === "Escape") setMenu(null);
+    };
+    document.addEventListener("pointerdown", dismiss);
+    document.addEventListener("keydown", key);
+    window.addEventListener("scroll", dismiss, true);
+    menuRef.current?.querySelector("button")?.focus();
+    return () => {
+      document.removeEventListener("pointerdown", dismiss);
+      document.removeEventListener("keydown", key);
+      window.removeEventListener("scroll", dismiss, true);
+    };
+  }, [menu]);
+  const open = () => {
+    setMenu(null);
+    onOpen({ path, ...line ? { line } : {} });
+  };
+  return /* @__PURE__ */ jsxs2(Fragment2, { children: [
+    /* @__PURE__ */ jsx3(
+      "a",
+      {
+        href: displayPath.split("/").map(encodeURIComponent).join("/") + (line ? `#L${line}` : ""),
+        title: address,
+        className,
+        onClick: (event) => {
+          event.preventDefault();
+          open();
+        },
+        onContextMenu: (event) => {
+          event.preventDefault();
+          setCopyError(false);
+          setMenu({ x: Math.min(event.clientX, window.innerWidth - 190), y: Math.min(event.clientY, window.innerHeight - 100) });
+        },
+        children
+      }
+    ),
+    menu && createPortal2(/* @__PURE__ */ jsxs2("div", { ref: menuRef, role: "menu", "aria-label": "File link", className: "thread-workspace-link-menu", style: { left: Math.max(8, menu.x), top: Math.max(8, menu.y) }, children: [
+      /* @__PURE__ */ jsx3("button", { role: "menuitem", onClick: open, children: "Open file" }),
+      /* @__PURE__ */ jsx3("button", { role: "menuitem", onClick: () => {
+        void navigator.clipboard.writeText(address).then(() => setMenu(null)).catch(() => setCopyError(true));
+      }, children: "Copy link address" }),
+      copyError && /* @__PURE__ */ jsx3("span", { role: "alert", children: "Could not copy path" })
+    ] }), document.body)
+  ] });
+}
+
 export {
   GraphWorkspaceImageLightbox,
   ZoomableImage,
   ResizablePanelGroup,
   ResizablePanel,
   ResizableHandle,
-  externalLinkProps,
+  getGraphChatHighlighter,
   normalizeFileSystemPath,
   localFileHref,
   relativeWorkspacePath,
   workspaceDisplayPath,
-  WorkspaceFileLink,
-  getGraphChatHighlighter
+  MOLECULAR_EXTENSIONS,
+  IMAGE_EXTENSIONS,
+  PDF_EXTENSIONS,
+  collectArtifacts,
+  extensionOf,
+  workspaceTreeNodeToGraphNode,
+  findFirstWorkspaceFile,
+  workspaceRelativeFocusPath,
+  ancestorDirectoryPaths,
+  hasWorkspacePath,
+  buildMoleculePreviewSnapshot,
+  languageForPath,
+  collectWorkspaceItems,
+  flattenWorkspaceNodes,
+  findFirstPreviewNode,
+  collectAncestorPaths,
+  externalLinkProps,
+  WorkspaceFileLink
 };

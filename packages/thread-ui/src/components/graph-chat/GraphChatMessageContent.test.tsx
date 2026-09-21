@@ -80,6 +80,22 @@ describe('GraphChatMessageContent', () => {
     expect(element.querySelector('li .katex annotation')?.textContent).toBe('y');
   });
 
+  it('keeps standalone equals and blank lines inside display math while streaming', () => {
+    const formula = String.raw`A\sin(\omega x+\phi)
+=
+A\cos\phi\,\sin(\omega x) + A\sin\phi\,\cos(\omega x)`;
+    const content = `说明：\n\\[\n${formula}\n\\]\n\n后续段落。`;
+    const element = render(<GraphChatMessageContent content={content} />);
+    expect(element.querySelector('.katex-display annotation')?.textContent).toBe(formula);
+    expect(element.querySelector('h2')).toBeNull();
+    expect(element.textContent).toContain('后续段落。');
+    act(() => root!.render(<GraphChatMessageContent content={'引用：\n\n> \\[\n> x\n> =\n>\n> y'} />));
+    expect(element.querySelector('.katex')).toBeNull();
+    act(() => root!.render(<GraphChatMessageContent content={'引用：\n\n> \\[\n> x\n> =\n>\n> y\n> \\]\n\n- 完成'} />));
+    expect(element.querySelector('blockquote .katex-display annotation')?.textContent).toBe('x\n=\n\ny');
+    expect(element.querySelector('li')?.textContent).toBe('完成');
+  });
+
   it('keeps out-of-workspace local and same-origin image links inside Explorer', () => {
     const open = vi.fn();
     const path = '/Users/mac/.codex/generated_images/test image.png';

@@ -112,6 +112,81 @@ interface ThreadComposerProps {
 }
 declare function ThreadComposer({ activeView, edgeToEdgeMobile, busy, settingsBusy, compactBusy, error, model, reasoningEffort, fastMode, collaborationMode, sandboxMode, hideSandboxModeControl, modelOptions, contextUsage, capabilities, toolboxItems, hookCommandTemplates, mcpConfigFormat, followTail, threadConnected, shellAvailable, disabled, disabledPlaceholder, shellControlState, draftPrompt, draftAttachments, onPickAttachment, skillsState, mcpState, hooksState, goalState, goalHistory, forkTurnOptionsState, onDraftChange, onSubmit, onInterrupt, onCompact, onOpenSkills, onOpenMcp, onOpenHooks, onOpenHarness, onCreateHook, onUpdateHook, onTrustHook, onUntrustHook, onOpenGoal, onPrepareGoalSubmit, onUpdateGoal, onOpenForkTurns, onForkLatest, onForkTurn, onReadProviderConfig, onWriteProviderConfig, onToggleFollow, canJumpToPreviousTurn, onJumpToPreviousTurn, canJumpToNextTurn, onJumpToNextTurn, subscriptionUsage, onUpdateSettings, onToggleView, onShellCopy, onShellControl, canInterrupt, pendingPrompts, onSteerPendingPrompt, onCancelPendingPrompt, }: ThreadComposerProps): react.JSX.Element;
 
+type SettingsSection = {
+    id: string;
+    label: string;
+    description?: string;
+    content: ReactNode;
+};
+declare function SettingsPanels({ sections, initialId }: {
+    sections: SettingsSection[];
+    initialId?: string;
+}): react.JSX.Element | null;
+
+interface WorkbenchThread {
+    key: string;
+    title: string;
+    subtitle: string;
+    href: string;
+    status: string;
+    favorite: boolean;
+}
+interface WorkbenchNotification {
+    id: string;
+    title: string;
+    href: string;
+    occurredAt: string;
+    summary?: string;
+}
+interface MatterWorkbenchOptions {
+    /** Optional host integration; defaults preserve Remote Codex behavior. */
+    brandName?: string;
+    hideRail?: boolean;
+    showShortcuts?: boolean;
+    showNotifications?: boolean;
+    showSearch?: boolean;
+    searchLabel?: string;
+    sidebarFooter?: ReactNode;
+    renderNavigationHeader?: (input: {
+        collapsed: boolean;
+        closeNavigation: () => void;
+    }) => ReactNode;
+    emptyWorkspace?: boolean;
+    navigationReady?: boolean;
+    harnessSessionId?: string | null;
+    harnessSessionUrl?: string | null;
+    threads: WorkbenchThread[];
+    workspaceThreads?: WorkbenchThread[];
+    currentKey: string;
+    favorite: boolean;
+    favoriteBusy?: boolean;
+    error?: string | null;
+    workspacePath: string;
+    activeView: 'chat' | 'shell';
+    terminalEnabled: boolean;
+    onViewChange: (view: 'chat' | 'shell') => void;
+    onToggleFavorite: () => void;
+    onNavigate: (href: string) => void;
+    onSearch: () => void;
+    notifications: WorkbenchNotification[];
+    unreadCount: number;
+    onReadNotifications: () => void;
+    renderThreadMenu?: (thread: WorkbenchThread) => ReactNode;
+}
+declare function MatterWorkbench({ options: o, title, homeHref, settings, newThread, actions, threadMenu, connection, explorer, revealExplorer, children, }: {
+    options: MatterWorkbenchOptions;
+    title: string;
+    homeHref: string;
+    settings: ReactNode;
+    newThread: ReactNode;
+    actions: ReactNode;
+    threadMenu: ReactNode;
+    connection: ReactNode;
+    explorer: ReactNode;
+    revealExplorer: number;
+    children: ReactNode;
+}): react.JSX.Element;
+
 type ThemeMode = 'system' | 'light' | 'dark';
 type AgentBackendId = AgentBackendIdDto;
 interface AppShellNavContextValue {
@@ -129,11 +204,14 @@ interface AppShellNavContextValue {
     setDefaultBackend: (backend: AgentBackendId) => void;
     autoCollapseCompletedTurns?: boolean;
     setAutoCollapseCompletedTurns?: (enabled: boolean) => void;
+    showReasoningSummaries?: boolean;
+    setShowReasoningSummaries?: (enabled: boolean) => void;
 }
 declare const AppShellNavContext: react.Context<AppShellNavContextValue | null>;
 declare function useAppShellNav(): AppShellNavContextValue | null;
 
 interface ThreadWorkspaceLayoutProps {
+    workbench?: MatterWorkbenchOptions;
     threads: ThreadDto[];
     status?: AgentRuntimeStatusDto | null;
     loading?: boolean;
@@ -168,6 +246,7 @@ interface ThreadWorkspaceLayoutProps {
     metaContent?: ReactNode;
     settingsContent?: ReactNode;
     globalSettingsContent?: ReactNode;
+    settingsSections?: SettingsSection[];
     appMenuButton?: ReactNode;
     appNavigationMenu?: ReactNode;
     workspaceReturnHref?: string;
@@ -216,7 +295,7 @@ interface ThreadCardsProps {
     collapsed?: boolean;
 }
 declare function ThreadCards({ threads, currentThreadId, currentWorkspaceId, workspaceLabels, onOpenThread, getThreadHref, renderThreadLink, onBeginRenameThread, onDeleteThread, scrollable, maxHeightClassName, showDeleteButton, showSessionCopyButton, collapsed, }: ThreadCardsProps): react.JSX.Element;
-declare function ThreadWorkspaceLayout({ threads, status, loading, error, viewportConstrained, layoutMode, effectiveTheme: effectiveThemeProp, themeMode: themeModeProp, onThemeModeChange, showMobileNewThreadShortcut, hideRoomsRail, navigationTitle, renderNavigationHeader, settingsDialogOpen, onSettingsDialogOpenChange, mobileHeaderAction, currentThreadId, currentThreadLabel, currentWorkspaceId, currentWorkspaceLabel, harnessLabel, sessionLabel, usageLabel, threadActionsButton, topbarActions, metaContent, settingsContent, globalSettingsContent, workspaceLabels, workspaceReturnHref, onWorkspaceReturn, getThreadHref, onOpenThread, getNewThreadHref, newThreadHref: explicitNewThreadHref, newThreadLabel, onNewThread, onNewThreadTitle, renderNewThreadDialogContent, renderThreadLink, onCloseAppNavigation, onRenameThread, onDeleteThread, workspaceContent, workspaceTitle, workspaceActions, workspaceRevealRequestKey, children, }: ThreadWorkspaceLayoutProps): react.JSX.Element;
+declare function ThreadWorkspaceLayout({ workbench, threads, status, loading, error, viewportConstrained, layoutMode, effectiveTheme: effectiveThemeProp, themeMode: themeModeProp, onThemeModeChange, showMobileNewThreadShortcut, hideRoomsRail, navigationTitle, renderNavigationHeader, settingsDialogOpen, onSettingsDialogOpenChange, mobileHeaderAction, currentThreadId, currentThreadLabel, currentWorkspaceId, currentWorkspaceLabel, harnessLabel, sessionLabel, usageLabel, threadActionsButton, topbarActions, metaContent, settingsContent, globalSettingsContent, settingsSections, workspaceLabels, workspaceReturnHref, onWorkspaceReturn, getThreadHref, onOpenThread, getNewThreadHref, newThreadHref: explicitNewThreadHref, newThreadLabel, onNewThread, onNewThreadTitle, renderNewThreadDialogContent, renderThreadLink, onCloseAppNavigation, onRenameThread, onDeleteThread, workspaceContent, workspaceTitle, workspaceActions, workspaceRevealRequestKey, children, }: ThreadWorkspaceLayoutProps): react.JSX.Element;
 
 type TimelineTurn = Omit<ThreadTurnDto, "status"> & {
     status: ThreadTurnDto["status"] | "sending";
@@ -247,6 +326,11 @@ interface ThreadTimelineProps {
     onRespondToRequest?: (requestId: string, input: RespondThreadActionRequestInput) => Promise<void> | void;
     liveOutput: string;
     scrollRequestKey?: number;
+    searchTarget?: {
+        turnId: string;
+        itemId: string;
+        key: number;
+    };
     previousTurnScrollRequestKey?: number;
     nextTurnScrollRequestKey?: number;
     bottomSpacer?: number;
@@ -285,7 +369,7 @@ interface ThreadTimelineProps {
     adapter?: ThreadTimelineAdapter | undefined;
     autoCollapseCompletedTurns?: boolean;
 }
-declare function ThreadTimelineComponent({ threadId, turns, totalTurnCount, pendingRequests, activeTurnId, threadRunning, pendingSteers, livePlan, liveItems, respondingRequestId, onRespondToRequest, liveOutput, scrollRequestKey, previousTurnScrollRequestKey, nextTurnScrollRequestKey, bottomSpacer, className, onTailVisibilityChange, onPreviousTurnAvailabilityChange, onNextTurnAvailabilityChange, loadingEarlier, onLoadEarlier, ephemeralUserNote, answeredRequestNotes, activityNotes, optimisticSteers, optimisticTurn, onLoadHistoryItemDetail, onLoadTurnDetail, onOpenThread, onSelectArtifact, onSelectHistoryItemDetail, adapter, autoCollapseCompletedTurns, }: ThreadTimelineProps): react.JSX.Element;
+declare function ThreadTimelineComponent({ threadId, turns, totalTurnCount, pendingRequests, activeTurnId, threadRunning, pendingSteers, livePlan, liveItems, respondingRequestId, onRespondToRequest, liveOutput, scrollRequestKey, searchTarget, previousTurnScrollRequestKey, nextTurnScrollRequestKey, bottomSpacer, className, onTailVisibilityChange, onPreviousTurnAvailabilityChange, onNextTurnAvailabilityChange, loadingEarlier, onLoadEarlier, ephemeralUserNote, answeredRequestNotes, activityNotes, optimisticSteers, optimisticTurn, onLoadHistoryItemDetail, onLoadTurnDetail, onOpenThread, onSelectArtifact, onSelectHistoryItemDetail, adapter, autoCollapseCompletedTurns, }: ThreadTimelineProps): react.JSX.Element;
 declare const ThreadTimeline: react.MemoExoticComponent<typeof ThreadTimelineComponent>;
 
 interface ThreadShellControlState {
@@ -354,12 +438,14 @@ interface ExportTurnsState {
     error: string | null;
 }
 interface CreateThreadShareInput {
+    scope?: 'thread' | 'device';
     targetIdentifier: string;
     threadAccess: RelayThreadAccess;
     workspaceAccess: RelayWorkspaceAccess;
     label?: string | null;
 }
 interface ThreadShareSummary {
+    scope?: 'thread' | 'device';
     id: string;
     targetUsername: string;
     label: string | null;
@@ -373,6 +459,7 @@ interface ShareState {
     error: string | null;
 }
 interface ThreadActionsDialogProps {
+    appearance?: 'default' | 'matter';
     open: boolean;
     busy?: boolean;
     turnsState: ExportTurnsState;
@@ -386,19 +473,21 @@ interface ThreadActionsDialogProps {
     onCreateShare?: (input: CreateThreadShareInput) => void | Promise<void>;
     onRevokeShare?: (shareId: string) => void | Promise<void>;
     onOpenDeviceSharing?: () => void;
+    deviceShareAvailable?: boolean;
     linkContent?: ReactNode;
     onUpdateShare?: (id: string, input: CreateThreadShareInput) => void | Promise<void>;
 }
-declare function ThreadActionsDialog({ open, busy, turnsState, shareAvailable, shareUnavailableMessage, shareState, initialMode, onCancel, onLoadTurns, onExport, onCreateShare, onRevokeShare, onOpenDeviceSharing, linkContent, onUpdateShare, }: ThreadActionsDialogProps): react.ReactPortal | null;
+declare function ThreadActionsDialog({ appearance, open, busy, turnsState, shareAvailable, shareUnavailableMessage, shareState, initialMode, onCancel, onLoadTurns, onExport, onCreateShare, onRevokeShare, deviceShareAvailable, linkContent, onUpdateShare, }: ThreadActionsDialogProps): react.ReactPortal | null;
 declare const ExportTranscriptDialog: typeof ThreadActionsDialog;
 
 interface LongTextDialogProps {
     open: boolean;
     title: string;
     text: string;
+    kind?: string | undefined;
     onClose: () => void;
 }
-declare function LongTextDialog({ open, title, text, onClose, }: LongTextDialogProps): react.ReactPortal | null;
+declare function LongTextDialog({ open, title, text, kind, onClose, }: LongTextDialogProps): react.ReactPortal | null;
 
 declare function formatShortTimestamp(value: string | null): string;
 declare function formatLongTimestamp(value: string | null): string;
@@ -423,6 +512,7 @@ interface ThreadDetailSurfaceProps {
     metaContent?: ReactNode;
     settingsContent?: ReactNode;
     globalSettingsContent?: ReactNode;
+    settingsSections?: SettingsSection[];
     settingsDialogOpen?: boolean;
     onSettingsDialogOpenChange?: (open: boolean) => void;
     mobileHeaderAction?: ReactNode;
@@ -437,6 +527,7 @@ interface ThreadDetailSurfaceProps {
     onWorkspaceReturn?: () => void;
     threadActionsButton?: ReactNode;
     surfaceActions?: ReactNode;
+    workbench?: MatterWorkbenchOptions;
     floatingPanel?: ReactNode;
     workspaceContent?: ReactNode;
     workspaceTitle?: string;
@@ -489,7 +580,7 @@ interface ThreadDetailSurfaceProps {
     loadingContent?: ReactNode;
     emptyContent?: ReactNode;
 }
-declare function ThreadDetailSurface({ threads, detail: rawDetail, loading, error, status, plugins: providedPlugins, adapter, metaContent, settingsContent, globalSettingsContent, settingsDialogOpen, onSettingsDialogOpenChange, mobileHeaderAction, appMenuButton, appNavigationMenu, navigationTitle, renderNavigationHeader, workspaceReturnHref, onWorkspaceReturn, threadActionsButton, surfaceActions, floatingPanel, workspaceContent, workspaceTitle, workspaceActions, workspaceFeatures, workspaceFocusPathRequest, onNewThreadTitle, beforeTimelineContent, errorContent, workspaceMissingContent, dialogs, currentThreadId, currentWorkspaceId, currentWorkspaceLabel, onCloseAppNavigation, presentation, className, activeView, liveOutput, timelineProps, composerProps, shellComposerProps, useFloatingMobileComposer, floatingMobileComposerBottomOffset, composerHostRef, shellPanelRef, shellEffectiveTheme, shellThemeMode, onShellThemeModeChange, onShellStateChange, shellUnavailableContent, shellDisconnectedContent, timelineComponent: TimelineComponent, shellPanelComponent: ShellPanelComponent, shellContent, loadingContent, emptyContent, }: ThreadDetailSurfaceProps): react.JSX.Element;
+declare function ThreadDetailSurface({ threads, detail: rawDetail, loading, error, status, plugins: providedPlugins, adapter, metaContent, settingsContent, globalSettingsContent, settingsSections, settingsDialogOpen, onSettingsDialogOpenChange, mobileHeaderAction, appMenuButton, appNavigationMenu, navigationTitle, renderNavigationHeader, workspaceReturnHref, onWorkspaceReturn, threadActionsButton, surfaceActions, workbench, floatingPanel, workspaceContent, workspaceTitle, workspaceActions, workspaceFeatures, workspaceFocusPathRequest, onNewThreadTitle, beforeTimelineContent, errorContent, workspaceMissingContent, dialogs, currentThreadId, currentWorkspaceId, currentWorkspaceLabel, onCloseAppNavigation, presentation, className, activeView, liveOutput, timelineProps, composerProps, shellComposerProps, useFloatingMobileComposer, floatingMobileComposerBottomOffset, composerHostRef, shellPanelRef, shellEffectiveTheme, shellThemeMode, onShellThemeModeChange, onShellStateChange, shellUnavailableContent, shellDisconnectedContent, timelineComponent: TimelineComponent, shellPanelComponent: ShellPanelComponent, shellContent, loadingContent, emptyContent, }: ThreadDetailSurfaceProps): react.JSX.Element;
 
 interface PluginProviderAdapter {
     fetchPlugins?: () => Promise<PluginDto[]> | PluginDto[];
@@ -546,6 +637,9 @@ interface PublicTranscriptSnapshot {
     turns: PublicTranscriptTurn[];
     theme?: 'light' | 'dark';
     images?: Record<string, string>;
+    live?: boolean;
+    stale?: boolean;
+    updatedAt?: string;
 }
 declare function transcriptSnapshot(title: string, turns: ThreadTurnDto[], theme: 'light' | 'dark'): PublicTranscriptSnapshot;
 declare function PublicTranscript({ snapshot }: {
@@ -561,4 +655,4 @@ declare function DialogHeader({ className, ...props }: ComponentProps<'div'>): r
 declare function DialogTitle({ className, ...props }: ComponentProps<typeof DialogPrimitive.Title>): react.JSX.Element;
 declare function DialogDescription({ className, ...props }: ComponentProps<typeof DialogPrimitive.Description>): react.JSX.Element;
 
-export { type AgentBackendId, AppShellMenuButton, AppShellNavContext, type AppShellNavContextValue, type AppShellNavigationItem, AppShellNavigationMenu, type AppShellNavigationMenuProps, AppShellSettingsDialog, type AppShellSettingsDialogProps, ConfirmDialog, type CreateThreadShareInput, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, ExportTranscriptDialog, FrontendPluginModule, LongTextDialog, MemoizedThreadGraphWorkspacePanel, PluginContextValue, PluginProvider, PromptAttachmentUpload, PublicTranscript, type PublicTranscriptSnapshot, type ThemeMode, ThreadActionsDialog, type ThreadActionsDialogProps, ThreadCards, ThreadComposer, type ThreadComposerProps, ThreadDetailSurface, type ThreadDetailSurfaceProps, ThreadDetailUiAdapter, ThreadGraphWorkspaceFeatures, ThreadGraphWorkspacePanel, ThreadGraphWorkspacePanelProps, type ThreadShareSummary, ThreadShellAdapter, ThreadShellControlState$1 as ThreadShellControlState, ThreadShellPanel, type ThreadShellPanelHandle, ThreadTimeline, ThreadTimelineAdapter, type ThreadTimelineProps, ThreadWorkspaceLayout, formatLongTimestamp, formatShortTimestamp, hasLikelyMarkdownSyntax, historyItemAccentClassName, historyItemLabel, threadStatusClassName, threadStatusLabel, transcriptSnapshot, turnStatusLabel, useAppShellNav, usePlugins };
+export { type AgentBackendId, AppShellMenuButton, AppShellNavContext, type AppShellNavContextValue, type AppShellNavigationItem, AppShellNavigationMenu, type AppShellNavigationMenuProps, AppShellSettingsDialog, type AppShellSettingsDialogProps, ConfirmDialog, type CreateThreadShareInput, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, ExportTranscriptDialog, FrontendPluginModule, LongTextDialog, MatterWorkbench, type MatterWorkbenchOptions, MemoizedThreadGraphWorkspacePanel, PluginContextValue, PluginProvider, PromptAttachmentUpload, PublicTranscript, type PublicTranscriptSnapshot, SettingsPanels, type SettingsSection, type ThemeMode, ThreadActionsDialog, type ThreadActionsDialogProps, ThreadCards, ThreadComposer, type ThreadComposerProps, ThreadDetailSurface, type ThreadDetailSurfaceProps, ThreadDetailUiAdapter, ThreadGraphWorkspaceFeatures, ThreadGraphWorkspacePanel, ThreadGraphWorkspacePanelProps, type ThreadShareSummary, ThreadShellAdapter, ThreadShellControlState$1 as ThreadShellControlState, ThreadShellPanel, type ThreadShellPanelHandle, ThreadTimeline, ThreadTimelineAdapter, type ThreadTimelineProps, ThreadWorkspaceLayout, type WorkbenchNotification, type WorkbenchThread, formatLongTimestamp, formatShortTimestamp, hasLikelyMarkdownSyntax, historyItemAccentClassName, historyItemLabel, threadStatusClassName, threadStatusLabel, transcriptSnapshot, turnStatusLabel, useAppShellNav, usePlugins };

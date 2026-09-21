@@ -45,6 +45,7 @@ interface GraphChatThreadChatPanelProps {
   >;
   transcriptItemCount: number;
   useFloatingMobileComposer?: boolean;
+  floatingDesktopComposer?: boolean;
   floatingMobileComposerBottomOffset?: number;
   composerHostRef?: RefObject<HTMLDivElement | null>;
 }
@@ -60,6 +61,7 @@ export function GraphChatThreadChatPanel({
   timelineProps,
   transcriptItemCount,
   useFloatingMobileComposer = false,
+  floatingDesktopComposer = false,
   floatingMobileComposerBottomOffset = 0,
   composerHostRef,
 }: GraphChatThreadChatPanelProps) {
@@ -199,7 +201,7 @@ export function GraphChatThreadChatPanel({
 
   useLayoutEffect(() => {
     const node = internalComposerHostRef.current;
-    if (!node || !isMobileViewport) {
+    if (!node || (!isMobileViewport && !floatingDesktopComposer)) {
       setMobileComposerHeight(0);
       return;
     }
@@ -218,7 +220,7 @@ export function GraphChatThreadChatPanel({
     return () => {
       observer.disconnect();
     };
-  }, [isMobileViewport, composerProps, hasPendingRequests]);
+  }, [isMobileViewport, floatingDesktopComposer, composerProps, hasPendingRequests]);
 
   useLayoutEffect(() => {
     const node = internalComposerHostRef.current;
@@ -316,11 +318,12 @@ export function GraphChatThreadChatPanel({
   );
   const chatScrollBottomSpacer = isMobileViewport
     ? effectiveMobileComposerOverlap + 12
-    : 0;
+    : floatingDesktopComposer ? mobileComposerHeight + 32 : 0;
   const panelStyle: CSSProperties | undefined =
     chatScrollBottomSpacer > 0
       ? ({
           '--thread-graph-chat-scroll-bottom-spacer': `${chatScrollBottomSpacer}px`,
+          '--thread-composer-keyboard-inset': `${mobileComposerBottomOffset}px`,
         } as CSSProperties)
       : undefined;
   const floatingComposerStyle: CSSProperties | undefined =
