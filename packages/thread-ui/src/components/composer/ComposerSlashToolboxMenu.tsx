@@ -317,12 +317,18 @@ export function ComposerSlashToolboxMenu({
               ) : null}
             </div>
           ) : (
-            <div className="max-h-80 overflow-auto">
+            <div className="flex min-h-0 max-h-80 flex-col">
+              {forkBusy && (slashPanelView === 'fork' || slashPanelView === 'forkTurns') ? (
+                <p role="status" className="shrink-0 px-3 py-2 text-sm text-[var(--theme-fg-muted)]">
+                  Creating fork… You will be taken to the new thread when it is ready.
+                </p>
+              ) : null}
               {forkError && (slashPanelView === 'fork' || slashPanelView === 'forkTurns') ? (
-                <p role="alert" className="m-2 rounded-xl border border-rose-500/35 bg-rose-500/10 px-3 py-3 text-sm text-rose-100/90">
+                <p role="alert" className="m-2 shrink-0 rounded-xl border border-[var(--status-danger-border)] bg-[var(--status-danger-bg)] px-3 py-3 text-sm text-[var(--status-danger-fg)]">
                   {forkError}
                 </p>
               ) : null}
+              <div className="min-h-0 overflow-auto">
               {slashPanelView === 'goals' ? (
                 <ComposerGoalsPanel
                   goalState={goalState}
@@ -413,6 +419,7 @@ export function ComposerSlashToolboxMenu({
                   onSaveRawMcpBlock={onSaveRawMcpBlock}
                 />
               )}
+              </div>
             </div>
           )}
         </ComposerMenuSurface>

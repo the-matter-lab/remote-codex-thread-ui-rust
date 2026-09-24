@@ -50,7 +50,6 @@ export function GraphChatHistoryGroupFrame({
               {count}
             </span>
           </span>
-          {runningIndicator}
         </div>
         <div className="thread-graph-history-group-card min-w-0 flex-1 rounded-[0.85rem] border px-3 py-2">
           <button
@@ -62,6 +61,7 @@ export function GraphChatHistoryGroupFrame({
           >
             <div className="thread-graph-history-group-summary min-w-0 flex flex-1 flex-wrap items-center gap-2 pr-1">
               {summary}
+              {runningIndicator}
             </div>
             {(trailingSummary || timeMeta) ? (
               <div className="inline-flex shrink-0 items-center gap-2">

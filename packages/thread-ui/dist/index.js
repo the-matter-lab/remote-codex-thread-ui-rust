@@ -3041,9 +3041,10 @@ function ComposerSlashToolboxMenu({
             )
           ),
           availableToolboxItems.length === 0 && !planModeAvailable ? /* @__PURE__ */ jsx17("p", { className: "px-3 py-2 text-sm text-stone-400", children: "No backend tools are available for this thread." }) : null
-        ] }) : /* @__PURE__ */ jsxs15("div", { className: "max-h-80 overflow-auto", children: [
-          forkError && (slashPanelView === "fork" || slashPanelView === "forkTurns") ? /* @__PURE__ */ jsx17("p", { role: "alert", className: "m-2 rounded-xl border border-rose-500/35 bg-rose-500/10 px-3 py-3 text-sm text-rose-100/90", children: forkError }) : null,
-          slashPanelView === "goals" ? /* @__PURE__ */ jsx17(
+        ] }) : /* @__PURE__ */ jsxs15("div", { className: "flex min-h-0 max-h-80 flex-col", children: [
+          forkBusy && (slashPanelView === "fork" || slashPanelView === "forkTurns") ? /* @__PURE__ */ jsx17("p", { role: "status", className: "shrink-0 px-3 py-2 text-sm text-[var(--theme-fg-muted)]", children: "Creating fork\u2026 You will be taken to the new thread when it is ready." }) : null,
+          forkError && (slashPanelView === "fork" || slashPanelView === "forkTurns") ? /* @__PURE__ */ jsx17("p", { role: "alert", className: "m-2 shrink-0 rounded-xl border border-[var(--status-danger-border)] bg-[var(--status-danger-bg)] px-3 py-3 text-sm text-[var(--status-danger-fg)]", children: forkError }) : null,
+          /* @__PURE__ */ jsx17("div", { className: "min-h-0 overflow-auto", children: slashPanelView === "goals" ? /* @__PURE__ */ jsx17(
             ComposerGoalsPanel,
             {
               goalState,
@@ -3138,7 +3139,7 @@ function ComposerSlashToolboxMenu({
               onSaveHttpMcp,
               onSaveRawMcpBlock
             }
-          )
+          ) })
         ] })
       }
     )
@@ -6065,7 +6066,7 @@ function RenameDialog({
           "aria-label": "Close rename dialog",
           onClick: onCancel,
           disabled: busy,
-          className: "absolute inset-0 bg-stone-950/78 backdrop-blur-sm disabled:cursor-not-allowed"
+          className: "absolute inset-0 bg-[var(--overlay-scrim)] backdrop-blur-sm disabled:cursor-not-allowed"
         }
       ),
       /* @__PURE__ */ jsxs21(
@@ -6075,12 +6076,12 @@ function RenameDialog({
           "aria-modal": "true",
           "aria-label": title,
           onSubmit: handleSubmit,
-          className: "relative z-[1] w-full max-w-md rounded-[1.6rem] border border-stone-700 bg-stone-900 p-5 shadow-2xl shadow-stone-950/40 sm:p-6",
+          className: "relative z-[1] w-full max-w-md rounded-xl border border-[var(--theme-border)] bg-[var(--theme-panel)] p-5 text-[var(--theme-fg)] shadow-[var(--theme-shadow)] sm:p-6",
           children: [
             /* @__PURE__ */ jsxs21("div", { className: "flex items-start justify-between gap-3", children: [
               /* @__PURE__ */ jsxs21("div", { className: "min-w-0 flex-1", children: [
-                /* @__PURE__ */ jsx25("p", { className: "text-sm font-medium text-stone-100", children: title }),
-                /* @__PURE__ */ jsx25("p", { className: "mt-1 text-sm text-stone-500", children: "Changes are saved only after confirmation." })
+                /* @__PURE__ */ jsx25("p", { className: "text-sm font-medium", children: title }),
+                /* @__PURE__ */ jsx25("p", { className: "mt-1 text-sm text-[var(--theme-fg-muted)]", children: "Changes are saved only after confirmation." })
               ] }),
               /* @__PURE__ */ jsx25(
                 "button",
@@ -6089,13 +6090,13 @@ function RenameDialog({
                   "aria-label": "Close dialog",
                   onClick: onCancel,
                   disabled: busy,
-                  className: "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-stone-700 text-stone-300 transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:opacity-60",
+                  className: "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[var(--theme-border)] text-[var(--theme-fg-muted)] transition hover:bg-[var(--theme-hover)] disabled:cursor-not-allowed disabled:opacity-60",
                   children: /* @__PURE__ */ jsx25("svg", { "aria-hidden": "true", viewBox: "0 0 16 16", className: "h-4 w-4 fill-current", children: /* @__PURE__ */ jsx25("path", { d: "M3.22 2.47 8 7.25l4.78-4.78 1.06 1.06L9.06 8.31l4.78 4.78-1.06 1.06L8 9.37l-4.78 4.78-1.06-1.06 4.78-4.78-4.78-4.78 1.06-1.06Z" }) })
                 }
               )
             ] }),
             /* @__PURE__ */ jsxs21("div", { className: "mt-5", children: [
-              /* @__PURE__ */ jsx25("label", { htmlFor: "rename-dialog-input", className: "text-sm font-medium text-stone-200", children: label }),
+              /* @__PURE__ */ jsx25("label", { htmlFor: "rename-dialog-input", className: "text-sm font-medium", children: label }),
               /* @__PURE__ */ jsx25(
                 "input",
                 {
@@ -6104,7 +6105,7 @@ function RenameDialog({
                   autoFocus: true,
                   value,
                   onChange: (event) => onChange(event.target.value),
-                  className: "mt-2 w-full rounded-2xl border border-stone-700 bg-stone-950 px-4 py-3 text-stone-100 outline-none transition focus:border-amber-300"
+                  className: "mt-2 w-full rounded-md border border-[var(--theme-border)] bg-[var(--theme-surface)] px-4 py-3 text-[var(--theme-fg)] outline-none transition focus:border-[var(--theme-accent-solid)]"
                 }
               )
             ] }),
@@ -6115,7 +6116,7 @@ function RenameDialog({
                   type: "button",
                   onClick: onCancel,
                   disabled: busy,
-                  className: "rounded-full border border-stone-700 px-4 py-2 text-sm font-medium text-stone-300 transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:opacity-60",
+                  className: "rounded-md border border-[var(--theme-border)] px-4 py-2 text-sm font-medium text-[var(--theme-fg-soft)] transition hover:bg-[var(--theme-hover)] disabled:cursor-not-allowed disabled:opacity-60",
                   children: "Cancel"
                 }
               ),
@@ -8056,7 +8057,7 @@ function LongTextDialog({
           type: "button",
           "aria-label": "Close full text",
           onClick: onClose,
-          className: "absolute inset-0 bg-stone-950/78 backdrop-blur-sm"
+          className: "absolute inset-0 bg-[var(--overlay-scrim)] backdrop-blur-sm"
         }
       ),
       /* @__PURE__ */ jsxs26(
@@ -10613,25 +10614,22 @@ function GraphChatHistoryGroupFrame({
     {
       className: `thread-graph-history-group ${className} relative min-w-0 w-full overflow-hidden rounded-[0.9rem] border px-3 py-2.5`,
       children: /* @__PURE__ */ jsxs34("div", { className: "flex items-start gap-2.5", children: [
-        /* @__PURE__ */ jsxs34("div", { className: "thread-graph-history-group-icon mt-0.5 flex shrink-0 items-center", children: [
-          /* @__PURE__ */ jsxs34(
-            "span",
-            {
-              className: `relative inline-flex h-8 w-8 items-center justify-center rounded-[0.9rem] border shadow-sm shadow-stone-950/20 ${desktopIconClassName}`,
-              children: [
-                icon,
-                /* @__PURE__ */ jsx42(
-                  "span",
-                  {
-                    className: `absolute -right-1 -top-1 inline-flex min-w-[1.1rem] items-center justify-center rounded-full border bg-stone-950/90 px-1 text-[9px] font-semibold leading-4 ${countBadgeClassName}`,
-                    children: count
-                  }
-                )
-              ]
-            }
-          ),
-          runningIndicator
-        ] }),
+        /* @__PURE__ */ jsx42("div", { className: "thread-graph-history-group-icon mt-0.5 flex shrink-0 items-center", children: /* @__PURE__ */ jsxs34(
+          "span",
+          {
+            className: `relative inline-flex h-8 w-8 items-center justify-center rounded-[0.9rem] border shadow-sm shadow-stone-950/20 ${desktopIconClassName}`,
+            children: [
+              icon,
+              /* @__PURE__ */ jsx42(
+                "span",
+                {
+                  className: `absolute -right-1 -top-1 inline-flex min-w-[1.1rem] items-center justify-center rounded-full border bg-stone-950/90 px-1 text-[9px] font-semibold leading-4 ${countBadgeClassName}`,
+                  children: count
+                }
+              )
+            ]
+          }
+        ) }),
         /* @__PURE__ */ jsxs34("div", { className: "thread-graph-history-group-card min-w-0 flex-1 rounded-[0.85rem] border px-3 py-2", children: [
           /* @__PURE__ */ jsxs34(
             "button",
@@ -10642,7 +10640,10 @@ function GraphChatHistoryGroupFrame({
               onClick: onToggleExpanded,
               className: "thread-graph-history-group-toggle flex w-full min-w-0 items-center justify-between gap-3 text-left",
               children: [
-                /* @__PURE__ */ jsx42("div", { className: "thread-graph-history-group-summary min-w-0 flex flex-1 flex-wrap items-center gap-2 pr-1", children: summary }),
+                /* @__PURE__ */ jsxs34("div", { className: "thread-graph-history-group-summary min-w-0 flex flex-1 flex-wrap items-center gap-2 pr-1", children: [
+                  summary,
+                  runningIndicator
+                ] }),
                 trailingSummary || timeMeta ? /* @__PURE__ */ jsxs34("div", { className: "inline-flex shrink-0 items-center gap-2", children: [
                   trailingSummary,
                   timeMeta
@@ -11540,8 +11541,7 @@ var GraphChatCommandGroupItem = memo4(
         runningIndicator: runningCount > 0 ? /* @__PURE__ */ jsx44(RunningDots, {}) : null,
         summary: /* @__PURE__ */ jsxs35(Fragment10, { children: [
           /* @__PURE__ */ jsx44("span", { className: "thread-graph-history-group-verb", children: "Ran" }),
-          /* @__PURE__ */ jsx44("span", { className: "thread-graph-history-group-description", children: countLabel }),
-          runningCount > 0 ? /* @__PURE__ */ jsx44("span", { className: "inline-flex items-center text-xs text-amber-100/90", children: /* @__PURE__ */ jsx44(RunningDots, {}) }) : null
+          /* @__PURE__ */ jsx44("span", { className: "thread-graph-history-group-description", children: countLabel })
         ] }),
         timeMeta,
         toggleAriaLabel: `${expanded ? "Collapse" : "Expand"} ${items.length} command entries`,
@@ -17935,7 +17935,7 @@ function ConfirmDialog({
           "aria-label": "Close confirmation dialog",
           onClick: onCancel,
           disabled: busy,
-          className: "absolute inset-0 bg-stone-950/78 backdrop-blur-sm disabled:cursor-not-allowed"
+          className: "absolute inset-0 bg-[var(--overlay-scrim)] backdrop-blur-sm disabled:cursor-not-allowed"
         }
       ),
       /* @__PURE__ */ jsxs47(
@@ -17944,12 +17944,12 @@ function ConfirmDialog({
           role: "dialog",
           "aria-modal": "true",
           "aria-label": title,
-          className: "relative z-[1] w-full max-w-md rounded-[1.6rem] border border-stone-700 bg-stone-900 p-5 shadow-2xl shadow-stone-950/40 sm:p-6",
+          className: "relative z-[1] w-full max-w-md rounded-xl border border-[var(--theme-border)] bg-[var(--theme-panel)] p-5 text-[var(--theme-fg)] shadow-[var(--theme-shadow)] sm:p-6",
           children: [
             /* @__PURE__ */ jsxs47("div", { className: "flex items-start justify-between gap-3", children: [
               /* @__PURE__ */ jsxs47("div", { className: "min-w-0 flex-1", children: [
-                /* @__PURE__ */ jsx58("p", { className: "text-sm font-medium text-stone-100", children: title }),
-                /* @__PURE__ */ jsx58("p", { className: "mt-2 text-sm leading-6 text-stone-400", children: description })
+                /* @__PURE__ */ jsx58("p", { className: "text-sm font-medium", children: title }),
+                /* @__PURE__ */ jsx58("p", { className: "mt-2 text-sm leading-6 text-[var(--theme-fg-muted)]", children: description })
               ] }),
               /* @__PURE__ */ jsx58(
                 "button",
@@ -17958,7 +17958,7 @@ function ConfirmDialog({
                   "aria-label": "Close dialog",
                   onClick: onCancel,
                   disabled: busy,
-                  className: "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-stone-700 text-stone-300 transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:opacity-60",
+                  className: "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-[var(--theme-border)] text-[var(--theme-fg-muted)] transition hover:bg-[var(--theme-hover)] disabled:cursor-not-allowed disabled:opacity-60",
                   children: /* @__PURE__ */ jsx58("svg", { "aria-hidden": "true", viewBox: "0 0 16 16", className: "h-4 w-4 fill-current", children: /* @__PURE__ */ jsx58("path", { d: "M3.22 2.47 8 7.25l4.78-4.78 1.06 1.06L9.06 8.31l4.78 4.78-1.06 1.06L8 9.37l-4.78 4.78-1.06-1.06 4.78-4.78-4.78-4.78 1.06-1.06Z" }) })
                 }
               )
@@ -17970,7 +17970,7 @@ function ConfirmDialog({
                   type: "button",
                   onClick: onCancel,
                   disabled: busy,
-                  className: "rounded-full border border-stone-700 px-4 py-2 text-sm font-medium text-stone-300 transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:opacity-60",
+                  className: "rounded-md border border-[var(--theme-border)] px-4 py-2 text-sm font-medium text-[var(--theme-fg-soft)] transition hover:bg-[var(--theme-hover)] disabled:cursor-not-allowed disabled:opacity-60",
                   children: "Cancel"
                 }
               ),

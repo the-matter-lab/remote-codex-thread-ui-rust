@@ -44,7 +44,7 @@ export function LongTextDialog({
         type="button"
         aria-label="Close full text"
         onClick={onClose}
-        className="absolute inset-0 bg-stone-950/78 backdrop-blur-sm"
+        className="absolute inset-0 bg-[var(--overlay-scrim)] backdrop-blur-sm"
       />
       <div
         role="dialog"
