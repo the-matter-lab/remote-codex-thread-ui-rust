@@ -72,6 +72,12 @@ export function GraphChatThreadChatPanel({
   const [mobilePromptFocused, setMobilePromptFocused] = useState(false);
   const internalComposerHostRef = useRef<HTMLDivElement | null>(null);
   const timelineTailVisibilityChange = timelineProps?.onTailVisibilityChange;
+  const [tailVisible, setTailVisible] = useState(true);
+  const [previousAvailable, setPreviousAvailable] = useState(false);
+  const [nextAvailable, setNextAvailable] = useState(false);
+  const [latestRequest, setLatestRequest] = useState(0);
+  const [previousRequest, setPreviousRequest] = useState(0);
+  const [nextRequest, setNextRequest] = useState(0);
   const hasPendingRequests = detail.pendingRequests.length > 0;
   const queuedPrompts = useMemo(() => {
     const pendingSteers = detail.pendingSteers ?? [];
@@ -111,6 +117,12 @@ export function GraphChatThreadChatPanel({
       composerProps
         ? {
             ...composerProps,
+            followTail: composerProps.followTail ?? tailVisible,
+            onToggleFollow: composerProps.onToggleFollow ?? (() => setLatestRequest(value => value + 1)),
+            canJumpToPreviousTurn: composerProps.canJumpToPreviousTurn ?? previousAvailable,
+            onJumpToPreviousTurn: composerProps.onJumpToPreviousTurn ?? (() => setPreviousRequest(value => value + 1)),
+            canJumpToNextTurn: composerProps.canJumpToNextTurn ?? nextAvailable,
+            onJumpToNextTurn: composerProps.onJumpToNextTurn ?? (() => setNextRequest(value => value + 1)),
             pendingPrompts: queuedPrompts,
             ...(adapter.steerPendingPrompt &&
             composerProps.capabilities?.turns.steer
@@ -139,15 +151,25 @@ export function GraphChatThreadChatPanel({
       composerProps,
       detail.thread.id,
       queuedPrompts,
+      tailVisible, previousAvailable, nextAvailable,
     ],
   );
 
   const handleTailVisibilityChange = useCallback(
     (nextIsTailVisible: boolean) => {
+      setTailVisible(nextIsTailVisible);
       timelineTailVisibilityChange?.(nextIsTailVisible);
     },
     [timelineTailVisibilityChange],
   );
+  const handlePreviousAvailability = useCallback((available: boolean) => {
+    setPreviousAvailable(available);
+    timelineProps?.onPreviousTurnAvailabilityChange?.(available);
+  }, [timelineProps?.onPreviousTurnAvailabilityChange]);
+  const handleNextAvailability = useCallback((available: boolean) => {
+    setNextAvailable(available);
+    timelineProps?.onNextTurnAvailabilityChange?.(available);
+  }, [timelineProps?.onNextTurnAvailabilityChange]);
 
   useEffect(() => {
     if (
@@ -351,6 +373,11 @@ export function GraphChatThreadChatPanel({
         liveOutput={liveOutput}
         className="thread-timeline-surface min-h-0 flex-1"
         {...timelineProps}
+        scrollRequestKey={timelineProps?.scrollRequestKey ?? latestRequest}
+        previousTurnScrollRequestKey={timelineProps?.previousTurnScrollRequestKey ?? previousRequest}
+        nextTurnScrollRequestKey={timelineProps?.nextTurnScrollRequestKey ?? nextRequest}
+        onPreviousTurnAvailabilityChange={handlePreviousAvailability}
+        onNextTurnAvailabilityChange={handleNextAvailability}
         pendingSteers={steeredPrompts}
         optimisticSteers={[]}
         adapter={timelineAdapter}
@@ -372,6 +399,7 @@ export function GraphChatThreadChatPanel({
     timelineAdapter,
     timelineProps,
     steeredPrompts,
+    latestRequest, previousRequest, nextRequest, handlePreviousAvailability, handleNextAvailability,
   ]);
 
   return (

@@ -1156,3 +1156,12 @@
   .matter-workbench.has-host-rail > .matter-main { grid-column: 3; grid-row: 2; }
   .matter-workbench.has-host-navigation.is-sidebar-hidden > .matter-sidebar { overflow: visible; z-index: 50; }
 }
+
+/* Menus are portalled out of the scrollable sidebar. */
+.matter-thread-menu > button { display: grid; place-items: center; width: 30px; height: 30px; border: 0; border-radius: 8px; background: transparent; color: var(--theme-fg); }
+.matter-thread-menu > button:hover { background: var(--theme-hover); }
+.thread-ui-shell .thread-action-menu { position: fixed; z-index: 110; width: min(232px, calc(100vw - 16px)); max-height: calc(100dvh - 16px); overflow-y: auto; padding: 6px; border: 1px solid var(--theme-border-strong); border-radius: 10px; background: var(--theme-panel); color: var(--theme-fg); box-shadow: 0 8px 24px rgb(0 0 0 / 18%); }
+.thread-ui-shell .thread-action-menu > button { display: flex; align-items: center; width: 100%; min-height: 36px; gap: 10px; padding: 7px 9px; border: 0; border-radius: 6px; background: transparent; color: inherit; text-align: left; font: inherit; font-size: 13px; }
+.thread-ui-shell .thread-action-menu > button:hover, .thread-ui-shell .thread-action-menu > button:focus-visible { background: var(--theme-hover); outline: 2px solid var(--theme-accent-border); outline-offset: -2px; }
+.thread-ui-portal { --overlay-scrim: rgb(0 0 0 / 42%); }
+.thread-ui-portal .thread-detail-dialog { background: var(--theme-panel); color: var(--theme-fg); }

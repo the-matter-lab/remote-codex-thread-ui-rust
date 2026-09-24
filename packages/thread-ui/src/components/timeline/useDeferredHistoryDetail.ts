@@ -79,7 +79,7 @@ export function useDeferredHistoryDetail({
         onSelectHistoryItemDetail({ item, detail });
         return;
       }
-      setExpandedText({ title: detail.title, text: detail.text, ...(item.kind === 'fileChange' ? { kind: item.kind } : {}) });
+      setExpandedText({ title: detail.title, text: detail.text, ...(['fileChange', 'toolCall', 'agentToolCall', 'skillToolCall'].includes(item.kind) ? {kind: item.kind} : {}) });
     },
     [onSelectHistoryItemDetail],
   );
@@ -169,7 +169,7 @@ export function useDeferredHistoryDetail({
     ) => {
       await openDeferredDetail({
         item,
-        fallbackTitle,
+        fallbackTitle: item.previewText?.split('\n')[0]?.trim() || fallbackTitle,
         fallbackText: item.detailText?.trim() || item.text || 'Tool call',
         loadingText: 'Loading full tool call details...',
         errorText: 'Unable to load full tool call details.',

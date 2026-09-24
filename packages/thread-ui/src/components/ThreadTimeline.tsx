@@ -966,6 +966,9 @@ function ThreadTimelineComponent({
         text={expandedText?.text ?? ''}
         kind={expandedText?.kind}
         onClose={closeExpandedText}
+        onOpenWorkspaceFile={adapter?.onOpenWorkspaceFile}
+        workspaceRootPath={adapter?.workspaceRootPath}
+        resolveHref={adapter?.resolveHref}
       />
     </>
   );

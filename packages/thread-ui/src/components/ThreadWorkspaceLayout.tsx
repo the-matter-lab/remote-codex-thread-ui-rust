@@ -32,6 +32,7 @@ import {
   threadStatusClassName,
   threadStatusLabel,
 } from "./threadPresentation";
+import { ThreadActionMenu } from "./ThreadActionMenu";
 import { RenameDialog } from "./RenameDialog";
 import { MatterWorkbench, type MatterWorkbenchOptions } from './MatterWorkbench';
 import type { ThemeMode } from "../app-shell/AppShellNavContext";
@@ -1043,20 +1044,15 @@ export function ThreadWorkspaceLayout({
         renderThreadMenu: workbench.renderThreadMenu ?? (entry => {
           const thread = threads.find(value => value.id === entry.key);
           if (!thread) return null;
-          return <details className="matter-thread-menu">
-            <summary aria-label={`Actions for ${entry.title}`} title={`Actions for ${entry.title}`}><MoreHorizontal size={16} /></summary>
-            <div>
+          return <ThreadActionMenu label={`Actions for ${entry.title}`}>
               {onRenameThread && <button onClick={event => { beginRenameThread(thread); event.currentTarget.closest('details')?.removeAttribute('open'); }}><Pencil size={14} />Rename thread</button>}
               {onDeleteThread && <button onClick={event => { onDeleteThread(thread); event.currentTarget.closest('details')?.removeAttribute('open'); }}><Trash2 size={14} />Delete thread</button>}
-            </div>
-          </details>;
+          </ThreadActionMenu>;
         }),
       }} title={currentThreadLabel ?? 'New thread'} homeHref={workspaceReturnHref ?? '/workspaces'}
         settings={renderSettingsDialog()} newThread={renderNewThreadDialogButton('matter-new-thread', true)}
         actions={threadActionsButton} connection={topbarActions ?? mobileHeaderAction}
-        threadMenu={<details className="matter-thread-menu">
-          <summary aria-label="Thread actions" title="Thread actions"><MoreHorizontal size={16} /></summary>
-          <div>
+        threadMenu={<ThreadActionMenu label="Thread actions">
             {workbench.showShortcuts !== false && <button disabled={workbench.favoriteBusy} onClick={event => { workbench.onToggleFavorite(); event.currentTarget.closest('details')?.removeAttribute('open'); }}><Star size={14} fill={workbench.favorite ? 'currentColor' : 'none'} />{workbench.favorite ? 'Unstar thread' : 'Star thread'}</button>}
             {onRenameThread && <button onClick={event => { const thread = threads.find(t => t.id === currentThreadId); if (thread) beginRenameThread(thread); event.currentTarget.closest('details')?.removeAttribute('open'); }}><Pencil size={14} />Rename thread</button>}
             <button disabled={!currentThreadId} onClick={() => currentThreadId && void copySessionValue(currentThreadId, workbench.brandName ? 'Conversation ID' : 'Remote Codex session ID')}><Copy size={14} />{workbench.brandName ? 'Copy conversation ID' : 'Copy Remote Codex session ID'}</button>
@@ -1064,8 +1060,7 @@ export function ThreadWorkspaceLayout({
             {workbench.harnessSessionUrl && <button onClick={() => void copySessionValue(workbench.harnessSessionUrl!, 'Codex deeplink')}><Copy size={14} />Copy Codex deeplink</button>}
             {onDeleteThread && <button onClick={event => { const thread = threads.find(t => t.id === currentThreadId); if (thread) onDeleteThread(thread); event.currentTarget.closest('details')?.removeAttribute('open'); }}><Trash2 size={14} />Delete thread</button>}
             {sessionCopyNotice && <p role="status" className="matter-copy-notice">{sessionCopyNotice}</p>}
-          </div>
-        </details>}
+        </ThreadActionMenu>}
         explorer={workspaceContent} revealExplorer={workspaceRevealRequestKey ?? 0}>
         {children}
       </MatterWorkbench>

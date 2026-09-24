@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import { ThemedPortal } from './ThemedPortal';
 import { DiffDetail } from './DiffDetail';
+import { GraphChatMessageContent } from './graph-chat/GraphChatMessageContent';
+import type {ThreadTimelineAdapter} from '../adapters';
 
 interface LongTextDialogProps {
   open: boolean;
@@ -8,6 +10,9 @@ interface LongTextDialogProps {
   text: string;
   kind?: string | undefined;
   onClose: () => void;
+  onOpenWorkspaceFile?: ThreadTimelineAdapter['onOpenWorkspaceFile'];
+  workspaceRootPath?: string;
+  resolveHref?: ThreadTimelineAdapter['resolveHref'];
 }
 
 export function LongTextDialog({
@@ -16,6 +21,7 @@ export function LongTextDialog({
   text,
   kind,
   onClose,
+  onOpenWorkspaceFile, workspaceRootPath, resolveHref,
 }: LongTextDialogProps) {
   useEffect(() => {
     if (!open) {
@@ -38,12 +44,14 @@ export function LongTextDialog({
     return null;
   }
 
-  return createPortal(
+  return (
+    <ThemedPortal>
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 sm:p-6">
       <button
         type="button"
         aria-label="Close full text"
         onClick={onClose}
+        style={{backgroundColor: "var(--overlay-scrim)", border: 0}}
         className="absolute inset-0 bg-[var(--overlay-scrim)] backdrop-blur-sm"
       />
       <div
@@ -70,12 +78,11 @@ export function LongTextDialog({
           </button>
         </div>
         <div className="min-h-0 flex-1 overflow-auto px-4 py-4 sm:px-5">
-          {kind === 'fileChange' && /^@@ /m.test(text) ? <DiffDetail text={text} /> : <pre className="whitespace-pre-wrap break-words text-sm leading-6">
+          {kind === 'fileChange' && /^@@ /m.test(text) ? <DiffDetail text={text} /> : ['toolCall', 'agentToolCall', 'skillToolCall'].includes(kind ?? '') ? <GraphChatMessageContent content={text} readOnly onOpenWorkspaceFile={onOpenWorkspaceFile} workspaceRootPath={workspaceRootPath} resolveHref={resolveHref} /> : <pre className="whitespace-pre-wrap break-words text-sm leading-6">
             {text}
           </pre>}
         </div>
       </div>
-    </div>,
-    document.body,
+    </div></ThemedPortal>
   );
 }

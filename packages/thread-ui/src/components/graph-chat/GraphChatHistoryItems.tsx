@@ -673,7 +673,7 @@ export const GraphChatToolCallItem = memo(function GraphChatToolCallItem({
   ) => void;
   timeMeta?: ReactNode;
 }) {
-  const summary = summarizeInlinePreviewText(item.text);
+  const summary = summarizeInlinePreviewText(item.previewText ?? item.text);
 
   return (
     <GraphChatHistoryToolFrame
@@ -707,7 +707,7 @@ export const GraphChatAgentToolCallItem = memo(
     ) => void;
     timeMeta?: ReactNode;
   }) {
-    const summary = summarizeInlinePreviewText(item.text);
+    const summary = summarizeInlinePreviewText(item.previewText ?? item.text);
 
     return (
       <GraphChatHistoryToolFrame
@@ -742,7 +742,7 @@ export const GraphChatSkillToolCallItem = memo(
     ) => void;
     timeMeta?: ReactNode;
   }) {
-    const summary = summarizeInlinePreviewText(item.text);
+    const summary = summarizeInlinePreviewText(item.previewText ?? item.text);
 
     return (
       <GraphChatHistoryToolFrame
@@ -1272,7 +1272,7 @@ export const GraphChatToolCallGroupItem = memo(
         toggleAriaLabel={`${expanded ? 'Collapse' : 'Expand'} ${countLabel}`}
       >
         {items.map((item, index) => {
-          const summary = summarizeInlinePreviewText(item.text);
+          const summary = summarizeInlinePreviewText(item.previewText ?? item.text);
           return (
             <button
               key={item.id}

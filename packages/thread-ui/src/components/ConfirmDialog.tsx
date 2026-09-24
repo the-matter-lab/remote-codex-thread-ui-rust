@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import { ThemedPortal } from './ThemedPortal';
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -43,13 +43,15 @@ export function ConfirmDialog({
     return null;
   }
 
-  return createPortal(
+  return (
+    <ThemedPortal>
     <div className="fixed inset-0 z-[95] flex items-center justify-center p-4 sm:p-6">
       <button
         type="button"
         aria-label="Close confirmation dialog"
         onClick={onCancel}
         disabled={busy}
+        style={{backgroundColor: "var(--overlay-scrim)", border: 0}}
         className="absolute inset-0 bg-[var(--overlay-scrim)] backdrop-blur-sm disabled:cursor-not-allowed"
       />
       <div
@@ -95,7 +97,6 @@ export function ConfirmDialog({
           </button>
         </div>
       </div>
-    </div>,
-    document.body,
+    </div></ThemedPortal>
   );
 }

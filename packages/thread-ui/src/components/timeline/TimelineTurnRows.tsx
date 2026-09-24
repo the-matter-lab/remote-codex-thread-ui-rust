@@ -545,6 +545,13 @@ function collapsedSummaryMessages(entries: TimelineHistoryEntry[], active: boole
   };
 }
 
+function countActivities(entries: TimelineHistoryEntry[]): number {
+  return entries.reduce((count, entry) => count + (
+    entry.kind === 'agentActivityGroup' ? countActivities(entry.entries)
+      : entry.kind === 'item' ? 1 : entry.items.length
+  ), 0);
+}
+
 export const ThreadTurnRow = memo(function ThreadTurnRow({
   threadId,
   adapter,
@@ -780,7 +787,7 @@ export const ThreadTurnRow = memo(function ThreadTurnRow({
           {interruptedLabel}
           <ChevronRight className={`h-4 w-4 shrink-0 transition ${effectiveCollapsed ? '' : 'rotate-90'}`} />
           </button>
-          <span className="thread-execution-step-count">{turn.deferredItemCount ?? collapsedSummary.hiddenEntries.length} steps</span>
+          <span className="thread-execution-step-count">{turn.deferredItemCount ?? countActivities(collapsedSummary.hiddenEntries)} {(turn.deferredItemCount ?? countActivities(collapsedSummary.hiddenEntries)) === 1 ? 'activity' : 'activities'}</span>
           <TurnUsageInline turn={turn} />
           <span
             className="thread-graph-worked-rule h-px min-w-0 flex-1"
