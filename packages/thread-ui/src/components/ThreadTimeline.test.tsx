@@ -52,6 +52,17 @@ function completedTurn(items: ThreadTurnDto['items']): ThreadTurnDto {
 }
 
 describe('ThreadTimeline', () => {
+  it('counts nested tool and agent activity records instead of one enclosing group', () => {
+    const element = render(<ThreadTimeline autoCollapseCompletedTurns liveOutput="" turns={[completedTurn([
+      {id:'u',kind:'userMessage',text:'Review'},
+      {id:'t1',kind:'toolCall',text:'run_graph',status:'completed'},
+      {id:'t2',kind:'toolCall',text:'lookup',status:'completed'},
+      {id:'a1',kind:'agentToolCall',text:'Chemical hazards',status:'completed'},
+      {id:'a2',kind:'agentToolCall',text:'Reaction hazards',status:'completed'},
+      {id:'reply',kind:'agentMessage',text:'Review completed.'},
+    ])]} />);
+    expect(element.querySelector('.thread-execution-step-count')?.textContent).toBe('4 activities');
+  });
   it.each(['completed', 'inProgress', 'failed'] as const)(
     'keeps rendered artifacts below the reply and mounted while toggling %s work',
     (status) => {
