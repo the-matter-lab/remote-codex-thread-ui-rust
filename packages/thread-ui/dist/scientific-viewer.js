@@ -1,7 +1,7 @@
 import {
   GraphMoleculeViewer,
   readGraphMoleculeViewerData
-} from "./chunk-3QAGB47N.js";
+} from "./chunk-TSVRAXDL.js";
 import "./chunk-TZBWAOOO.js";
 export {
   GraphMoleculeViewer,

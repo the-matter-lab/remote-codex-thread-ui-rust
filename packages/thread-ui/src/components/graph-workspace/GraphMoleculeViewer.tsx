@@ -242,7 +242,7 @@ export function GraphMoleculeViewer({
         const scale = host?.clientHeight ? Math.min(1, host.clientWidth / host.clientHeight) : 1;
         // 3Dmol fits vertically; a tall, narrow Explorer also needs a
         // horizontal fit. Keep this framing across trajectory frames.
-        viewer.zoom(0.85 * scale);
+        viewer.zoom((hasUnitCell ? 0.5 : 0.85) * scale);
         viewportScaleRef.current = scale;
         zoomedRef.current = true;
       }
@@ -535,6 +535,7 @@ export function GraphMoleculeViewer({
               onScreenshot={() => void handleScreenshot()}
               viewerRef={viewerRef}
               viewerHostRef={viewerHostRef}
+              hasUnitCell={unitCellAvailable}
               xyzContent={xyzContent}
               xyzFormat={xyzFormat}
             />

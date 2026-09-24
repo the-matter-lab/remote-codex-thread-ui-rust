@@ -359,6 +359,7 @@ function GraphMoleculeViewerUpperButtonGroup({
   onScreenshot,
   viewerRef,
   viewerHostRef,
+  hasUnitCell,
   xyzContent,
   xyzFormat
 }) {
@@ -404,7 +405,7 @@ function GraphMoleculeViewerUpperButtonGroup({
     }
     viewerRef.current.zoomTo();
     const host = viewerHostRef.current;
-    viewerRef.current.zoom(0.85 * (host?.clientHeight ? Math.min(1, host.clientWidth / host.clientHeight) : 1));
+    viewerRef.current.zoom((hasUnitCell ? 0.5 : 0.85) * (host?.clientHeight ? Math.min(1, host.clientWidth / host.clientHeight) : 1));
     viewerRef.current.setCameraParameters({});
     viewerRef.current.render();
   }
@@ -678,7 +679,7 @@ function GraphMoleculeViewer({
         viewer.zoomTo();
         const host = viewerHostRef.current;
         const scale = host?.clientHeight ? Math.min(1, host.clientWidth / host.clientHeight) : 1;
-        viewer.zoom(0.85 * scale);
+        viewer.zoom((hasUnitCell ? 0.5 : 0.85) * scale);
         viewportScaleRef.current = scale;
         zoomedRef.current = true;
       }
@@ -929,6 +930,7 @@ function GraphMoleculeViewer({
                   onScreenshot: () => void handleScreenshot(),
                   viewerRef,
                   viewerHostRef,
+                  hasUnitCell: unitCellAvailable,
                   xyzContent,
                   xyzFormat
                 }

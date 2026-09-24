@@ -17,6 +17,7 @@ export default function GraphMoleculeViewerUpperButtonGroup({
   onScreenshot,
   viewerRef,
   viewerHostRef,
+  hasUnitCell,
   xyzContent,
   xyzFormat,
 }: {
@@ -26,6 +27,7 @@ export default function GraphMoleculeViewerUpperButtonGroup({
   onScreenshot: () => void;
   viewerRef: RefObject<GLViewer | null>;
   viewerHostRef: RefObject<HTMLDivElement | null>;
+  hasUnitCell: boolean;
   xyzContent: string | null;
   xyzFormat: string;
 }) {
@@ -77,7 +79,7 @@ export default function GraphMoleculeViewerUpperButtonGroup({
     }
     viewerRef.current.zoomTo();
     const host = viewerHostRef.current;
-    viewerRef.current.zoom(0.85 * (host?.clientHeight ? Math.min(1, host.clientWidth / host.clientHeight) : 1));
+    viewerRef.current.zoom((hasUnitCell ? 0.5 : 0.85) * (host?.clientHeight ? Math.min(1, host.clientWidth / host.clientHeight) : 1));
     viewerRef.current.setCameraParameters({});
     viewerRef.current.render();
   }
