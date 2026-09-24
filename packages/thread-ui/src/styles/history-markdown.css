@@ -2204,6 +2204,9 @@
 }
 
 .thread-ui-shell .thread-graph-markdown :where(th, td) {
+  /* Preserve scientific numbers and labels; the table already scrolls. */
+  overflow-wrap: normal;
+  word-break: normal;
   border: 1px solid var(--theme-border);
   padding: 0.4rem 0.55rem;
   text-align: left;
