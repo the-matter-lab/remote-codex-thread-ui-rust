@@ -358,6 +358,7 @@ function GraphMoleculeViewerUpperButtonGroup({
   moleculeId,
   onScreenshot,
   viewerRef,
+  viewerHostRef,
   xyzContent,
   xyzFormat
 }) {
@@ -402,6 +403,8 @@ function GraphMoleculeViewerUpperButtonGroup({
       return;
     }
     viewerRef.current.zoomTo();
+    const host = viewerHostRef.current;
+    viewerRef.current.zoom(0.85 * (host?.clientHeight ? Math.min(1, host.clientWidth / host.clientHeight) : 1));
     viewerRef.current.setCameraParameters({});
     viewerRef.current.render();
   }
@@ -539,6 +542,7 @@ function GraphMoleculeViewer({
   const onReadyRef = useRef(onReady);
   onReadyRef.current = onReady;
   const zoomedRef = useRef(false);
+  const viewportScaleRef = useRef(1);
   const unitCellPreferenceRef = useRef(true);
   const [cameraInfo, setCameraInfo] = useState(
     null
@@ -609,6 +613,11 @@ function GraphMoleculeViewer({
     const resizeViewer = () => {
       if (cancelled || !host.clientWidth || !host.clientHeight) return;
       viewerRef.current?.resize();
+      const scale = Math.min(1, host.clientWidth / host.clientHeight);
+      if (zoomedRef.current && scale !== viewportScaleRef.current) {
+        viewerRef.current?.zoom(scale / viewportScaleRef.current);
+      }
+      viewportScaleRef.current = scale;
       viewerRef.current?.render();
     };
     const resizeObserver = new ResizeObserver(resizeViewer);
@@ -667,6 +676,10 @@ function GraphMoleculeViewer({
       const frameAtomLabels = xyzContent.split("\n").slice(2).map((line) => line.trim()).filter(Boolean).map((line) => line.split(/\s+/)[0] ?? "Atom");
       if (!zoomedRef.current) {
         viewer.zoomTo();
+        const host = viewerHostRef.current;
+        const scale = host?.clientHeight ? Math.min(1, host.clientWidth / host.clientHeight) : 1;
+        viewer.zoom(0.85 * scale);
+        viewportScaleRef.current = scale;
         zoomedRef.current = true;
       }
       model.setClickable(
@@ -915,6 +928,7 @@ function GraphMoleculeViewer({
                   moleculeId,
                   onScreenshot: () => void handleScreenshot(),
                   viewerRef,
+                  viewerHostRef,
                   xyzContent,
                   xyzFormat
                 }

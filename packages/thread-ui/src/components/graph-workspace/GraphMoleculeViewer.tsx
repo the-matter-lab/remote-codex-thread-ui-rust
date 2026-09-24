@@ -69,6 +69,7 @@ export function GraphMoleculeViewer({
   const onReadyRef = useRef(onReady);
   onReadyRef.current = onReady;
   const zoomedRef = useRef(false);
+  const viewportScaleRef = useRef(1);
   const unitCellPreferenceRef = useRef(true);
 
   const [cameraInfo, setCameraInfo] = useState<GraphMoleculeCameraInfo | null>(
@@ -156,6 +157,11 @@ export function GraphMoleculeViewer({
     const resizeViewer = () => {
       if (cancelled || !host.clientWidth || !host.clientHeight) return;
       viewerRef.current?.resize();
+      const scale = Math.min(1, host.clientWidth / host.clientHeight);
+      if (zoomedRef.current && scale !== viewportScaleRef.current) {
+        viewerRef.current?.zoom(scale / viewportScaleRef.current);
+      }
+      viewportScaleRef.current = scale;
       viewerRef.current?.render();
     };
     const resizeObserver = new ResizeObserver(resizeViewer);
@@ -232,6 +238,12 @@ export function GraphMoleculeViewer({
 
       if (!zoomedRef.current) {
         viewer.zoomTo();
+        const host = viewerHostRef.current;
+        const scale = host?.clientHeight ? Math.min(1, host.clientWidth / host.clientHeight) : 1;
+        // 3Dmol fits vertically; a tall, narrow Explorer also needs a
+        // horizontal fit. Keep this framing across trajectory frames.
+        viewer.zoom(0.85 * scale);
+        viewportScaleRef.current = scale;
         zoomedRef.current = true;
       }
 
@@ -522,6 +534,7 @@ export function GraphMoleculeViewer({
               moleculeId={moleculeId}
               onScreenshot={() => void handleScreenshot()}
               viewerRef={viewerRef}
+              viewerHostRef={viewerHostRef}
               xyzContent={xyzContent}
               xyzFormat={xyzFormat}
             />
