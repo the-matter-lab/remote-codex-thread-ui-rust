@@ -447,25 +447,61 @@
   color: var(--theme-accent, #7aaca3);
   cursor: pointer;
 }
+/* Usage may be nested inside the legacy turn wrapper or shown by room/tool. */
+.thread-ui-shell .thread-turn-usage,
+.thread-ui-shell .thread-structured-usage {
+  min-width: 0;
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+.thread-ui-shell .thread-structured-usage > span {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
 @media (max-width: 640px) {
-  .thread-ui-shell .thread-turn-usage { flex-wrap: nowrap; gap: 0.4rem; }
-  .thread-ui-shell .thread-turn-usage-model {
-    display: flex;
+  .thread-ui-shell .thread-graph-worked-summary {
     min-width: 0;
+    max-width: 100%;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .thread-ui-shell .thread-graph-worked-summary > .thread-turn-usage,
+  .thread-ui-shell .thread-turn-usage > .thread-structured-usage {
+    flex-basis: 100%;
+  }
+  .thread-ui-shell .thread-turn-usage { gap: 0.35rem 0.6rem; }
+  .thread-ui-shell .thread-turn-usage-model {
+    display: inline-flex;
+    max-width: 100%;
+    flex-wrap: wrap;
   }
   .thread-ui-shell .thread-turn-usage-model-name {
     min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow-wrap: normal;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
-  .thread-ui-shell .thread-turn-usage-effort { flex-shrink: 0; white-space: pre; }
-  .thread-ui-shell .thread-turn-usage-tokens > span:not(:first-child) { display: none; }
-  .thread-ui-shell .thread-turn-usage-tokens,
-  .thread-ui-shell .thread-turn-usage-price { flex-shrink: 0; }
-  .thread-ui-shell .thread-graph-worked-summary { flex-wrap: nowrap; gap: 0.35rem; }
+  .thread-ui-shell .thread-turn-usage-effort { white-space: pre-wrap; }
+  .thread-ui-shell .thread-turn-usage-tokens {
+    min-width: 0;
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+  .thread-ui-shell .thread-turn-usage-price {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  .thread-ui-shell .thread-graph-turn-footer,
+  .thread-ui-shell .thread-graph-turn-footer-runtime,
+  .thread-ui-shell .thread-graph-turn-footer-meta {
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+  .thread-ui-shell .thread-graph-turn-footer-meta { white-space: normal; }
 }
+
 
 /* Keep the last reply close to its work summary, on both pointer layouts. */
 .thread-ui-shell .thread-graph-worked-summary + .thread-graph-message { margin-top: 2px; }

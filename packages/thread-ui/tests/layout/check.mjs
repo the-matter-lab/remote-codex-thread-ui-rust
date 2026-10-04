@@ -32,6 +32,18 @@ try {
       await page.locator('.thread-graph-composer-input [contenteditable]').fill('Inspect this workspace');
       if (viewport.width === 1440) await page.locator('span[title="inspection-result-0.txt"]').waitFor();
       await bounded(page, label);
+      // Document width cannot detect content clipped inside a bounded pane.
+      const usageFields = await page.locator('.thread-turn-usage-tokens > span').evaluateAll(nodes => nodes.map(node => {
+        const rect = node.getBoundingClientRect();
+        const pane = node.closest('.thread-graph-scroll-container').getBoundingClientRect();
+        const range = document.createRange(); range.selectNodeContents(node);
+        return {text:node.textContent, width:rect.width, height:rect.height, left:pane.left, right:pane.right, lines:Array.from(range.getClientRects(), line => ({left:line.left, right:line.right}))};
+      }));
+      assert.ok(usageFields.length >= 4, 'Legacy usage fixture must expose input/output/cache fields');
+      for (const field of usageFields) {
+        assert.ok(field.width > 0 && field.height > 0, `Hidden usage field: ${field.text}`);
+        for (const line of field.lines) assert.ok(line.left >= field.left - 1 && line.right <= field.right + 1, `Clipped usage text: ${field.text}`);
+      }
       await visibleControl(page, '.thread-graph-composer-send-button', viewport.height);
       await visibleControl(page, '.thread-graph-composer-stop-button', viewport.height);
       await screenshot(page, `${label}-chat`);
