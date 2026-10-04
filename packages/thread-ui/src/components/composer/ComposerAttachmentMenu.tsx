@@ -4,6 +4,8 @@ import { PlusIcon } from './composerPresentation';
 
 export function ComposerAttachmentMenu({
   open,
+  canPickPhoto = true,
+  canPickFile = true,
   iconButtonClassName,
   menuClassName,
   menuItemClassName,
@@ -12,6 +14,8 @@ export function ComposerAttachmentMenu({
   onPickFile,
 }: {
   open: boolean;
+  canPickPhoto?: boolean;
+  canPickFile?: boolean;
   iconButtonClassName: string;
   menuClassName: string;
   menuItemClassName: string;
@@ -40,20 +44,24 @@ export function ComposerAttachmentMenu({
           className={`${menuClassName} w-32 rounded-2xl border bg-stone-900/72 shadow-2xl shadow-stone-950/20`}
         >
           <div className="p-2">
-            <button
-              type="button"
-              onClick={onPickPhoto}
-              className={`${menuItemClassName} block w-full rounded-xl px-3 py-2 text-left text-sm transition`}
-            >
-              Photo
-            </button>
-            <button
-              type="button"
-              onClick={onPickFile}
-              className={`${menuItemClassName} mt-1 block w-full rounded-xl px-3 py-2 text-left text-sm transition`}
-            >
-              File
-            </button>
+            {canPickPhoto ? (
+              <button
+                type="button"
+                onClick={onPickPhoto}
+                className={`${menuItemClassName} block w-full rounded-xl px-3 py-2 text-left text-sm transition`}
+              >
+                Photo
+              </button>
+            ) : null}
+            {canPickFile ? (
+              <button
+                type="button"
+                onClick={onPickFile}
+                className={`${menuItemClassName} mt-1 block w-full rounded-xl px-3 py-2 text-left text-sm transition`}
+              >
+                File
+              </button>
+            ) : null}
           </div>
         </ComposerMenuSurface>
       )}

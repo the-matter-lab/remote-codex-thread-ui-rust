@@ -17,6 +17,7 @@ export interface ComposerFrameProps {
   inputGroupClassName: string;
   error: string | null | undefined;
   followTail: boolean;
+  attachmentCapabilities?: { files: boolean; images: boolean } | undefined;
   photoInputRef: MutableRefObject<HTMLInputElement | null>;
   fileInputRef: MutableRefObject<HTMLInputElement | null>;
   onAppendAttachments: (
@@ -46,6 +47,7 @@ export function ComposerFrame({
   inputGroupClassName,
   error,
   followTail,
+  attachmentCapabilities,
   photoInputRef,
   fileInputRef,
   onAppendAttachments,
@@ -66,6 +68,7 @@ export function ComposerFrame({
   return (
     <div className={layerClassName}>
       <ComposerHiddenAttachmentInputs
+        attachmentCapabilities={attachmentCapabilities}
         photoInputRef={photoInputRef}
         fileInputRef={fileInputRef}
         onAppendAttachments={onAppendAttachments}
@@ -101,7 +104,7 @@ export function ComposerFrame({
           {shellPromptSlot}
         </div>
         {error ? (
-          <div className="mt-2 rounded-2xl border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
+          <div role="alert" className="mt-2 rounded-2xl border border-rose-500/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
             {error}
           </div>
         ) : null}

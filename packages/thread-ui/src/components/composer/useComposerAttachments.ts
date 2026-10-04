@@ -1,4 +1,4 @@
-import { useCallback, type MutableRefObject } from 'react';
+import { useCallback, useRef, type MutableRefObject } from 'react';
 
 import type { PromptAttachmentKindDto } from '@remote-codex/shared';
 
@@ -21,6 +21,8 @@ export interface UseComposerAttachmentsInput {
   pendingSelectionRef: MutableRefObject<PromptSelectionRange | null>;
   pendingInsertedAttachmentIdsRef: MutableRefObject<string[]>;
   onInserted?: () => void;
+  onRejected?: (message: string) => void;
+  attachmentCapabilities?: { files: boolean; images: boolean };
   buildClientId?: () => string;
 }
 
@@ -33,6 +35,13 @@ function defaultBuildClientId() {
   }
 
   return `attachment-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function isImageAttachment(file: File) {
+  return (
+    classifyAttachmentKind(file) === 'photo' ||
+    /\.(png|jpe?g|gif|webp|svg|avif|bmp|heic|heif|tiff?)$/i.test(file.name)
+  );
 }
 
 export function orderDroppedAttachmentFiles(files: File[]) {
@@ -51,14 +60,32 @@ export function useComposerAttachments({
   pendingSelectionRef,
   pendingInsertedAttachmentIdsRef,
   onInserted,
+  onRejected,
+  attachmentCapabilities,
   buildClientId = defaultBuildClientId,
 }: UseComposerAttachmentsInput) {
+  const capabilitiesRef = useRef(attachmentCapabilities);
+  capabilitiesRef.current = attachmentCapabilities;
   const applyFiles = useCallback(
-    (
-      files: File[],
-      kindForFile: (file: File) => PromptAttachmentKindDto,
-    ) => {
+    (files: File[], kindForFile: (file: File) => PromptAttachmentKindDto) => {
+      const capabilities = capabilitiesRef.current;
+      const originalKindForFile = kindForFile;
+      const admitted = capabilities
+        ? files.filter((file) => {
+            const image = isImageAttachment(file);
+            return image
+              ? capabilities.images
+              : originalKindForFile(file) !== 'photo' && capabilities.files;
+          })
+        : files;
+      const rejected = admitted.length !== files.length;
+      const rejectionMessage =
+        'Some attachments were not added. Image or file attachments are unavailable for the selected model or connection.';
+      files = admitted;
+      if (capabilities)
+        kindForFile = (file) => (isImageAttachment(file) ? 'photo' : 'file');
       if (files.length === 0) {
+        if (rejected) onRejected?.(rejectionMessage);
         return false;
       }
 
@@ -74,9 +101,9 @@ export function useComposerAttachments({
       updateDraft(() => insertion.draft);
       pendingSelectionRef.current = insertion.selection;
       selectionSnapshotRef.current = insertion.selection;
-      pendingInsertedAttachmentIdsRef.current =
-        insertion.insertedAttachmentIds;
+      pendingInsertedAttachmentIdsRef.current = insertion.insertedAttachmentIds;
       onInserted?.();
+      if (rejected) onRejected?.(rejectionMessage);
       return true;
     },
     [
@@ -84,6 +111,7 @@ export function useComposerAttachments({
       buildClientId,
       getSelection,
       onInserted,
+      onRejected,
       pendingInsertedAttachmentIdsRef,
       pendingSelectionRef,
       prompt,

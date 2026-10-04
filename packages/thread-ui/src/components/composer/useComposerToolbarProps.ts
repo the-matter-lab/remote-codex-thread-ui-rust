@@ -46,6 +46,7 @@ export interface ComposerToolbarCapabilities {
 
 export interface UseComposerToolbarPropsInput {
   isShellView: boolean;
+  attachmentCapabilities?: { files: boolean; images: boolean };
   canToggleShellView: boolean;
   isMobileShell: boolean;
   shellPromptLabel: string | null;
@@ -156,6 +157,7 @@ export interface UseComposerToolbarPropsInput {
 
 export function useComposerToolbarProps({
   isShellView,
+  attachmentCapabilities,
   canToggleShellView,
   isMobileShell,
   shellPromptLabel,
@@ -370,10 +372,12 @@ export function useComposerToolbarProps({
         onSaveRawMcpBlock,
       };
 
-  const attachmentMenuProps: ComposerAttachmentMenuProps | null = isShellView
+  const attachmentMenuProps: ComposerAttachmentMenuProps | null = isShellView || (attachmentCapabilities && !attachmentCapabilities.files && !attachmentCapabilities.images)
     ? null
     : {
         open: openMenu === 'attachments',
+        canPickPhoto: attachmentCapabilities?.images ?? true,
+        canPickFile: attachmentCapabilities?.files ?? true,
         iconButtonClassName,
         menuClassName,
         menuItemClassName,

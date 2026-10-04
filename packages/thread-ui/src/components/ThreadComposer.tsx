@@ -130,6 +130,8 @@ export interface ThreadComposerProps {
   draftPrompt?: string | undefined;
   draftAttachments?: PromptAttachmentUpload[] | undefined;
   onPickAttachment?: ThreadComposerAttachmentPicker | undefined;
+  /** Omitted flags retain the generic composer's existing attachment behavior. */
+  attachmentCapabilities?: { files: boolean; images: boolean };
   skillsState?: SlashPanelState<ThreadSkillsDto>;
   mcpState?: SlashPanelState<ThreadMcpServersDto>;
   hooksState?: SlashPanelState<ThreadHooksDto>;
@@ -230,6 +232,7 @@ export function ThreadComposer({
   draftPrompt,
   draftAttachments,
   onPickAttachment,
+  attachmentCapabilities,
   skillsState = {
     status: 'idle',
     data: null,
@@ -292,6 +295,11 @@ export function ThreadComposer({
   onCancelPendingPrompt,
 }: ThreadComposerProps) {
   const [openMenu, setOpenMenu] = useState<SettingsMenu>(null);
+  const [attachmentError, setAttachmentError] = useState<string | null>(null);
+  const attachmentCapabilitiesRef = useRef(attachmentCapabilities);
+  attachmentCapabilitiesRef.current = attachmentCapabilities;
+  const canAttach = attachmentCapabilities === undefined ||
+    attachmentCapabilities.files || attachmentCapabilities.images;
   const [slashPanelView, setSlashPanelView] = useState<SlashPanelView>('root');
   const submitInFlightRef = useRef(false);
   const [mcpPanelMode, setMcpPanelMode] = useState<McpPanelMode>('list');
@@ -593,20 +601,34 @@ export function ThreadComposer({
       selectionSnapshotRef,
       pendingSelectionRef,
       pendingInsertedAttachmentIdsRef,
-      onInserted: () => setOpenMenu(null),
+      attachmentCapabilities,
+      onRejected: setAttachmentError,
+      onInserted: () => {
+        setAttachmentError(null);
+        setOpenMenu(null);
+      },
     });
   const pickAttachment = useCallback(
     (
       kind: PromptAttachmentKindDto,
       inputRef: typeof photoInputRef | typeof fileInputRef,
     ) => {
+      const capabilities = attachmentCapabilitiesRef.current;
+      if (capabilities && !(kind === 'photo' ? capabilities.images : capabilities.files)) {
+        return;
+      }
       dismissPromptFocus();
       if (onPickAttachment) {
         onPickAttachment({
           kind,
           appendAttachments: (files, overrideKind = kind) =>
             appendAttachments(files, overrideKind),
-          defaultPick: () => inputRef.current?.click(),
+          defaultPick: () => {
+            const current = attachmentCapabilitiesRef.current;
+            if (!current || (kind === 'photo' ? current.images : current.files)) {
+              inputRef.current?.click();
+            }
+          },
         });
         return;
       }
@@ -783,7 +805,7 @@ export function ThreadComposer({
     if (dragAction.preventDefault) {
       event.preventDefault();
     }
-    if (dragAction.activateDragTarget) {
+    if (dragAction.activateDragTarget && canAttach) {
       setIsDragTargetActive(true);
     }
   }
@@ -797,9 +819,9 @@ export function ThreadComposer({
       event.preventDefault();
     }
     if (dragAction.activateDragTarget && event.dataTransfer) {
-      event.dataTransfer.dropEffect = 'copy';
+      event.dataTransfer.dropEffect = canAttach ? 'copy' : 'none';
     }
-    if (dragAction.activateDragTarget) {
+    if (dragAction.activateDragTarget && canAttach) {
       setIsDragTargetActive(true);
     }
   }
@@ -909,6 +931,7 @@ export function ThreadComposer({
     busy,
   });
   const toolbarProps = useComposerToolbarProps({
+    attachmentCapabilities,
     isShellView,
     canToggleShellView,
     isMobileShell,
@@ -1091,8 +1114,9 @@ export function ThreadComposer({
       formClassName={formClassName}
       shellClassName={composerShellClassName}
       inputGroupClassName={graphChatInputGroupClassName}
-      error={error}
+      error={error ?? attachmentError}
       followTail={followTail}
+      attachmentCapabilities={attachmentCapabilities}
       photoInputRef={photoInputRef}
       fileInputRef={fileInputRef}
       onAppendAttachments={appendAttachments}

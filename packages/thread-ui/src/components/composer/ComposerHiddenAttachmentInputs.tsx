@@ -3,10 +3,12 @@ import type { ChangeEvent, RefObject } from 'react';
 import type { PromptAttachmentKindDto } from '@remote-codex/shared';
 
 export function ComposerHiddenAttachmentInputs({
+  attachmentCapabilities,
   photoInputRef,
   fileInputRef,
   onAppendAttachments,
 }: {
+  attachmentCapabilities?: { files: boolean; images: boolean } | undefined;
   photoInputRef: RefObject<HTMLInputElement | null>;
   fileInputRef: RefObject<HTMLInputElement | null>;
   onAppendAttachments: (
@@ -26,6 +28,9 @@ export function ComposerHiddenAttachmentInputs({
     <>
       <input
         ref={photoInputRef}
+        disabled={
+          attachmentCapabilities ? !attachmentCapabilities.images : false
+        }
         type="file"
         accept="image/*"
         multiple
@@ -35,6 +40,9 @@ export function ComposerHiddenAttachmentInputs({
       />
       <input
         ref={fileInputRef}
+        disabled={
+          attachmentCapabilities ? !attachmentCapabilities.files : false
+        }
         type="file"
         multiple
         tabIndex={-1}
