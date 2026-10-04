@@ -21,6 +21,16 @@ function Fixture() {
   const params = new URLSearchParams(location.search);
   const theme = params.get('theme') === 'dark' ? 'dark' : 'light';
   const unavailable = params.has('unavailable');
+  // A reply ending in one short code block exposes overlapping copy controls.
+  const detail = params.has('copyCode') ? {
+    ...mockDetail,
+    turns: mockDetail.turns.map((turn, index) => index === 0 ? {
+      ...turn,
+      items: turn.items.map(item => item.kind === 'agentMessage' ? {
+        ...item, text: '**Copy fixture**\n\n```javascript\nconst water = "H2O";\n```',
+      } : item),
+    } : turn),
+  } : mockDetail;
   const [agent, setAgent] = useState('Agent Alpha');
   const options: MatterWorkbenchOptions = {
     brandName:'ElAgente', hideRail:true, showShortcuts:false, showNotifications:false, showSearch:false,
@@ -31,7 +41,7 @@ function Fixture() {
   };
   return <PluginProvider builtinPlugins={[]}>
     {unavailable ? <ThreadWorkspaceLayout threads={[]} workbench={{...options, emptyWorkspace:true}} effectiveTheme={theme} themeMode={theme} viewportConstrained currentWorkspaceLabel={agent} globalSettingsContent={<p>Appearance</p>}><div className="fixture-unavailable">Agent paused</div></ThreadWorkspaceLayout> :
-      <ThreadDetailSurface threads={mockThreads} detail={mockDetail} loading={false} error={null} status={mockStatus} capabilities={mockCapabilities} adapter={adapter} currentThreadId={mockDetail.thread.id} currentWorkspaceId={mockDetail.workspace.id} currentWorkspaceLabel={agent} activeView="chat" workbench={options} shellEffectiveTheme={theme} shellThemeMode={theme} onShellThemeModeChange={() => {}} globalSettingsContent={<p>Appearance</p>} composerProps={{disabled:false, draftPrompt:'', model:mockDetail.thread.model, reasoningEffort:mockDetail.thread.reasoningEffort, collaborationMode:mockDetail.thread.collaborationMode, canInterrupt:true, onInterrupt() {}}}/>
+      <ThreadDetailSurface threads={mockThreads} detail={detail} loading={false} error={null} status={mockStatus} capabilities={mockCapabilities} adapter={adapter} currentThreadId={mockDetail.thread.id} currentWorkspaceId={mockDetail.workspace.id} currentWorkspaceLabel={agent} activeView="chat" workbench={options} shellEffectiveTheme={theme} shellThemeMode={theme} onShellThemeModeChange={() => {}} globalSettingsContent={<p>Appearance</p>} composerProps={{disabled:false, draftPrompt:'', model:mockDetail.thread.model, reasoningEffort:mockDetail.thread.reasoningEffort, collaborationMode:mockDetail.thread.collaborationMode, canInterrupt:true, onInterrupt() {}}}/>
     }
   </PluginProvider>;
 }

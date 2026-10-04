@@ -16,6 +16,7 @@ In another terminal, with Playwright and Chromium already installed:
 
 ```sh
 node packages/thread-ui/tests/layout/check.mjs
+node packages/thread-ui/tests/layout/check-code-copy.mjs
 pnpm exec tsc -p packages/thread-ui/tests/layout/tsconfig.json
 pnpm --filter @remote-codex/thread-ui exec vitest run src/components/MatterWorkbench.test.tsx src/components/ThreadWorkspaceLayout.test.tsx
 ```
@@ -23,6 +24,12 @@ pnpm --filter @remote-codex/thread-ui exec vitest run src/components/MatterWorkb
 If Playwright is supplied by a separate checkout, set `PLAYWRIGHT_MODULE` to that
 checkout's absolute `node_modules/@playwright/test` path. `LAYOUT_OUTPUT` chooses
 the screenshot/results directory; `LAYOUT_URL` overrides the localhost URL.
+`COPY_OUTPUT` chooses the code-copy screenshot/results directory.
+
+The code-copy check uses a reply ending in a one-line fenced code block. It
+checks direct mouse clicks at both widths, hover hit-testing against the
+overlapping reply-copy control, mobile block-tap reveal followed by button tap,
+and keyboard activation. Each activation must copy the exact code to clipboard.
 
 The checks cover 1440×900, 390×844 and 900×700 in light/dark themes; horizontal
 and page overflow, transcript/composer visibility, workspace tree scrolling and

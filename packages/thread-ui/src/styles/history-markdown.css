@@ -3033,12 +3033,15 @@
   display: flex; position: absolute; left: auto; right: 0; bottom: 0; z-index: 10;
   opacity: 0; pointer-events: none; transition: opacity 140ms ease;
 }
-.thread-ui-shell .thread-graph-code-copy { opacity: 0; pointer-events: none; transition: opacity 140ms ease; }
+/* The code target must sit above the reply-copy control when a reply ends in code. */
+.thread-ui-shell .thread-graph-code-copy { opacity: 0; pointer-events: none; z-index: 11; transition: opacity 140ms ease; }
 .thread-ui-shell .thread-graph-message-bubble[data-touch-actions="true"] .thread-graph-message-copy-desktop,
 .thread-ui-shell .thread-graph-code-block[data-touch-actions="true"] .thread-graph-code-copy {
   opacity: .6; pointer-events: auto;
 }
 @media (hover: hover) and (pointer: fine) {
+  /* A pointer click can hit-test before moving the mouse to trigger :hover. */
+  .thread-ui-shell .thread-graph-code-copy { pointer-events: auto; }
   .thread-ui-shell .thread-graph-message-bubble:hover .thread-graph-message-copy-desktop,
   .thread-ui-shell .thread-graph-message-bubble:focus-within .thread-graph-message-copy-desktop,
   .thread-ui-shell .thread-graph-code-block:hover .thread-graph-code-copy,
