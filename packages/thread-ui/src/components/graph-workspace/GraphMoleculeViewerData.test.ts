@@ -23,7 +23,7 @@ const extxyz =
 const mol =
   'water\n  W4\n\n  2  1  0  0  0  0            999 V2000\n    0.0000    0.0000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n    0.9500    0.0000    0.0000 H   0  0  0  0  0  0  0  0  0  0  0  0\n  1  2  1  0  0  0  0\nM  END\n';
 const pdb =
-  'HETATM    1  O   HOH A   1       0.000   0.000   0.000  1.00  0.00           O  \nHETATM    2  H1  HOH A   1       0.950   0.000   0.000  1.00  0.00           H  \nCONECT    1    2\nEND\n';
+  'HETATM    7  O   HOH A   1       0.000   0.000   0.000  1.00  0.00           O  \nHETATM   42  H1  HOH A   1       0.950   0.000   0.000  1.00  0.00           H  \nCONECT    7   42\nEND\n';
 const cif =
   'data_water\n_cell_length_a 4\n_cell_length_b 5\n_cell_length_c 6\n_cell_angle_alpha 90\n_cell_angle_beta 90\n_cell_angle_gamma 90\nloop_\n_atom_site_label\n_atom_site_type_symbol\n_atom_site_fract_x\n_atom_site_fract_y\n_atom_site_fract_z\nO1 O 0 0 0\nH1 H 0.2375 0 0\n';
 export const STRUCTURE_FIXTURES = {
@@ -62,7 +62,78 @@ describe('immutable structure parsing', () => {
         'H',
       ]);
       expect(model.selectedAtoms({})[1]!.x).toBeCloseTo(0.95);
+      const serials = model.selectedAtoms({}).map((atom) => atom.serial);
+      if (format === 'pdb') expect(serials).toEqual([7, 42]);
+      expect(
+        applyStructureMetadata(model, {
+          version: 1,
+          objectId: 'o',
+          sourceRevision: 'r',
+          checksum: target.checksum,
+          format,
+          atoms: [
+            { id: 'canonical-O', element: 'O' },
+            { id: 'canonical-H', element: 'H' },
+          ],
+        }),
+      ).toEqual(['canonical-O', 'canonical-H']);
+      expect(model.selectedAtoms({}).map((atom) => atom.index)).toEqual([0, 1]);
+      expect(
+        model.selectedAtoms({ index: [1] }).map((atom) => atom.elem),
+      ).toEqual(['H']);
+      expect(model.selectedAtoms({}).map((atom) => atom.serial)).toEqual(
+        serials,
+      );
       expect(data.exportContent).toBe(text);
+    },
+  );
+  it.each(['provided', 'none'] as const)(
+    'maps canonical IDs and render selectors when %s bonds skip parser indices',
+    async (bonding) => {
+      const runtime = (await import('3dmol')) as unknown as {
+        GLModel: new (id: number) => RenderModel & {
+          addMolData(text: string, format: string, options: object): void;
+        };
+      };
+      const model = new runtime.GLModel(0);
+      const frame = structureRenderFrame(extxyz, 'extxyz');
+      model.addMolData(frame.content, frame.format, { assignBonds: false });
+      expect(model.selectedAtoms({}).map((atom) => atom.index)).toEqual([
+        undefined,
+        undefined,
+      ]);
+      const metadata: ArtifactMetadata = {
+        version: 1,
+        objectId: 'o',
+        sourceRevision: 'edited',
+        checksum: target.checksum,
+        format: 'extxyz',
+        atoms: [
+          { id: 'canonical-O', element: 'O' },
+          { id: 'canonical-H', element: 'H' },
+        ],
+        bonds: [{ atomIds: ['canonical-O', 'canonical-H'], order: 1 }],
+        render: { coordinateUnit: 'angstrom', bonding },
+      };
+      const before = JSON.stringify(metadata),
+        coordinates = model
+          .selectedAtoms({})
+          .map((atom) => [atom.x, atom.y, atom.z]);
+      expect(applyStructureMetadata(model, metadata)).toEqual([
+        'canonical-O',
+        'canonical-H',
+      ]);
+      expect(model.selectedAtoms({}).map((atom) => atom.index)).toEqual([0, 1]);
+      expect(
+        model.selectedAtoms({ index: [1] }).map((atom) => atom.elem),
+      ).toEqual(['H']);
+      expect(model.selectedAtoms({}).map((atom) => atom.serial)).toEqual([
+        0, 1,
+      ]);
+      expect(
+        model.selectedAtoms({}).map((atom) => [atom.x, atom.y, atom.z]),
+      ).toEqual(coordinates);
+      expect(JSON.stringify(metadata)).toBe(before);
     },
   );
   it('retains source bytes including CRLF and trailing blanks, while splitting trajectories', () => {

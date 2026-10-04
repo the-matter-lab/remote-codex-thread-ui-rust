@@ -301,3 +301,113 @@ it('disabled submission without a callback and rejected submissions provide visi
     'Stale native revision',
   );
 });
+
+it.each(['provided', 'none'] as const)(
+  'picks, highlights, hovers and submits actual EXTXYZ parser atoms with %s bonds',
+  async (bonding) => {
+    Object.defineProperty(window.URL, 'createObjectURL', {
+      value: () => 'blob:worker',
+      configurable: true,
+    });
+    const library = (await import('3dmol')) as unknown as {
+      GLModel: new (id: number) => RenderModel & {
+        addMolData(text: string, format: string, options: object): void;
+      };
+    };
+    const content = '2\nProperties=species:S:1:pos:R:3\nO 0 0 0\nH 1 0 0\n';
+    const actualModel = new library.GLModel(0);
+    actualModel.addMolData(content, 'xyz', { assignBonds: false });
+    expect(actualModel.selectedAtoms({}).map((atom) => atom.index)).toEqual([
+      undefined,
+      undefined,
+    ]);
+    vi.mocked(runtime.viewer.addModel).mockReturnValue(actualModel);
+    const submit = vi.fn(),
+      local = vi.fn();
+    const editedTarget = {
+      ...target,
+      sourceRevision: 'edited-r2',
+      frameId: 'edited-frame',
+    };
+    const metadata = {
+      version: 1 as const,
+      objectId: editedTarget.objectId,
+      sourceRevision: editedTarget.sourceRevision,
+      checksum: editedTarget.checksum,
+      format: 'extxyz',
+      atoms: [
+        { id: 'canonical-O', element: 'O' },
+        { id: 'canonical-H', element: 'H' },
+      ],
+      bonds: [
+        {
+          atomIds: ['canonical-O', 'canonical-H'] as [string, string],
+          order: 1,
+        },
+      ],
+      render: { coordinateUnit: 'angstrom' as const, bonding },
+    };
+    const before = JSON.stringify(metadata);
+    await act(async () =>
+      root.render(
+        <GraphMoleculeViewer
+          source={{
+            content: [content],
+            format: 'extxyz',
+            target: editedTarget,
+            metadata,
+          }}
+          onSelectionChange={local}
+          onSelectionSubmit={submit}
+        />,
+      ),
+    );
+    type PickedAtom = ReturnType<RenderModel['selectedAtoms']>[number] & {
+      callback: (atom: object, viewer: object, event?: MouseEvent) => void;
+      hover_callback: (atom: object, viewer: object, event: MouseEvent) => void;
+      style: { sphere?: { color: string } };
+    };
+    const atoms = actualModel.selectedAtoms({}) as PickedAtom[];
+    expect(atoms.map((atom) => atom.index)).toEqual([0, 1]);
+    await act(async () => atoms[0]!.callback(atoms[0]!, runtime.viewer));
+    expect(local.mock.lastCall?.[0]).toMatchObject({
+      atoms: [0],
+      selectedIds: ['canonical-O'],
+      target: editedTarget,
+    });
+    expect(atoms[0]!.style.sphere?.color).toBe('yellow');
+    await act(async () =>
+      atoms[1]!.callback(
+        atoms[1]!,
+        runtime.viewer,
+        new MouseEvent('click', { shiftKey: true }),
+      ),
+    );
+    await act(async () =>
+      atoms[1]!.hover_callback(
+        atoms[1]!,
+        runtime.viewer,
+        new MouseEvent('mousemove', { clientX: 20, clientY: 30 }),
+      ),
+    );
+    expect(node.textContent).toContain('H (1)');
+    await click('Stage current selection');
+    await click('Send staged selections');
+    expect(submit).toHaveBeenCalledExactlyOnceWith({
+      selections: [
+        expect.objectContaining({
+          atoms: [0, 1],
+          selectedIds: ['canonical-O', 'canonical-H'],
+          target: editedTarget,
+        }),
+      ],
+    });
+    expect(JSON.stringify(metadata)).toBe(before);
+    expect(
+      actualModel.selectedAtoms({}).map((atom) => [atom.x, atom.y, atom.z]),
+    ).toEqual([
+      [0, 0, 0],
+      [1, 0, 0],
+    ]);
+  },
+);

@@ -647,7 +647,7 @@ export function GraphMoleculeViewer({
             x: event.clientX,
             y: event.clientY,
             label: `${atom.atom || atom.elem || 'Atom'} (${
-              atom.serial ?? atom.index ?? '?'
+              atom.index ?? atom.serial ?? '?'
             })`,
             coords: {
               x: atom.x.toFixed(2),

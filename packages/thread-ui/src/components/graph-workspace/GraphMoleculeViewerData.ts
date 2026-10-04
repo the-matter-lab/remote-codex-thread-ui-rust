@@ -138,11 +138,17 @@ export function applyStructureMetadata(
   if (metadata?.atoms && metadata.atoms.length !== atoms.length)
     throw new Error('Atom metadata count differs from the rendered model');
   const ids = atoms.map(
-    (atom, index) =>
-      metadata?.atoms?.[index]?.id ?? String(atom.index ?? index),
+    (_atom, index) => metadata?.atoms?.[index]?.id ?? String(index),
   );
   if (new Set(ids).size !== ids.length)
     throw new Error('Duplicate atom identity');
+  // XYZ's parser initializes index only during inferred bonding. Provided/none
+  // bonding skips that path, so normalize the temporary render model ourselves.
+  // Selection, style selectors and canonical IDs all use source atom order;
+  // parser serials (including non-contiguous PDB serials) remain untouched.
+  atoms.forEach((atom, index) => {
+    atom.index = index;
+  });
   const bonding = metadata?.render?.bonding;
   if (bonding === 'provided' && !metadata?.bonds)
     throw new Error('Provided bonding requires bond metadata');
