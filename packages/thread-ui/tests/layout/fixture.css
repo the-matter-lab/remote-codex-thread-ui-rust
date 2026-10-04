@@ -1,0 +1,7 @@
+@import "tailwindcss";
+@import "../../src/styles.css";
+@source "../../src";
+html, body, #root { height: 100%; margin: 0; overflow: hidden; }
+* { box-sizing: border-box; }
+button, input, textarea, select { font: inherit; }
+.fixture-unavailable { display: grid; place-items: center; height: 100%; color: var(--theme-fg); background: var(--theme-bg); }

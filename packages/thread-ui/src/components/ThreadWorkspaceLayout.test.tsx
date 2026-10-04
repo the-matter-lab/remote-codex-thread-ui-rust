@@ -114,15 +114,15 @@ describe('ThreadWorkspaceLayout', () => {
     vi.restoreAllMocks();
   });
 
-  it('defaults desktop thread entry to chat with workspace collapsed', () => {
+  it('defaults desktop thread entry to inspectable chat and workspace', () => {
     const element = renderLayout();
 
     expect(element.querySelector('[data-testid="chat-content"]')).toBeTruthy();
     expect(
       element.querySelector('[data-testid="workspace-content"]'),
-    ).toBeNull();
+    ).toBeTruthy();
     expect(
-      element.querySelector('[aria-label="Expand workspace"]'),
+      element.querySelector('[aria-label="Resize workspace"]'),
     ).toBeTruthy();
   });
 
@@ -181,6 +181,7 @@ describe('ThreadWorkspaceLayout', () => {
       </ThreadWorkspaceLayout>
     );
     const element = render(layout());
+    flushSync(() => element.querySelector<HTMLButtonElement>('[aria-label="Collapse workspace"]')!.click());
 
     expect(
       element.querySelector('[data-testid="workspace-content"]'),

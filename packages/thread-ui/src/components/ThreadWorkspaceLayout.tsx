@@ -481,7 +481,7 @@ export function ThreadWorkspaceLayout({
   const [mobileRoomsOpen, setMobileRoomsOpen] = useState(false);
   const [roomsRailCollapsed, setRoomsRailCollapsed] = useState(false);
   const [workspaceCollapsed, setWorkspaceCollapsed] = useState(
-    !initialWorkspaceFocusViewport,
+    false,
   );
   const [isShellMobileViewport, setIsShellMobileViewport] = useState(
     initialShellMobileViewport,
@@ -1347,6 +1347,7 @@ export function ThreadWorkspaceLayout({
                   </div>
                 ) : (
                   <ResizablePanelGroup
+                    autoSaveId="thread-ui.workspace-layout"
                     direction="horizontal"
                     className="thread-split-container thread-graph-shell-resizable thread-graph-shell-desktop-split h-full min-h-0 overflow-hidden"
                   >
@@ -1358,7 +1359,7 @@ export function ThreadWorkspaceLayout({
                     >
                       {children}
                     </ResizablePanel>
-                    <ResizableHandle className="thread-resize-handle w-2 bg-transparent after:w-px after:bg-slate-200/80 after:transition-colors hover:after:bg-slate-300 dark:after:bg-[#303642] dark:hover:after:bg-[#475063]" />
+                    <ResizableHandle aria-label="Resize workspace" className="thread-resize-handle w-2 bg-transparent after:w-px after:bg-slate-200/80 after:transition-colors hover:after:bg-slate-300 dark:after:bg-[#303642] dark:hover:after:bg-[#475063]" />
                     <ResizablePanel
                       defaultSize={53}
                       minSize={30}

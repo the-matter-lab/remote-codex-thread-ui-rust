@@ -1165,3 +1165,27 @@
 .thread-ui-shell .thread-action-menu > button:hover, .thread-ui-shell .thread-action-menu > button:focus-visible { background: var(--theme-hover); outline: 2px solid var(--theme-accent-border); outline-offset: -2px; }
 .thread-ui-portal { --overlay-scrim: rgb(0 0 0 / 42%); }
 .thread-ui-portal .thread-detail-dialog { background: var(--theme-panel); color: var(--theme-fg); }
+
+/* Shared inspection layout: one scroll owner per pane, retained while hidden. */
+.matter-workbench :is(.matter-main, .matter-content, .matter-explorer-body) { min-width: 0; min-height: 0; overflow: hidden; }
+.matter-workbench :is(.matter-chat, .matter-explorer)[hidden] { display: none; }
+.matter-explorer-heading { flex-shrink: 0; }
+.matter-explorer-body { display: flex; flex-direction: column; flex: 1; }
+.matter-explorer-body > * { flex: 1; min-height: 0; min-width: 0; }
+.matter-content.is-workspace-focus .matter-explorer { position: relative; inset: auto; width: 100%; border-left: 0; }
+.matter-workspace-switch { display: flex; flex-shrink: 0; align-items: stretch; }
+.thread-ui-shell .matter-workbench .matter-workspace-switch button { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 0 10px; min-height: 36px; color: var(--theme-fg-soft); border-left: 1px solid var(--theme-border); }
+.matter-workspace-switch svg { width: 16px; height: 16px; }
+.thread-ui-shell .matter-workbench .matter-workspace-switch button:is([aria-pressed='true'], [aria-expanded='true']) { color: var(--theme-accent-strong); background: var(--theme-accent-soft); }
+.thread-ui-shell .matter-workbench .matter-workspace-switch button:hover { background: var(--theme-hover); }
+.matter-workbench .matter-explorer-resize:focus-visible { outline: 2px solid var(--theme-accent-solid); outline-offset: -2px; }
+.matter-workbench .matter-explorer-resize { touch-action: none; }
+.matter-workbench .matter-explorer-heading button { min-width: 36px; min-height: 36px; }
+@media (max-width: 639px) {
+  .thread-ui-shell .matter-workbench .matter-sidebar { position: absolute; top: calc(44px + env(safe-area-inset-top)); bottom: 0; padding-bottom: max(12px, env(safe-area-inset-bottom)); }
+  .matter-workbench .matter-sidebar-scrim { position: absolute; inset: calc(44px + env(safe-area-inset-top)) 0 0; }
+  .thread-ui-shell .matter-workbench { position: relative; }
+  .thread-ui-shell .matter-workbench .matter-workspace-switch button { gap: 4px; padding-inline: 7px; font-size: 12px; }
+  .thread-ui-shell .matter-workbench .thread-graph-composer-input { max-height: min(160px, 24dvh); }
+  .matter-content.is-workspace-focus { padding-bottom: env(safe-area-inset-bottom); }
+}

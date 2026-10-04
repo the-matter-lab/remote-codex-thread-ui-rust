@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, type ReactNode, type CSSProperties } from 'react';
+import { useEffect, useState, useRef, useId, type ReactNode, type CSSProperties } from 'react';
 import {
   ArrowLeft,
   ArrowRight,
@@ -50,6 +50,8 @@ export interface MatterWorkbenchOptions {
   renderNavigationHeader?: (input: { collapsed: boolean; closeNavigation: () => void }) => ReactNode;
   emptyWorkspace?: boolean;
   navigationReady?: boolean;
+  /** Desktop workspace starts visible; an explicit saved preference takes precedence. */
+  defaultExplorerOpen?: boolean;
   harnessSessionId?: string | null;
   harnessSessionUrl?: string | null;
   threads: WorkbenchThread[];
@@ -114,26 +116,77 @@ export function MatterWorkbench({
     query.addEventListener('change', change);
     return () => query.removeEventListener('change', change);
   }, []);
+  const [workspaceFocus, setWorkspaceFocus] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 1023px)').matches);
+  useEffect(() => {
+    const query = window.matchMedia('(max-width: 1023px)');
+    const change = () => setWorkspaceFocus(query.matches);
+    query.addEventListener('change', change);
+    return () => query.removeEventListener('change', change);
+  }, []);
+  const navigationRef = useRef<HTMLElement>(null);
+  const navigationToggleRef = useRef<HTMLButtonElement>(null);
+  const navigationWasOpen = useRef(false);
+  const navigationId = useId();
+  const workspaceId = useId();
+  const toolsId = useId();
+  useEffect(() => {
+    if (mobile && sidebarOpen) {
+      navigationWasOpen.current = true;
+      navigationRef.current?.querySelector<HTMLButtonElement>('[aria-label="Close sidebar"]')?.focus();
+    } else if (navigationWasOpen.current) {
+      navigationWasOpen.current = false;
+      navigationToggleRef.current?.focus();
+    }
+  }, [mobile, sidebarOpen]);
+  useEffect(() => { if (!mobile) setSidebarOpen(false); }, [mobile]);
   const [shortcutsOpen, setShortcutsOpen] = useState(true);
   const [recentsOpen, setRecentsOpen] = useState(true);
   const [bellOpen, setBellOpen] = useState(false);
   const [toolbarOpen, setToolbarOpen] = useState(false);
-  const [explorerOpen, setExplorerOpen] = useState(false);
+  const [desktopExplorerOpen, setDesktopExplorerOpen] = useState(() => {
+    try {
+      const saved = localStorage.getItem('remote-codex.explorer-open');
+      if (saved !== null) return saved === 'true';
+    } catch { /* Optional preference. */ }
+    return o.defaultExplorerOpen !== false;
+  });
+  const [mobileWorkspaceOpen, setMobileWorkspaceOpen] = useState(false);
+  const explorerOpen = Boolean(explorer) && (workspaceFocus ? mobileWorkspaceOpen : desktopExplorerOpen);
+  const [explorerVisited, setExplorerVisited] = useState(false);
+  useEffect(() => { if (explorerOpen) setExplorerVisited(true); }, [explorerOpen]);
+  const setExplorerOpen = (open: boolean) => {
+    if (workspaceFocus) setMobileWorkspaceOpen(open);
+    else {
+      setDesktopExplorerOpen(open);
+      try { localStorage.setItem('remote-codex.explorer-open', String(open)); } catch { /* Optional preference. */ }
+    }
+  };
   const [explorerWidth, setExplorerWidth] = useState(() => {
-    try { return Math.max(260, Math.min(800, Number(localStorage.getItem('remote-codex.explorer-width')) || 360)); } catch { return 360; }
+    try { return Math.max(260, Math.min(800, Number(localStorage.getItem('remote-codex.explorer-width')) || 440)); } catch { return 440; }
   });
   const contentRef = useRef<HTMLDivElement>(null);
   const resizeOrigin = useRef<{ x: number; width: number } | null>(null);
+  const [contentWidth, setContentWidth] = useState(1000);
+  useEffect(() => {
+    const content = contentRef.current;
+    if (!content || typeof ResizeObserver === 'undefined') return;
+    const update = () => setContentWidth(content.clientWidth);
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(content);
+    return () => observer.disconnect();
+  }, []);
+  const explorerMax = Math.max(260, Math.min(800, contentWidth - 360));
+  const visibleExplorerWidth = Math.min(explorerMax, explorerWidth);
   const resizeExplorer = (width: number) => {
-    const max = Math.max(260, (contentRef.current?.clientWidth ?? 1000) - 320);
-    const next = Math.round(Math.max(260, Math.min(max, width)));
+    const next = Math.round(Math.max(260, Math.min(explorerMax, width)));
     setExplorerWidth(next);
     try { localStorage.setItem('remote-codex.explorer-width', String(next)); } catch { /* Optional preference. */ }
   };
   const [lastReveal, setLastReveal] = useState(revealExplorer);
   if (lastReveal !== revealExplorer) {
     setLastReveal(revealExplorer);
-    if (revealExplorer > 0) setExplorerOpen(true);
+    if (revealExplorer > 0) { setMobileWorkspaceOpen(true); setDesktopExplorerOpen(true); }
   }
   const navigate = (href: string) => {
     setSidebarOpen(false);
@@ -217,6 +270,8 @@ export function MatterWorkbench({
       </nav>}
       <header className="matter-topbar">
         <button
+          ref={navigationToggleRef}
+          aria-controls={navigationId}
           aria-label="Toggle navigation sidebar"
           aria-expanded={mobile ? sidebarOpen : !sidebarHidden}
           onClick={() => {
@@ -266,7 +321,7 @@ export function MatterWorkbench({
           </button>}
         </div>
       </header>
-      {sidebarOpen && (
+      {mobile && sidebarOpen && (
         <button
           className="matter-sidebar-scrim"
           aria-label="Close navigation"
@@ -274,6 +329,21 @@ export function MatterWorkbench({
         />
       )}
       <aside
+        ref={navigationRef}
+        id={navigationId}
+        inert={mobile && !sidebarOpen}
+        role={mobile && sidebarOpen ? 'dialog' : undefined}
+        aria-modal={mobile && sidebarOpen ? true : undefined}
+        onKeyDown={event => {
+          if (!mobile || !sidebarOpen) return;
+          if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); setSidebarOpen(false); }
+          if (event.key === 'Tab') {
+            const controls = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), [tabindex="0"]')).filter(node => !node.closest('[inert]'));
+            const first = controls[0]; const last = controls[controls.length - 1];
+            if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+            else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+          }
+        }}
         className={`matter-sidebar ${sidebarOpen ? 'is-open' : ''}`}
         aria-label="Thread navigation"
       >
@@ -332,7 +402,7 @@ export function MatterWorkbench({
           {o.sidebarFooter ?? "Your conversations, together."}
         </div>
       </aside>
-      <main className="matter-main">
+      <main className="matter-main" inert={mobile && sidebarOpen}>
         <div className="matter-tabs-row">
         <nav ref={tabsRef} className="matter-thread-tabs" aria-label="Workspace threads">
           {tabs.map((t) => (
@@ -352,8 +422,12 @@ export function MatterWorkbench({
           ))}
           {newThread}
         </nav>
-        {!o.emptyWorkspace && <button className="matter-toolbar-toggle" aria-label="Thread tools" aria-expanded={toolbarOpen} aria-controls="matter-thread-tools" onClick={() => setToolbarOpen(open => !open)} title={toolbarOpen ? 'Hide thread tools' : 'Show thread tools'}><SlidersHorizontal /></button>}
-        {toolbarOpen && <div className="matter-breadcrumb" id="matter-thread-tools">
+        {Boolean(explorer) && <div className="matter-workspace-switch" role="group" aria-label="Chat and workspace">
+          {workspaceFocus && <button aria-label="Show chat" aria-pressed={!explorerOpen} onClick={() => setExplorerOpen(false)}><MessageSquare /><span>Chat</span></button>}
+          <button aria-label={workspaceFocus ? 'Show workspace' : 'Toggle Explorer'} aria-controls={workspaceId} aria-expanded={explorerOpen} aria-pressed={workspaceFocus ? explorerOpen : undefined} onClick={() => setExplorerOpen(workspaceFocus || !explorerOpen)}><PanelRight /><span>Workspace</span></button>
+        </div>}
+        {!o.emptyWorkspace && <button className="matter-toolbar-toggle" aria-label="Thread tools" aria-expanded={toolbarOpen} aria-controls={toolsId} onClick={() => setToolbarOpen(open => !open)} title={toolbarOpen ? 'Hide thread tools' : 'Show thread tools'}><SlidersHorizontal /></button>}
+        {toolbarOpen && <div className="matter-breadcrumb" id={toolsId}>
           <WorkbenchPath path={o.workspacePath} />
           <ChevronRight />
           <span className="matter-current-title" title={title}>
@@ -370,41 +444,36 @@ export function MatterWorkbench({
           <div className="matter-thread-actions">
             {actions}
             {threadMenu}
-            <button
-              aria-label="Toggle Explorer"
-              aria-expanded={explorerOpen}
-              onClick={() => setExplorerOpen(!explorerOpen)}
-            >
-              <PanelRight />
-            </button>
+
           </div>
         </div>}
         </div>
-        <div ref={contentRef} style={{ '--explorer-width': `${explorerWidth}px` } as CSSProperties} className={`matter-content ${explorerOpen ? 'has-explorer' : ''}`}>
-          <div className="matter-chat">
+        <div ref={contentRef} style={{ '--explorer-width': `${visibleExplorerWidth}px` } as CSSProperties} className={`matter-content ${explorerOpen ? 'has-explorer' : ''} ${workspaceFocus ? 'is-workspace-focus' : ''}`}>
+          <div className="matter-chat" hidden={workspaceFocus && explorerOpen} inert={workspaceFocus && explorerOpen}>
             <WorkbenchContext.Provider value={true}>
               {children}
             </WorkbenchContext.Provider>
           </div>
-          {explorerOpen && (
-            <aside className="matter-explorer" aria-label="Explorer">
-              {!mobile && <div role="separator" aria-label="Resize Explorer" aria-orientation="vertical" aria-valuemin={260} aria-valuemax={Math.max(260, (contentRef.current?.clientWidth ?? 1000) - 320)} aria-valuenow={explorerWidth} tabIndex={0} className="matter-explorer-resize"
-                onPointerDown={e => { e.preventDefault(); e.currentTarget.setPointerCapture(e.pointerId); resizeOrigin.current = { x: e.clientX, width: explorerWidth }; }}
+          {Boolean(explorer) && (explorerOpen || explorerVisited) && (
+            <aside id={workspaceId} className="matter-explorer" aria-label="Explorer" hidden={!explorerOpen} inert={!explorerOpen}>
+              {!workspaceFocus && <div role="separator" aria-label="Resize Explorer" aria-orientation="vertical" aria-valuemin={260} aria-valuemax={explorerMax} aria-valuenow={visibleExplorerWidth} aria-controls={workspaceId} tabIndex={0} className="matter-explorer-resize"
+                onPointerDown={e => { e.preventDefault(); e.currentTarget.setPointerCapture(e.pointerId); resizeOrigin.current = { x: e.clientX, width: visibleExplorerWidth }; }}
                 onPointerMove={e => { if (resizeOrigin.current) resizeExplorer(resizeOrigin.current.width + resizeOrigin.current.x - e.clientX); }}
                 onPointerUp={e => { resizeOrigin.current = null; e.currentTarget.releasePointerCapture(e.pointerId); }}
+                onPointerCancel={() => { resizeOrigin.current = null; }}
                 onLostPointerCapture={() => { resizeOrigin.current = null; }}
-                onKeyDown={e => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); resizeExplorer(explorerWidth + (e.key === 'ArrowLeft' ? 24 : -24)); } }}
+                onKeyDown={e => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); resizeExplorer(visibleExplorerWidth + (e.key === 'ArrowLeft' ? 24 : -24)); } else if (e.key === 'Home' || e.key === 'End') { e.preventDefault(); resizeExplorer(e.key === 'Home' ? 260 : explorerMax); } }}
               />}
               <div className="matter-explorer-heading">
                 Explorer
                 <button
                   aria-label="Close Explorer"
-                  onClick={() => setExplorerOpen(false)}
+                  onClick={() => { setExplorerOpen(false); contentRef.current?.parentElement?.querySelector<HTMLButtonElement>('[aria-label="Show chat"], [aria-label="Toggle Explorer"]')?.focus(); }}
                 >
                   <X />
                 </button>
               </div>
-              {explorer}
+              <div className="matter-explorer-body">{explorer}</div>
             </aside>
           )}
         </div>

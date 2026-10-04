@@ -3055,3 +3055,18 @@ html[data-theme-effective="light"] .thread-workspace-link-menu button:hover,html
 @keyframes thread-operation-sheen { from { background-position:150% 0; } to { background-position:-150% 0; } }
 .is-running-batch .thread-graph-history-group-verb,.is-running-batch .thread-graph-history-group-description { background-image:linear-gradient(105deg,var(--theme-fg-muted) 35%,var(--theme-fg) 50%,var(--theme-fg-muted) 65%); background-size:250% 100%; background-clip:text; -webkit-background-clip:text; color:transparent; animation:thread-operation-sheen 2.4s linear infinite; }
 @media(prefers-reduced-motion:reduce) { .is-running-batch .thread-graph-history-group-verb,.is-running-batch .thread-graph-history-group-description { animation:none; color:var(--theme-fg); background:none; } }
+
+/* Reserve row action space so file labels remain clickable in narrow panes. */
+.thread-ui-shell .thread-graph-tree-actions {
+  position: static;
+  flex-shrink: 0;
+  align-self: stretch;
+}
+@media (hover: none) {
+  .thread-ui-shell .thread-graph-tree-actions { opacity: 1; pointer-events: auto; }
+}
+/* Narrow split panes keep labels readable; expanded Explorer reveals row actions. */
+.thread-ui-shell .thread-graph-workspace-explorer-pane { container-type: inline-size; }
+@container (max-width: 200px) {
+  .thread-graph-tree-actions { display: none; }
+}
