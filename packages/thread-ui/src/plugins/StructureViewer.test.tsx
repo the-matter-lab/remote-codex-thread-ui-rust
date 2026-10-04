@@ -313,3 +313,80 @@ it('an update pending verification disables identity-bearing actions while retai
   expect(rendered.props.loading).toBe(true);
   expect(node.querySelector('[data-testid="viewer"]')).toBe(viewer);
 });
+
+it('retains operation identity after accepted-only input and only completes on applied', async () => {
+  const submitInput = vi
+    .fn()
+    .mockImplementationOnce(async (input: ViewerInput) => ({
+      ...input,
+      status: 'accepted',
+    }))
+    .mockImplementation(async (input: ViewerInput) => ({
+      ...input,
+      status: 'applied',
+      result: input.payload,
+    }));
+  await mount(asset(), {
+    discovery: EXTENSION_FIXTURES.grafico.discovery,
+    submitInput,
+  });
+  const target =
+    typeof rendered.props.source === 'object'
+      ? rendered.props.source!.target!
+      : null!;
+  const selection = {
+    selections: [
+      { moleculeId: 'water', atoms: [0], selectedIds: ['oxygen'], target },
+    ],
+  };
+  await expect(rendered.props.onSelectionSubmit!(selection)).rejects.toThrow(
+    'awaiting native completion',
+  );
+  await rendered.props.onSelectionSubmit!(selection);
+  expect(submitInput.mock.calls[1]![0].operationId).toBe(
+    submitInput.mock.calls[0]![0].operationId,
+  );
+});
+
+it('requires host PNG upload for artifact-backed screenshots and forwards personal active-view callback', async () => {
+  const discovery = structuredClone(EXTENSION_FIXTURES.grafico.discovery);
+  const action = {
+    id: 'elagente.viewer.screenshot',
+    label: 'Submit screenshot',
+    execution: 'native' as const,
+    completion: 'applied' as const,
+    inputSchema: {
+      type: 'object' as const,
+      additionalProperties: false as const,
+      required: ['imageArtifactId', 'mediaType', 'width', 'height'],
+      properties: {
+        imageArtifactId: { type: 'string' as const },
+        mediaType: { type: 'string' as const, enum: ['image/png'] },
+        width: { type: 'integer' as const, minimum: 1 },
+        height: { type: 'integer' as const, minimum: 1 },
+      },
+    },
+    resultSchema: {
+      type: 'object' as const,
+      additionalProperties: false as const,
+      properties: {},
+    },
+  };
+  discovery.capabilities[action.id] = true;
+  discovery.actions.push(action);
+  await mount(asset(), { discovery, submitInput: vi.fn() });
+  expect(rendered.props.onScreenshot).toBeUndefined();
+  const onActive = vi.fn(),
+    onScreenshot = vi.fn();
+  await act(async () =>
+    root.render(
+      <StructureView
+        asset={asset()}
+        onActive={onActive}
+        onScreenshot={onScreenshot}
+      />,
+    ),
+  );
+  expect(rendered.props.onActive).toBe(onActive);
+  expect(rendered.props.onScreenshot).toBe(onScreenshot);
+});

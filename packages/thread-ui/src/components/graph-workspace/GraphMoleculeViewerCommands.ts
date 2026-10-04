@@ -6,7 +6,86 @@ import {
   type ScientificTarget,
   type ViewerAcknowledgement,
   type ViewerRequest,
+  type ActionDefinition,
 } from '@remote-codex/shared';
+
+/** Reviewed data schema; the native adapter advertises the same versioned action. */
+export const VIEWER_COMMAND_BATCH_ACTION: ActionDefinition = {
+  id: 'elagente.viewer.command-batch',
+  label: 'Apply viewer commands',
+  execution: 'browser',
+  completion: 'applied',
+  inputSchema: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['version', 'commands'],
+    properties: {
+      version: { type: 'integer', minimum: 1, maximum: 1 },
+      commands: {
+        type: 'array',
+        maxItems: 128,
+        items: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['type'],
+          properties: {
+            type: {
+              type: 'string',
+              enum: [
+                'selection',
+                'camera',
+                'annotations',
+                'style',
+                'unit-cell',
+              ],
+            },
+            selectedIds: {
+              type: 'array',
+              maxItems: 10000,
+              items: { type: 'string', maxLength: 160 },
+            },
+            color: { type: 'string', maxLength: 32 },
+            radius: { type: 'number', minimum: 0, maximum: 1000 },
+            view: {
+              type: 'array',
+              maxItems: 8,
+              items: { type: 'number', minimum: -1e9, maximum: 1e9 },
+            },
+            style: {
+              type: 'string',
+              enum: ['ball-stick', 'stick', 'spacefill', 'surface', 'cartoon'],
+            },
+            visible: { type: 'boolean' },
+            annotations: {
+              type: 'array',
+              maxItems: 256,
+              items: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['id', 'text', 'atomId'],
+                properties: {
+                  id: { type: 'string', maxLength: 160 },
+                  text: { type: 'string', maxLength: 1024 },
+                  atomId: { type: 'string', maxLength: 160 },
+                  color: { type: 'string', maxLength: 32 },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  resultSchema: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['commandCount', 'durationMs'],
+    properties: {
+      commandCount: { type: 'integer', minimum: 0, maximum: 128 },
+      durationMs: { type: 'integer', minimum: 0 },
+    },
+  },
+};
 
 export type ViewerStyle =
   | 'ball-stick'
@@ -14,9 +93,19 @@ export type ViewerStyle =
   | 'spacefill'
   | 'cartoon'
   | 'surface';
-export type ViewerAnnotation = { id: string; text: string; atomId: string };
+export type ViewerAnnotation = {
+  id: string;
+  text: string;
+  atomId: string;
+  color?: string;
+};
 export type ViewerCommand =
-  | { type: 'selection'; selectedIds: string[] }
+  | {
+      type: 'selection';
+      selectedIds: string[];
+      color?: string;
+      radius?: number;
+    }
   | { type: 'style'; style: ViewerStyle }
   | { type: 'camera'; view: number[] }
   | { type: 'annotations'; annotations: ViewerAnnotation[] }
@@ -52,12 +141,29 @@ export function validateViewerCommands(
   if (!Array.isArray(value) || value.length > 128)
     throw new Error('Command batch must contain at most 128 commands');
   const ids = new Set(atomIds);
+  const validColor = (value: unknown) =>
+    typeof value === 'string' &&
+    (/^#[0-9a-fA-F]{6}$/.test(value) ||
+      [
+        'black',
+        'white',
+        'red',
+        'green',
+        'blue',
+        'yellow',
+        'orange',
+        'purple',
+        'cyan',
+        'magenta',
+        'gray',
+        'grey',
+      ].includes(value));
   return value.map((raw) => {
     if (!raw || typeof raw !== 'object' || Array.isArray(raw))
       throw new Error('Invalid viewer command');
     const cmd = raw as Record<string, unknown>;
     const keys: Record<string, string[]> = {
-      selection: ['type', 'selectedIds'],
+      selection: ['type', 'selectedIds', 'color', 'radius'],
       style: ['type', 'style'],
       camera: ['type', 'view'],
       annotations: ['type', 'annotations'],
@@ -80,6 +186,15 @@ export function validateViewerCommands(
           new Set(cmd.selectedIds).size !== cmd.selectedIds.length
         )
           throw new Error('Selection refers to invalid atoms');
+        if (
+          (cmd.color !== undefined && !validColor(cmd.color)) ||
+          (cmd.radius !== undefined &&
+            (typeof cmd.radius !== 'number' ||
+              !Number.isFinite(cmd.radius) ||
+              cmd.radius <= 0 ||
+              cmd.radius > 1000))
+        )
+          throw new Error('Invalid selection color or radius');
         break;
       case 'style':
         if (!styles.includes(cmd.style as ViewerStyle))
@@ -110,13 +225,14 @@ export function validateViewerCommands(
               !a ||
               typeof a !== 'object' ||
               Object.keys(a).some(
-                (k) => !['id', 'text', 'atomId'].includes(k),
+                (k) => !['id', 'text', 'atomId', 'color'].includes(k),
               ) ||
               typeof a.id !== 'string' ||
               !a.id ||
               a.id.length > 160 ||
               typeof a.text !== 'string' ||
               a.text.length > 1024 ||
+              (a.color !== undefined && !validColor(a.color)) ||
               !ids.has(a.atomId),
           ) ||
           new Set(cmd.annotations.map((a) => a.id)).size !==
@@ -147,6 +263,8 @@ export function createViewerCommandExecutor(
   >();
   let applying = false;
   return async (request: ViewerRequest): Promise<ViewerAcknowledgement> => {
+    // Detach the in-flight fence and commands from mutable transport objects.
+    request = structuredClone(request);
     const state = getState();
     const reject = (code: string, message: string): ViewerAcknowledgement => ({
       version: 1,
@@ -173,7 +291,7 @@ export function createViewerCommandExecutor(
     const previous = history.get(request.operationId);
     if (previous)
       return previous.request === identity
-        ? previous.acknowledgement
+        ? structuredClone(await previous.acknowledgement)
         : reject(
             'OPERATION_CONFLICT',
             'Operation identity was reused with different input.',
@@ -190,6 +308,11 @@ export function createViewerCommandExecutor(
           'Native actions must be submitted to the host.',
         );
       const payload = request.payload as Record<string, JsonValue>;
+      if (
+        request.actionId === VIEWER_COMMAND_BATCH_ACTION.id &&
+        payload.version !== 1
+      )
+        throw new Error('Unsupported viewer command batch version');
       commands = validateViewerCommands(
         request.actionId === 'elagente.viewer.style'
           ? [{ type: 'style', style: payload.style }]
@@ -214,7 +337,10 @@ export function createViewerCommandExecutor(
         actionId: request.actionId,
         target: structuredClone(request.target),
         status: 'applied',
-        result: {},
+        result:
+          request.actionId === VIEWER_COMMAND_BATCH_ACTION.id
+            ? { commandCount: commands.length, durationMs: 0 }
+            : {},
       };
       validateViewerAcknowledgement(acknowledgement, request, state.discovery);
     } catch (error) {
@@ -237,6 +363,7 @@ export function createViewerCommandExecutor(
     // Publish the promise before executing, so duplicate in-flight requests share
     // completion. Retain failures too: a failed renderer must not replay effects.
     const completion = Promise.resolve().then(async () => {
+      const startedAt = performance.now();
       try {
         if (
           !sameScientificTarget(getState().target, request.target) ||
@@ -255,6 +382,16 @@ export function createViewerCommandExecutor(
             'STALE_TARGET',
             'The inspected target changed during rendering.',
           );
+        if (request.actionId === VIEWER_COMMAND_BATCH_ACTION.id)
+          acknowledgement.result = {
+            commandCount: commands.length,
+            durationMs: Math.max(0, Math.round(performance.now() - startedAt)),
+          };
+        validateViewerAcknowledgement(
+          acknowledgement,
+          request,
+          state.discovery!,
+        );
         return acknowledgement;
       } catch (error) {
         return reject(
@@ -269,6 +406,6 @@ export function createViewerCommandExecutor(
       request: identity,
       acknowledgement: completion,
     });
-    return completion;
+    return structuredClone(await completion);
   };
 }

@@ -62,11 +62,16 @@ type ThreeDmolAtom = {
 };
 
 export type GraphMoleculeScreenshot = {
+  version: 1;
   moleculeId: string | null;
   image: string;
+  mediaType: 'image/png';
+  width: number;
+  height: number;
   target?: ScientificTarget;
   trajectoryIndex: number;
   camera: number[];
+  selectedIds: string[];
 };
 export type GraphMoleculeAtomSelection = {
   moleculeId: string | null;
@@ -79,6 +84,9 @@ export type GraphMoleculeSelectionSubmission = {
 };
 export type GraphMoleculeViewerHandle = {
   captureScreenshot: () => string;
+  /** A detached snapshot of this mounted viewer's live personal state. */
+  captureView: () => GraphMoleculeScreenshot;
+  isAvailable: () => boolean;
   trajectoryIndex: number;
   target?: ScientificTarget;
   execute: (request: ViewerRequest) => Promise<ViewerAcknowledgement>;
@@ -94,6 +102,8 @@ export type GraphMoleculeViewerProps = {
     selection: GraphMoleculeSelectionSubmission,
   ) => void | Promise<void>;
   onReady?: (view: GraphMoleculeViewerHandle) => void;
+  /** Personal inspection signal; never a durable input or shared camera event. */
+  onActive?: (view: GraphMoleculeViewerHandle) => void;
   source: GraphMoleculeViewerSource;
   title?: string | null;
   extensionHost?: ExtensionHostAdapter;
@@ -117,6 +127,7 @@ export function GraphMoleculeViewer({
   onSelectionChange,
   onSelectionSubmit,
   onReady,
+  onActive,
   source,
   title = 'Molecular structure',
   presentation = 'workspace',
@@ -135,6 +146,10 @@ export function GraphMoleculeViewer({
   loadingRef.current = loading;
   const onReadyRef = useRef(onReady);
   onReadyRef.current = onReady;
+  const readyHandleRef = useRef<GraphMoleculeViewerHandle | null>(null);
+  const captureRef = useRef<() => GraphMoleculeScreenshot>(() => {
+    throw new Error('Screenshot is unavailable');
+  });
   const zoomedRef = useRef(false);
   const viewportScaleRef = useRef(1);
   const unitCellPreferenceRef = useRef(true);
@@ -149,6 +164,11 @@ export function GraphMoleculeViewer({
     Record<number, string>
   >({});
   const [selectedSerials, setSelectedSerials] = useState<number[]>([]);
+  const selectedSerialsRef = useRef(selectedSerials);
+  selectedSerialsRef.current = selectedSerials;
+  const selectionStyleRef = useRef<{ color: string; radius?: number }>({
+    color: 'yellow',
+  });
   const [stagedSelections, setStagedSelections] = useState<
     Record<string, GraphMoleculeAtomSelection>
   >({});
@@ -273,8 +293,13 @@ export function GraphMoleculeViewer({
       model.setStyle(
         { index: indices },
         {
-          stick: { radius: 0.3, color: 'yellow' },
-          sphere: { scale: 0.4, color: 'yellow' },
+          stick: { radius: 0.3, color: selectionStyleRef.current.color },
+          sphere: {
+            ...(selectionStyleRef.current.radius
+              ? { radius: selectionStyleRef.current.radius }
+              : { scale: 0.4 }),
+            color: selectionStyleRef.current.color,
+          },
         },
       );
     return surface;
@@ -291,7 +316,7 @@ export function GraphMoleculeViewer({
         viewer.addLabel(annotation.text, {
           position: atom,
           backgroundColor: 'white',
-          fontColor: 'black',
+          fontColor: annotation.color ?? 'black',
           fontSize: 12,
         });
     });
@@ -328,13 +353,20 @@ export function GraphMoleculeViewer({
     applyingCommandRef.current = true;
     try {
       let nextStyle = style,
-        nextSelection = selectedSerials;
+        nextSelection = selectedSerialsRef.current;
       commands.forEach((command) => {
         switch (command.type) {
           case 'selection':
+            selectionStyleRef.current = {
+              color: command.color ?? 'yellow',
+              ...(command.radius === undefined
+                ? {}
+                : { radius: command.radius }),
+            };
             nextSelection = command.selectedIds.map((id) =>
               atomIdsRef.current.indexOf(id),
             );
+            selectedSerialsRef.current = nextSelection;
             setSelectedSerials(nextSelection);
             break;
           case 'style':
@@ -506,6 +538,9 @@ export function GraphMoleculeViewer({
       window.removeEventListener('resize', resizeViewer);
       viewerRef.current = null;
       modelRef.current = null;
+      renderedReadyRef.current = false;
+      commandState.current.ready = false;
+      readyHandleRef.current = null;
     };
   }, []);
 
@@ -605,6 +640,7 @@ export function GraphMoleculeViewer({
           if (serial === undefined) {
             return;
           }
+          selectionStyleRef.current = { color: 'yellow' };
           const label =
             atom.atom || atom.elem || frameAtomLabels[serial] || 'Atom';
 
@@ -666,26 +702,49 @@ export function GraphMoleculeViewer({
       commandState.current.ready = !loading;
       const readyFrame = currentFrameRef.current;
       renderedFrameRef.current = readyFrame;
-      const readyTarget = target;
-      onReadyRef.current?.({
-        captureScreenshot: () => {
-          if (
-            viewerRef.current !== viewer ||
-            !renderedReadyRef.current ||
-            readyFrame !== currentFrameRef.current ||
-            loadingRef.current ||
-            (!sameScientificTarget(readyTarget, targetRef.current) &&
-              (readyTarget || targetRef.current))
-          )
-            throw new Error('The inspected target changed.');
-          viewer.render();
-          if (!viewer.pngURI) throw new Error('Screenshot is unavailable');
-          return viewer.pngURI();
-        },
+      const readyTarget = target ? structuredClone(target) : undefined;
+      const isAvailable = () =>
+        Boolean(
+          viewerHostRef.current?.isConnected &&
+          viewerRef.current === viewer &&
+          renderedReadyRef.current &&
+          readyFrame === currentFrameRef.current &&
+          !loadingRef.current &&
+          (sameScientificTarget(readyTarget, targetRef.current) ||
+            (!readyTarget && !targetRef.current)),
+        );
+      const captureView = () => {
+        if (!isAvailable())
+          throw new Error('The inspected target changed or is unavailable.');
+        return captureRef.current();
+      };
+      const handle: GraphMoleculeViewerHandle = {
+        captureScreenshot: () => captureView().image,
+        captureView,
+        isAvailable,
         trajectoryIndex: target?.frameIndex ?? currentIndex,
-        target,
-        execute: executorRef.current!,
-      });
+        target: readyTarget ? structuredClone(readyTarget) : undefined,
+        execute: async (request) => {
+          if (!isAvailable())
+            return {
+              version: 1,
+              requestId: request.requestId,
+              operationId: request.operationId,
+              actionId: request.actionId,
+              target: structuredClone(request.target),
+              status: 'rejected',
+              error: {
+                code: sameScientificTarget(request.target, targetRef.current)
+                  ? 'VIEWER_UNAVAILABLE'
+                  : 'STALE_TARGET',
+                message: 'The inspected viewer changed or is unavailable.',
+              },
+            };
+          return executorRef.current!(request);
+        },
+      };
+      readyHandleRef.current = handle;
+      onReadyRef.current?.(handle);
     } catch (error) {
       renderedReadyRef.current = false;
       commandState.current.ready = false;
@@ -757,20 +816,50 @@ export function GraphMoleculeViewer({
 
   const capture = (): GraphMoleculeScreenshot => {
     const viewer = viewerRef.current;
-    if (loading || !viewer?.pngURI || !renderedReadyRef.current)
+    if (
+      !readyHandleRef.current?.isAvailable() ||
+      !viewer?.pngURI ||
+      applyingCommandRef.current
+    )
       throw new Error('Screenshot is unavailable');
     viewer.render();
     const image = viewer.pngURI();
-    if (!image.startsWith('data:image/png'))
+    if (!image.startsWith('data:image/png;base64,'))
       throw new Error('Viewer did not produce a PNG');
+    const header = Uint8Array.from(atob(image.slice(22, 66)), (c) =>
+      c.charCodeAt(0),
+    );
+    if (
+      header.length < 24 ||
+      ![137, 80, 78, 71, 13, 10, 26, 10].every(
+        (byte, index) => header[index] === byte,
+      ) ||
+      String.fromCharCode(...header.slice(12, 16)) !== 'IHDR'
+    )
+      throw new Error('Viewer did not produce a valid PNG');
+    const dimensions = new DataView(header.buffer);
+    const width = dimensions.getUint32(16),
+      height = dimensions.getUint32(20);
+    if (!width || !height) throw new Error('Viewer produced an empty PNG');
+    const camera = [...viewer.getView()];
+    if (camera.length !== 8 || camera.some((value) => !Number.isFinite(value)))
+      throw new Error('Viewer camera is unavailable');
     return {
+      version: 1,
       moleculeId,
       image,
-      target,
+      mediaType: 'image/png',
+      width,
+      height,
+      target: target ? structuredClone(target) : undefined,
       trajectoryIndex: target?.frameIndex ?? currentIndex,
-      camera: [...viewer.getView()],
+      camera,
+      selectedIds: selectedSerialsRef.current
+        .map((index) => atomIdsRef.current[index]!)
+        .filter(Boolean),
     };
   };
+  captureRef.current = capture;
   const handleScreenshot = async () => {
     const screenshot = capture();
     const blob = await (await fetch(screenshot.image)).blob();
@@ -817,6 +906,14 @@ export function GraphMoleculeViewer({
   return (
     <div
       className={`thread-graph-molecule-viewer is-${presentation} flex h-full min-h-0 flex-col bg-white ${className}`}
+      onPointerDownCapture={() => {
+        const handle = readyHandleRef.current;
+        if (handle?.isAvailable()) onActive?.(handle);
+      }}
+      onFocusCapture={() => {
+        const handle = readyHandleRef.current;
+        if (handle?.isAvailable()) onActive?.(handle);
+      }}
     >
       <div className="thread-graph-molecule-header flex shrink-0 items-center justify-between gap-3 border-b border-slate-200 px-3 py-2 sm:px-4 sm:py-3">
         <div className="min-w-0">

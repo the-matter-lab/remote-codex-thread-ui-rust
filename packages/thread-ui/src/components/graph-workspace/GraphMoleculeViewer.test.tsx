@@ -27,6 +27,8 @@ vi.mock('./load3Dmol', () => ({
   load3Dmol: async () => ({ createViewer: () => runtime.viewer }),
 }));
 const first = '2\nfirst\nO 0 0 0\nH 1 0 0\n';
+const png =
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/l9sAAAAASUVORK5CYII=';
 const target: ScientificTarget = {
   artifactId: 'a',
   objectId: 'o',
@@ -101,7 +103,7 @@ beforeEach(() => {
     }),
     zoom: vi.fn(),
     zoomTo: vi.fn(),
-    pngURI: () => 'data:image/png;base64,AA==',
+    pngURI: () => png,
   };
   node = document.createElement('div');
   document.body.append(node);
@@ -156,7 +158,7 @@ it('local selection remains personal; explicit selection and PNG callbacks carry
     expect.objectContaining({
       target,
       trajectoryIndex: 0,
-      image: 'data:image/png;base64,AA==',
+      image: png,
       camera,
     }),
   );
@@ -411,3 +413,193 @@ it.each(['provided', 'none'] as const)(
     ]);
   },
 );
+
+it('captures live personal camera/selection through a retained ready handle and detaches provenance', async () => {
+  const active = vi.fn();
+  await act(async () =>
+    root.render(
+      <GraphMoleculeViewer
+        source={{ content: [first], target }}
+        onReady={onReady}
+        onActive={active}
+      />,
+    ),
+  );
+  const retained = handle;
+  camera = [7, 8, 9, 4, 0, 0, 0, 1];
+  await act(async () => runtime.click({ index: 1 }, runtime.viewer));
+  expect(retained.isAvailable()).toBe(true);
+  const captured = retained.captureView();
+  expect(captured).toMatchObject({
+    version: 1,
+    image: png,
+    mediaType: 'image/png',
+    width: 1,
+    height: 1,
+    target,
+    trajectoryIndex: 0,
+    camera,
+    selectedIds: ['1'],
+  });
+  captured.camera[0] = 999;
+  captured.selectedIds[0] = 'foreign';
+  captured.target!.objectId = 'foreign';
+  expect(retained.captureView()).toMatchObject({
+    target,
+    camera: [7, 8, 9, 4, 0, 0, 0, 1],
+    selectedIds: ['1'],
+  });
+  await act(async () =>
+    node
+      .querySelector('.thread-graph-molecule-stage')!
+      .dispatchEvent(new Event('pointerdown', { bubbles: true })),
+  );
+  expect(active).toHaveBeenCalledExactlyOnceWith(retained);
+  await act(async () =>
+    Array.from(node.querySelectorAll('button'))
+      .find((b) => b.textContent?.startsWith('LIVE'))!
+      .focus(),
+  );
+  expect(active).toHaveBeenCalledTimes(2);
+  await act(async () =>
+    root.render(
+      <GraphMoleculeViewer
+        source={{ content: [first], target }}
+        onReady={onReady}
+        loading
+      />,
+    ),
+  );
+  expect(retained.isAvailable()).toBe(false);
+  expect(() => retained.captureView()).toThrow('unavailable');
+  await act(async () =>
+    root.render(
+      <GraphMoleculeViewer
+        source={{ content: [first], target }}
+        onReady={onReady}
+      />,
+    ),
+  );
+  const current = handle;
+  await act(async () => root.render(null));
+  expect(current.isAvailable()).toBe(false);
+  expect(() => current.captureView()).toThrow('unavailable');
+});
+
+it('reports screenshot upload/native rejection and rejects invalid PNG/camera without emitting input', async () => {
+  const submit = vi
+    .fn()
+    .mockRejectedValue(new Error('PNG native input rejected'));
+  await act(async () =>
+    root.render(
+      <GraphMoleculeViewer
+        source={{ content: [first], target }}
+        onScreenshot={submit}
+        onReady={onReady}
+      />,
+    ),
+  );
+  const send = () =>
+    Array.from(node.querySelectorAll('button'))
+      .find((b) => b.textContent === 'Send screenshot')!
+      .click();
+  await act(async () => send());
+  expect(node.querySelector('[role="status"]')?.textContent).toBe(
+    'PNG native input rejected',
+  );
+  expect(submit).toHaveBeenCalledTimes(1);
+  submit.mockClear();
+  runtime.viewer.pngURI = () => 'data:image/png;base64,AA==';
+  await act(async () => send());
+  expect(node.querySelector('[role="status"]')?.textContent).toContain(
+    'valid PNG',
+  );
+  expect(submit).not.toHaveBeenCalled();
+  runtime.viewer.pngURI = () => png;
+  camera = [NaN];
+  expect(() => handle.captureView()).toThrow('camera is unavailable');
+});
+
+it('captures the applied batch camera and selection before React commits and renders annotations before ACK', async () => {
+  const { VIEWER_COMMAND_BATCH_ACTION } =
+    await import('./GraphMoleculeViewerCommands');
+  const discovery = structuredClone(EXTENSION_FIXTURES.grafico.discovery);
+  discovery.capabilities[VIEWER_COMMAND_BATCH_ACTION.id] = true;
+  discovery.actions.push(VIEWER_COMMAND_BATCH_ACTION);
+  await act(async () =>
+    root.render(
+      <GraphMoleculeViewer
+        source={{ content: [first], target }}
+        onReady={onReady}
+        extensionHost={{ discovery }}
+      />,
+    ),
+  );
+  await act(async () => {
+    const acknowledgement = await handle.execute({
+      version: 1,
+      requestId: 'batch',
+      operationId: 'batch',
+      actionId: VIEWER_COMMAND_BATCH_ACTION.id,
+      target,
+      payload: {
+        version: 1,
+        commands: [
+          { type: 'selection', selectedIds: ['1'], color: 'red', radius: 0.5 },
+          { type: 'camera', view: [4, 5, 6, 7, 0, 0, 0, 1] },
+          {
+            type: 'annotations',
+            annotations: [
+              { id: 'label', text: 'hydrogen', atomId: '1', color: 'blue' },
+            ],
+          },
+        ],
+      },
+    });
+    expect(acknowledgement).toMatchObject({
+      status: 'applied',
+      result: { commandCount: 3 },
+    });
+    expect(runtime.viewer.addLabel).toHaveBeenCalledWith(
+      'hydrogen',
+      expect.objectContaining({ fontColor: 'blue' }),
+    );
+    expect(model.setStyle).toHaveBeenCalledWith(
+      { index: [1] },
+      expect.objectContaining({ sphere: { radius: 0.5, color: 'red' } }),
+    );
+    expect(handle.captureView()).toMatchObject({
+      selectedIds: ['1'],
+      camera: [4, 5, 6, 7, 0, 0, 0, 1],
+    });
+  });
+});
+
+it('a retained unmounted handle rejects commands before renderer effects', async () => {
+  await act(async () =>
+    root.render(
+      <GraphMoleculeViewer
+        source={{ content: [first], target }}
+        onReady={onReady}
+        extensionHost={{ discovery: EXTENSION_FIXTURES.grafico.discovery }}
+      />,
+    ),
+  );
+  const retained = handle;
+  await act(async () => root.render(null));
+  const before = vi.mocked(runtime.viewer.render).mock.calls.length;
+  expect(
+    await retained.execute({
+      version: 1,
+      requestId: 'unmounted',
+      operationId: 'unmounted',
+      actionId: 'elagente.viewer.style',
+      target,
+      payload: { style: 'stick' },
+    }),
+  ).toMatchObject({
+    status: 'rejected',
+    error: { code: 'VIEWER_UNAVAILABLE' },
+  });
+  expect(runtime.viewer.render).toHaveBeenCalledTimes(before);
+});

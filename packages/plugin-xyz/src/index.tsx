@@ -110,6 +110,7 @@ function sourceTarget(asset: StructureAsset): ScientificTarget | undefined {
 export function StructureView({
   asset,
   onReady,
+  onActive,
   onOpenFile,
   presentation = 'timeline',
   extensionHost,
@@ -124,6 +125,7 @@ export function StructureView({
   presentation?: 'timeline' | 'workspace';
   onOpenFile?: () => void;
   onReady?: ViewerProps['onReady'];
+  onActive?: ViewerProps['onActive'];
   extensionHost?: ExtensionHostAdapter;
   onSelectionSubmit?: ViewerProps['onSelectionSubmit'];
   onSelectionChange?: ViewerProps['onSelectionChange'];
@@ -270,6 +272,10 @@ export function StructureView({
         acknowledgement.error?.message ?? 'Viewer input rejected.',
       );
     }
+    if (acknowledgement.status !== 'applied')
+      throw new Error(
+        'Viewer input is awaiting native completion. Retry to check its acknowledgement.',
+      );
     pendingInputs.current.delete(key);
   }
   const selectionCallback: ViewerProps['onSelectionSubmit'] =
@@ -314,7 +320,16 @@ export function StructureView({
       : undefined);
   const screenshotCallback: ViewerProps['onScreenshot'] =
     onScreenshot ??
-    (available(screenshotAction) && loaded?.target
+    // Artifact-backed PNG inputs require the host upload callback. Keep the
+    // older reviewed inline-PNG adapter only for schemas which actually accept it.
+    (available(screenshotAction) &&
+    loaded?.target &&
+    host?.discovery.actions.some(
+      (action) =>
+        action.id === screenshotAction &&
+        action.inputSchema.type === 'object' &&
+        action.inputSchema.properties.image?.type === 'string',
+    )
       ? (screenshot) =>
           submit('screenshot', screenshotAction, screenshot.target, {
             image: screenshot.image,
@@ -351,6 +366,7 @@ export function StructureView({
         presentation={presentation}
         onOpenFile={onOpenFile}
         onReady={onReady}
+        onActive={onActive}
         extensionHost={host}
         loading={loading}
         onSelectionChange={onSelectionChange}
