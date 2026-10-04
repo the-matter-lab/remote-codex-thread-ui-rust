@@ -1,6 +1,6 @@
 import { progressEvidence, scopeUsageItems, usageEvidenceResult, usageEvidence } from './structuredEvidence';
 import { StructuredToolEvidence } from './StructuredToolEvidence';
-import { GraphChatMarkdownAwareBody } from '../graph-chat/GraphChatMessageBody';
+import { ReasoningSummary } from './ReasoningSummary';
 import {
   memo,
   useCallback,
@@ -168,12 +168,8 @@ export const HistoryItemRow = memo(function HistoryItemRow({
 
   if (item.kind === 'reasoning') {
     return (
-      <details className="thread-graph-message-thinking my-2 rounded-lg border p-3">
-        <summary className="cursor-pointer text-sm" onClick={onBeforeMessageResize}>Reasoning summary</summary>
-        <GraphChatMarkdownAwareBody text={item.text} messageId={item.id} scrollRootRef={scrollRootRef}
-          onBeforeResize={onBeforeMessageResize} onOpenWorkspaceFile={adapter?.onOpenWorkspaceFile}
-          workspaceRootPath={adapter?.workspaceRootPath} resolveHref={adapter?.resolveHref} />
-      </details>
+      <ReasoningSummary item={item as ThreadHistoryItemDto & { kind: 'reasoning' }}
+        scrollRootRef={scrollRootRef} adapter={adapter} onBeforeResize={onBeforeMessageResize} />
     );
   }
 
@@ -392,6 +388,7 @@ export const HistoryItemRow = memo(function HistoryItemRow({
 
 interface ThreadTurnRowProps {
   threadId: string | undefined;
+  showReasoningSummaries?: boolean;
   adapter?: ThreadTimelineAdapter | undefined;
   turn: TimelineTurn;
   absoluteIndex: number;
@@ -560,6 +557,7 @@ function countActivities(entries: TimelineHistoryEntry[]): number {
 
 export const ThreadTurnRow = memo(function ThreadTurnRow({
   threadId,
+  showReasoningSummaries: showReasoningSummariesProp,
   adapter,
   turn,
   absoluteIndex,
@@ -581,7 +579,8 @@ export const ThreadTurnRow = memo(function ThreadTurnRow({
   scrollRootRef,
   articleRef,
 }: ThreadTurnRowProps) {
-  const showReasoningSummaries = useAppShellNav()?.showReasoningSummaries ?? true;
+  const shellNav = useAppShellNav();
+  const showReasoningSummaries = showReasoningSummariesProp ?? shellNav?.showReasoningSummaries ?? true;
   const hasLiveActivity =
     Boolean(livePlan) ||
     Boolean(liveOutput) ||
@@ -625,10 +624,12 @@ export const ThreadTurnRow = memo(function ThreadTurnRow({
       });
   }, [activeForRendering, mergedItems, showReasoningSummaries, turn.id, turn.usageByScope]);
   const groupedItems = useMemo(
-    // Published results belong below the reply, outside the work disclosure.
-    // Separate them before grouping so a tool/activity group cannot hide them.
-    () => groupTimelineHistoryItems(preparedItems.filter((item) => item.kind !== 'artifact')),
+    // Results and reasoning have their own disclosures outside collapsed work.
+    () => groupTimelineHistoryItems(preparedItems.filter((item) => item.kind !== 'artifact' && item.kind !== 'reasoning')),
     [preparedItems],
+  );
+  const reasoningItems = preparedItems.filter(
+    (item): item is ThreadHistoryItemDto & { kind: 'reasoning' } => item.kind === 'reasoning',
   );
   const outputItems = preparedItems.filter(
     (item): item is ThreadHistoryItemDto & { kind: 'artifact' } => item.kind === 'artifact',
@@ -741,8 +742,7 @@ export const ThreadTurnRow = memo(function ThreadTurnRow({
     collapsedSummary.hiddenEntries.length > 0 || Boolean(turn.hasDeferredItems);
   const effectiveCollapsed = isCollapsed && hasCollapsedHiddenItems;
   const visibleSummaryAgent = effectiveCollapsed ? collapsedSummary.latestAgent : collapsedSummary.finalAgent;
-  const canToggleWorkedSummary =
-    hasCollapsedHiddenItems;
+  const useSummaryLayout = hasCollapsedHiddenItems || reasoningItems.length > 0;
   const terminalWorkedNode =
     isTerminalTurnStatus(turn.status) && !hasCollapsedHiddenItems ? (
       <div className="thread-graph-worked-summary flex w-full items-center gap-2 py-2 text-sm">
@@ -758,7 +758,7 @@ export const ThreadTurnRow = memo(function ThreadTurnRow({
       </div>
     ) : null;
   const collapsedSummaryNode =
-    hasCollapsedHiddenItems ? (
+    useSummaryLayout ? (
       <div className="thread-graph-turn-collapsed-summary space-y-2">
         {collapsedSummary.users.map((item) => (
           <CompactMessageItem
@@ -780,7 +780,7 @@ export const ThreadTurnRow = memo(function ThreadTurnRow({
             {...(adapter ? { adapter } : {})}
           />
         ))}
-        <div className="thread-graph-worked-summary flex w-full items-center gap-2 py-2 text-sm">
+        {hasCollapsedHiddenItems ? <div className="thread-graph-worked-summary flex w-full items-center gap-2 py-2 text-sm">
           <button
             type="button"
             className="group flex shrink-0 items-center gap-2 text-left transition"
@@ -805,8 +805,12 @@ export const ThreadTurnRow = memo(function ThreadTurnRow({
             className="thread-graph-worked-rule h-px min-w-0 flex-1"
             aria-hidden="true"
           />
-        </div>
+        </div> : terminalWorkedNode}
         {!effectiveCollapsed ? <div className="thread-execution-timeline">{renderHistoryEntries(collapsedSummary.hiddenEntries)}</div> : null}
+        {reasoningItems.map((item) => (
+          <ReasoningSummary key={item.id} item={item} scrollRootRef={scrollRootRef}
+            adapter={adapter} onBeforeResize={onBeforeMessageResize} />
+        ))}
         {visibleSummaryAgent ? (
           <CompactMessageItem
             threadId={threadId}
@@ -848,7 +852,7 @@ export const ThreadTurnRow = memo(function ThreadTurnRow({
   );
   const visibleBody = (
     <>
-      {canToggleWorkedSummary ? collapsedSummaryNode : turnBody}
+      {useSummaryLayout ? collapsedSummaryNode : turnBody}
       {outputItems.length > 0 ? (
         <div className="thread-graph-turn-outputs mt-3 space-y-3" role="group" aria-label="Agent artifacts">
           {outputItems.map((item) => (

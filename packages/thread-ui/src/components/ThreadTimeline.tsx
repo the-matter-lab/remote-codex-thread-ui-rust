@@ -110,6 +110,8 @@ export interface ThreadTimelineProps {
   }) => void;
   adapter?: ThreadTimelineAdapter | undefined;
   autoCollapseCompletedTurns?: boolean;
+  /** Show only reasoning summaries actually emitted by the provider. */
+  showReasoningSummaries?: boolean;
 }
 
 function isTerminalTurnStatus(status: TimelineTurn['status']) {
@@ -190,8 +192,10 @@ function ThreadTimelineComponent({
   onSelectHistoryItemDetail,
   adapter,
   autoCollapseCompletedTurns,
+  showReasoningSummaries,
 }: ThreadTimelineProps) {
   const shellNav = useAppShellNav();
+  const effectiveShowReasoningSummaries = showReasoningSummaries ?? shellNav?.showReasoningSummaries ?? true;
   const effectiveAutoCollapseCompletedTurns =
     autoCollapseCompletedTurns ??
     shellNav?.autoCollapseCompletedTurns ??
@@ -706,6 +710,7 @@ function ThreadTimelineComponent({
 
                     return (
                   <ThreadTurnRow
+                    showReasoningSummaries={effectiveShowReasoningSummaries}
                     threadId={threadId}
                     {...(adapter ? { adapter } : {})}
                     turn={displayTurn}
@@ -790,6 +795,7 @@ function ThreadTimelineComponent({
 
                     return (
                   <ThreadTurnRow
+                    showReasoningSummaries={effectiveShowReasoningSummaries}
                     threadId={threadId}
                     {...(adapter ? { adapter } : {})}
                     turn={optimisticTurn}
@@ -903,6 +909,7 @@ function ThreadTimelineComponent({
 
           {unattachedLiveTurn && unattachedLiveItems && unattachedLiveItems.length > 0 && (
             <ThreadTurnRow
+              showReasoningSummaries={effectiveShowReasoningSummaries}
               threadId={threadId}
               {...(adapter ? { adapter } : {})}
               turn={unattachedLiveTurn}

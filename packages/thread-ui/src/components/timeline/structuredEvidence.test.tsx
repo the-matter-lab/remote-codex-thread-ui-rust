@@ -192,15 +192,17 @@ describe("W5 tool evidence and usage (G10 G11 G12 G14 G17 G41 G43)", () => {
         },
       ]),
     );
-    await act(async () =>
-      container
-        .querySelector<HTMLButtonElement>('[aria-label="Expand 1 operation"]')
-        ?.click(),
-    );
     expect(container.querySelector("details summary")?.textContent).toBe(
       "Reasoning summary",
     );
     expect(container.querySelector('[data-message-id="reasoning"]')).toBeNull();
+    expect(container.textContent).not.toContain('Reported reasoning');
+    await act(async () => {
+      const details = container.querySelector<HTMLDetailsElement>('[data-reasoning-item-id="reasoning"]')!;
+      details.open = true;
+      details.dispatchEvent(new Event('toggle'));
+    });
+    expect(container.querySelector('strong')?.textContent).toBe('Reported reasoning');
     expect(container.querySelector("h1")?.textContent).toBe("Final reply");
     expect(container.querySelector("code")?.textContent).toContain("print(2)");
     expect(container.querySelectorAll(".katex").length).toBeGreaterThanOrEqual(

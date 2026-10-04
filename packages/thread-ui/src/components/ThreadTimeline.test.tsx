@@ -304,7 +304,7 @@ describe('ThreadTimeline', () => {
     expect(element.textContent).toContain('Final checkpoint');
   });
 
-  it('shows Worked when reasoning is the collapsed middle agent bubble', () => {
+  it('shows Worked and a separate collapsed reasoning disclosure without tool activity', () => {
     const element = render(
       <ThreadTimeline
         autoCollapseCompletedTurns={true}
@@ -346,11 +346,8 @@ describe('ThreadTimeline', () => {
     expect(element.textContent).not.toContain(
       'The user asked for the exact number 3.',
     );
-    expect(
-      Array.from(element.querySelectorAll('button')).some((button) =>
-        button.getAttribute('aria-label')?.includes('Expand turn 1'),
-      ),
-    ).toBe(true);
+    expect(element.querySelector<HTMLDetailsElement>('[data-reasoning-item-id="reasoning-1"]')?.open).toBe(false);
+    expect(element.querySelector('[aria-label*="Expand turn 1"]')).toBeNull();
   });
 
   it('shows Worked when an actual middle message bubble is collapsed', () => {
@@ -631,7 +628,7 @@ describe('ThreadTimeline', () => {
     expect(element.textContent).toContain('All commands completed.');
   });
 
-  it('folds imported reasoning summaries into activity and omits empty assistant rows', () => {
+  it('keeps imported reasoning disclosures outside activity and omits empty assistant rows', () => {
     const element = render(
       <ThreadTimeline
         autoCollapseCompletedTurns={false}
@@ -676,7 +673,7 @@ describe('ThreadTimeline', () => {
 
     expect(element.textContent).toContain('The first finding is ready.');
     expect(element.textContent).toContain('Worked');
-    expect(element.textContent).toContain('3 operations');
+    expect(element.textContent).toContain('2 activities');
     expect(element.textContent).toContain(
       'The imported session now reads cleanly.',
     );
@@ -687,12 +684,13 @@ describe('ThreadTimeline', () => {
       Array.from(element.querySelectorAll('[data-role="assistant"]')),
     ).toHaveLength(2);
 
-    const expandButton = Array.from(element.querySelectorAll('button')).find(
-      (button) => button.getAttribute('aria-label') === 'Expand 3 operations',
-    );
-    expect(expandButton).toBeTruthy();
+    const summaries = Array.from(element.querySelectorAll<HTMLDetailsElement>('[data-reasoning-item-id]'));
+    expect(summaries).toHaveLength(2);
     flushSync(() => {
-      expandButton?.click();
+      for (const details of summaries) {
+        details.open = true;
+        details.dispatchEvent(new Event('toggle'));
+      }
     });
     expect(element.textContent).toContain(
       'Planning concurrent browser inspection',
@@ -702,7 +700,7 @@ describe('ThreadTimeline', () => {
     );
   });
 
-  it('preserves activity and command expansion choices as live entries arrive', () => {
+  it('preserves reasoning and command expansion independently as live entries arrive', () => {
     const activeTurn: ThreadTurnDto = {
       ...completedTurn([]),
       status: 'inProgress',
@@ -723,16 +721,19 @@ describe('ThreadTimeline', () => {
       />
     );
     const element = render(timeline(initialItems));
-    const activityToggle = () => element.querySelector<HTMLButtonElement>(
-      '.thread-graph-history-group-activity button[aria-expanded]',
+    const reasoningDisclosure = () => element.querySelector<HTMLDetailsElement>(
+      '[data-reasoning-item-id="reason-1"]',
     );
     const commandToggle = () => element.querySelector<HTMLButtonElement>(
       '.thread-graph-history-group-command button[aria-expanded]',
     );
 
-    flushSync(() => activityToggle()?.click());
+    flushSync(() => {
+      reasoningDisclosure()!.open = true;
+      reasoningDisclosure()!.dispatchEvent(new Event('toggle'));
+    });
     flushSync(() => commandToggle()?.click());
-    expect(activityToggle()?.getAttribute('aria-expanded')).toBe('true');
+    expect(reasoningDisclosure()?.open).toBe(true);
     expect(commandToggle()?.getAttribute('aria-expanded')).toBe('true');
 
     const nextItems: ThreadTurnDto['items'] = [
@@ -741,21 +742,29 @@ describe('ThreadTimeline', () => {
       { id: 'reason-2', kind: 'reasoning', text: 'Reviewing the new result.' },
     ];
     flushSync(() => root?.render(timeline(nextItems)));
-    expect(activityToggle()?.getAttribute('aria-expanded')).toBe('true');
+    expect(reasoningDisclosure()?.open).toBe(true);
     expect(commandToggle()?.getAttribute('aria-expanded')).toBe('true');
     expect(element.textContent).toContain('Inspecting the first issue.');
-    expect(element.textContent).toContain('Reviewing the new result.');
+    expect(element.textContent).not.toContain('Reviewing the new result.');
+    expect(element.querySelector<HTMLDetailsElement>('[data-reasoning-item-id="reason-2"]')?.open).toBe(false);
     expect(element.querySelector('[aria-label="Open grouped command 3"]')?.textContent)
       .toContain('pnpm test');
 
-    flushSync(() => activityToggle()?.click());
+    flushSync(() => {
+      reasoningDisclosure()!.open = false;
+      reasoningDisclosure()!.dispatchEvent(new Event('toggle'));
+    });
     flushSync(() => root?.render(timeline([
       ...nextItems,
       { id: 'reason-3', kind: 'reasoning', text: 'Preparing the next step.' },
     ])));
-    expect(activityToggle()?.getAttribute('aria-expanded')).toBe('false');
+    expect(reasoningDisclosure()?.open).toBe(false);
     expect(element.textContent).not.toContain('Preparing the next step.');
-    flushSync(() => activityToggle()?.click());
+    flushSync(() => {
+      const details = element.querySelector<HTMLDetailsElement>('[data-reasoning-item-id="reason-3"]')!;
+      details.open = true;
+      details.dispatchEvent(new Event('toggle'));
+    });
     expect(element.textContent).toContain('Preparing the next step.');
     expect(commandToggle()?.getAttribute('aria-expanded')).toBe('true');
   });
