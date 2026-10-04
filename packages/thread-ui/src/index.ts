@@ -102,3 +102,6 @@ export { PublicTranscript, transcriptSnapshot, type PublicTranscriptSnapshot } f
 
 export { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./components/graph-ui/Dialog";
 export { SettingsPanels, type SettingsSection } from './components/SettingsPanels';
+
+export {createExtensionPluginApi, extensionModuleAvailable, type ExtensionPluginApi} from './plugins/extension-api';
+export type {ExtensionHostAdapter, ExtensionRenderContext, ViewerToolbarContext, ViewerToolbarContribution} from './plugins/plugin-types';

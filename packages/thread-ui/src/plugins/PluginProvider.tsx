@@ -21,7 +21,9 @@ import type {
   ArtifactRenderContext,
   FrontendPluginModule,
   InlineCodeRenderContext,
+  ExtensionHostAdapter,
 } from './plugin-types';
+import {createExtensionPluginApi, extensionModuleAvailable} from './extension-api';
 
 export interface PluginProviderAdapter {
   fetchPlugins?: () => Promise<PluginDto[]> | PluginDto[];
@@ -39,10 +41,12 @@ const DEFAULT_BUILTIN_PLUGINS: FrontendPluginModule[] = [];
 export function PluginProvider({
   adapter = DEFAULT_PLUGIN_PROVIDER_ADAPTER,
   builtinPlugins = DEFAULT_BUILTIN_PLUGINS,
+  extensionHost,
   children,
 }: {
   adapter?: PluginProviderAdapter;
   builtinPlugins?: FrontendPluginModule[];
+  extensionHost?: ExtensionHostAdapter;
   children: ReactNode;
 }) {
   const [plugins, setPlugins] = useState<PluginDto[]>(() =>
@@ -144,9 +148,11 @@ export function PluginProvider({
       plugins.filter((plugin) => plugin.enabled).map((plugin) => plugin.id),
     );
     return builtinPlugins.filter((module) =>
-      enabledIds.has(module.manifest.id),
+      enabledIds.has(module.manifest.id) && extensionModuleAvailable(module, extensionHost),
     );
-  }, [builtinPlugins, plugins]);
+  }, [builtinPlugins, plugins, extensionHost]);
+
+  const extensions = useMemo(() => createExtensionPluginApi(enabledModules, extensionHost), [enabledModules, extensionHost]);
 
   const renderArtifact = useCallback(
     (context: ArtifactRenderContext) => {
@@ -157,9 +163,9 @@ export function PluginProvider({
             (type) => type.type === context.artifact.type,
           ),
       );
-      return module?.renderArtifact?.(context) ?? null;
+      return module?.renderArtifact?.({...context, extensionHost: extensions.extensionHost}) ?? null;
     },
-    [enabledModules],
+    [enabledModules, extensions],
   );
 
   const renderInlineCode = useCallback(
@@ -193,12 +199,13 @@ export function PluginProvider({
   );
 
   const getThreadPanels = useCallback(
-    () => enabledModules.flatMap((module) => module.threadPanels ?? []),
-    [enabledModules],
+    extensions.getExtensionPanels,
+    [extensions],
   );
 
   const value = useMemo<PluginContextValue>(
     () => ({
+      extensions,
       plugins,
       loading,
       error,
@@ -212,6 +219,7 @@ export function PluginProvider({
       getThreadPanels,
     }),
     [
+      extensions,
       error,
       getThreadPanels,
       hasRendererForArtifact,

@@ -1,0 +1,3 @@
+import type {ArtifactMetadata, ExtensionDiscovery, ViewerInput, ViewerAcknowledgement, StructuredProgress, StructuredUsage} from './extensions.mjs';
+export interface ExtensionFixture {agentId: string; discovery: ExtensionDiscovery; artifacts: Array<{id: string; checksum: string; size: number; fixtureBytes: string; metadata: ArtifactMetadata; [key: string]: unknown}>; input: ViewerInput; acknowledgements: ViewerAcknowledgement[]; progress: StructuredProgress; usage: StructuredUsage; unavailableUsage: StructuredUsage; unknownItem: {extension: import('./extensions.mjs').ExtensionEnvelope; [key: string]: unknown}}
+export declare const EXTENSION_FIXTURES: Readonly<Record<'grafico' | 'cuantico', ExtensionFixture>>;

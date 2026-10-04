@@ -10,9 +10,12 @@ import type {
   FrontendPluginModule,
   InlineCodeRenderContext,
   ThreadPanelContribution,
+  ExtensionHostAdapter,
 } from './plugin-types';
+import {createExtensionPluginApi, extensionModuleAvailable, type ExtensionPluginApi} from './extension-api';
 
 export interface PluginContextValue {
+  extensions?: ExtensionPluginApi;
   plugins: PluginDto[];
   loading: boolean;
   error: string | null;
@@ -47,9 +50,11 @@ export function mergePluginState(
 
 export function createDefaultPluginContextValue(
   modules: FrontendPluginModule[] = [],
+  extensionHost?: ExtensionHostAdapter,
 ): PluginContextValue {
   const plugins = mergePluginState(modules, []);
-  const enabledModules = modules;
+  const extensions = createExtensionPluginApi(modules, extensionHost);
+  const enabledModules = modules.filter(m => extensionModuleAvailable(m, extensions.extensionHost));
   const renderArtifact: PluginContextValue['renderArtifact'] = (context) => {
     const module = enabledModules.find(
       (entry) =>
@@ -58,7 +63,7 @@ export function createDefaultPluginContextValue(
           (type) => type.type === context.artifact.type,
         ),
     );
-    return module?.renderArtifact?.(context) ?? null;
+    return module?.renderArtifact?.({...context, extensionHost: extensions.extensionHost}) ?? null;
   };
   const renderInlineCode: PluginContextValue['renderInlineCode'] = (context) => {
     for (const module of enabledModules) {
@@ -76,6 +81,7 @@ export function createDefaultPluginContextValue(
   };
 
   return {
+    extensions,
     plugins,
     loading: false,
     error: null,
@@ -93,8 +99,7 @@ export function createDefaultPluginContextValue(
             (type) => type.type === artifact.type,
           ),
       ),
-    getThreadPanels: () =>
-      enabledModules.flatMap((module) => module.threadPanels ?? []),
+    getThreadPanels: extensions.getExtensionPanels,
   };
 }
 

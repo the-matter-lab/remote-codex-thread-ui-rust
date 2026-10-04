@@ -417,6 +417,9 @@ export interface ThreadHistoryItemDto {
     text: string;
   }> | null;
   artifact?: ThreadArtifactDto | null;
+  extension?: import('./extensions.mjs').ExtensionEnvelope<unknown>;
+  progress?: import('./extensions.mjs').StructuredProgress;
+  usage?: import('./extensions.mjs').StructuredUsage;
 }
 
 export interface ThreadHistoryItemDetailDto {
@@ -427,6 +430,8 @@ export interface ThreadHistoryItemDetailDto {
 }
 
 export interface ThreadArtifactDto {
+  metadata?: import('./extensions.mjs').ArtifactMetadata;
+  extension?: import('./extensions.mjs').ExtensionEnvelope<unknown>;
   id: string;
   pluginId: string;
   type: string;
@@ -488,6 +493,7 @@ export interface PluginCapabilitiesDto {
 }
 
 export interface PluginManifestDto {
+  contribution?: import('./extensions.mjs').ContributionDefinition;
   id: string;
   name: string;
   version: string;
@@ -1179,3 +1185,7 @@ export function mergeThreadHistoryItem(
       ? { sequence: incoming.sequence ?? current.sequence } : {}),
   };
 }
+
+// Frozen ElAgente extension DTOs; no runtime UI loading from wire data.
+export * from './extensions.mjs';
+export { EXTENSION_FIXTURES } from './extension-fixtures.mjs';
