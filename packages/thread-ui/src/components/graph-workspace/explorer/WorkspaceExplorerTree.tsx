@@ -29,6 +29,7 @@ export function WorkspaceExplorerTree({
   scrollTopRef,
   onCopyPath,
   onDownload,
+  onDownloadZip,
   canDownload,
   onOpenFilter,
   onFilterResultsChange,
@@ -52,6 +53,7 @@ export function WorkspaceExplorerTree({
   scrollTopRef?: MutableRefObject<number>;
   onCopyPath?: (node: WorkspaceTreeNode) => void;
   onDownload?: (node: WorkspaceTreeNode) => void;
+  onDownloadZip?: (node: WorkspaceTreeNode) => void;
   canDownload?: (node: WorkspaceTreeNode) => boolean;
   onOpenFilter?: () => void;
   onFilterResultsChange?: (input: {
@@ -279,6 +281,7 @@ export function WorkspaceExplorerTree({
                 {...(onPin ? { onPin } : {})}
                 {...(onRetryDirectory ? { onRetry: onRetryDirectory } : {})}
                 {...(onDownload ? { onDownload } : {})}
+                {...(onDownloadZip ? { onDownloadZip } : {})}
                 {...(canDownload ? { canDownload } : {})}
                 {...(onCopyPath ? { onCopyPath } : {})}
               />

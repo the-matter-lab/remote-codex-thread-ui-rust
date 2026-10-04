@@ -74,6 +74,7 @@ export function WorkspaceExplorerRow({
   onPin,
   onRetry,
   onDownload,
+  onDownloadZip,
   canDownload,
   onCopyPath,
 }: {
@@ -91,6 +92,7 @@ export function WorkspaceExplorerRow({
   onPin?: (node: WorkspaceTreeNode) => void;
   onRetry?: (path: string) => void;
   onDownload?: (node: WorkspaceTreeNode) => void;
+  onDownloadZip?: (node: WorkspaceTreeNode) => void;
   canDownload?: (node: WorkspaceTreeNode) => boolean;
   onCopyPath?: (node: WorkspaceTreeNode) => void;
 }) {
@@ -250,6 +252,11 @@ export function WorkspaceExplorerRow({
               aria-label={`Download ${node.name}`}
             >
               <Download className="h-3.5 w-3.5" />
+            </button>
+          ) : null}
+          {isDirectory && row.depth > 0 && onDownloadZip ? (
+            <button type="button" tabIndex={-1} disabled={canDownload ? !canDownload(node) : false} onClick={() => onDownloadZip(node)} className="thread-graph-tree-action flex h-9 w-9 shrink-0 items-center justify-center rounded-md transition sm:h-7 sm:w-7" title={`Download ${node.name} (ZIP)`} aria-label={`Download ${node.name} (ZIP)`}>
+              <FileArchive className="h-3.5 w-3.5" />
             </button>
           ) : null}
           {onCopyPath ? (

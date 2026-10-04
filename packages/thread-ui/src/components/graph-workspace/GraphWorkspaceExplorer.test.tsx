@@ -151,12 +151,13 @@ let mobileViewport = false;
 async function renderExplorer(
   adapter: ThreadWorkspaceAdapter,
   focusPathRequest?: { path: string; line?: number; requestId: number } | null,
+  threadDetail: ThreadDetailDto = detail,
 ) {
   await act(async () => {
     root?.render(
       <GraphWorkspaceExplorer
         activeView="chat"
-        detail={detail}
+        detail={threadDetail}
         artifacts={[]}
         plugins={createDefaultPluginContextValue()}
         status={null}
@@ -237,6 +238,167 @@ describe('GraphWorkspaceExplorer', () => {
       input.dispatchEvent(new Event('change', { bubbles: true })),
     );
   }
+
+  const r4Capabilities: WorkspaceExplorerCapabilities = {
+    ...archiveCapabilities,
+    archives: { version: 1, formats: ['tar', 'zip'] },
+    trash: { version: 1, files: true, restore: true, empty: true },
+  };
+  const trashEntry = { trashId: 'trash-1', path: 'README.md', revision: 'source-revision-1', size: 18, trashedAt: '2026-10-04T20:00:00.000Z' };
+  function dialogButton(name: string) {
+    return [...document.querySelectorAll<HTMLButtonElement>('[role="dialog"] button')].find((button) => button.textContent?.trim() === name)!;
+  }
+
+  it('imports advertised ZIP, reports committed paths, and opens its nested firstFile in the mobile viewer', async () => {
+    mobileViewport = true;
+    let imported = false;
+    const listTree = vi.fn(async ({ path }: { path?: string | null }) => path === 'bundle' ? directory('bundle', [file('bundle/first.txt')]) : directory('', imported ? [directory('bundle', [], false)] : []));
+    const importArchive = vi.fn(async () => {
+      imported = true;
+      return { kind: 'archive' as const, archiveName: 'bundle.zip', extractedCount: 2, paths: ['bundle', 'bundle/first.txt'], firstFile: 'bundle/first.txt' };
+    });
+    const uploadFile = vi.fn();
+    await renderExplorer({ listTree, readFile: async ({ path }) => filePreview(path), capabilities: r4Capabilities, importArchive, uploadFile });
+    expect(host?.querySelector('[data-testid="preview-file"]')).toBeNull();
+    expect(host?.querySelector<HTMLInputElement>('[data-testid="workspace-archive-import-input"]')?.accept).toBe('.tar,.zip');
+    const archive = new File(['ZIP bytes delegated unchanged'], 'bundle.zip');
+    await chooseFile('workspace-archive-import-input', archive);
+    expect(importArchive).toHaveBeenCalledWith({ threadId: 'thread-1', workspaceId: 'workspace-1', path: '', file: archive, format: 'zip' });
+    expect(uploadFile).not.toHaveBeenCalled();
+    expect(host?.querySelector('[data-testid="preview-file"]')?.textContent).toContain('bundle/first.txt');
+    expect(listTree).toHaveBeenCalledWith({ threadId: 'thread-1', workspaceId: 'workspace-1', path: 'bundle' });
+    expect(host?.querySelector('[role="status"]')?.textContent).toContain('Committed 2 paths: bundle, bundle/first.txt');
+  });
+
+  it('downloads advertised ZIP from the folder row and root with exact paths and a visible result', async () => {
+    const downloadNode = vi.fn();
+    await renderExplorer({ ...createAdapter().adapter, capabilities: r4Capabilities, downloadNode });
+    await act(async () => host?.querySelector<HTMLButtonElement>('[aria-label="Download src (ZIP)"]')?.click());
+    expect(downloadNode).toHaveBeenLastCalledWith({ threadId: 'thread-1', workspaceId: 'workspace-1', path: 'src', kind: 'directory', format: 'zip' });
+    expect(host?.querySelector('[role="status"]')?.textContent).toContain('Downloaded src as a ZIP archive');
+    await act(async () => buttonNamed('Download Workspace (ZIP)')?.click());
+    expect(downloadNode).toHaveBeenLastCalledWith({ threadId: 'thread-1', workspaceId: 'workspace-1', path: '', kind: 'directory', format: 'zip' });
+    await act(async () => host?.querySelector<HTMLButtonElement>('[aria-label="Download src"]')?.click());
+    expect(downloadNode).toHaveBeenLastCalledWith({ threadId: 'thread-1', workspaceId: 'workspace-1', path: 'src', kind: 'directory' });
+    expect(host?.querySelector('[role="status"]')?.textContent).toContain('TAR archive');
+  });
+
+  it.each(['archives', 'trash'] as const)('fails visibly and disables operations for an unknown %s capability version', async (extension) => {
+    const capabilities = { ...r4Capabilities, [extension]: { ...r4Capabilities[extension], version: 2 } } as unknown as WorkspaceExplorerCapabilities;
+    const importArchive = vi.fn();
+    const downloadNode = vi.fn();
+    const trashFile = vi.fn();
+    await renderExplorer({ ...createAdapter().adapter, capabilities, importArchive, downloadNode, trashFile });
+    expect(host?.querySelector('[role="alert"]')?.textContent).toContain('capability is unsupported');
+    expect(buttonNamed('Import TAR archive')?.disabled).toBe(true);
+    expect(buttonNamed('Download Workspace (TAR)')?.disabled).toBe(true);
+    expect(buttonNamed('Trash selected file')).toBeUndefined();
+    expect(importArchive).not.toHaveBeenCalled();
+    expect(trashFile).not.toHaveBeenCalled();
+  });
+
+  it('trashes and restores the selected file using the captured entry revision and original destination', async () => {
+    let present = true;
+    const trashFile = vi.fn(async () => { present = false; return trashEntry; });
+    const listTrash = vi.fn(async () => ({ version: 1 as const, revision: present ? 'empty-list' : 'trashed-list', entries: present ? [] : [trashEntry] }));
+    const restoreTrash = vi.fn(async () => { present = true; });
+    const readFile = vi.fn(async ({ path }: { path: string }) => filePreview(path));
+    await renderExplorer({ listTree: async () => directory('', present ? [file('README.md')] : []), readFile, capabilities: r4Capabilities, trashFile, listTrash, restoreTrash });
+    expect(buttonNamed('Delete selected file…')).toBeUndefined();
+    await act(async () => { buttonNamed('Trash selected file')?.click(); buttonNamed('Trash selected file')?.click(); });
+    expect(trashFile).toHaveBeenCalledTimes(1);
+    expect(trashFile).toHaveBeenCalledWith({ threadId: 'thread-1', workspaceId: 'workspace-1', path: 'README.md', operationId: expect.any(String) });
+    expect(host?.querySelector('[role="status"]')?.textContent).toContain('Moved README.md to trash');
+    await act(async () => buttonNamed('Trash')?.click());
+    expect(document.querySelector('[role="dialog"]')?.textContent).toContain('Immutable artifacts, artifact downloads and thread history are retained');
+    await act(async () => document.querySelector<HTMLButtonElement>('[aria-label="Restore README.md"]')?.click());
+    expect(restoreTrash).toHaveBeenCalledWith({ threadId: 'thread-1', workspaceId: 'workspace-1', trashId: 'trash-1', expectedRevision: 'source-revision-1', expectedDestinationRevision: null, operationId: expect.any(String) });
+    expect(host?.querySelector('[data-testid="preview-file"]')?.textContent).toContain('README.md');
+    expect(document.querySelector('[role="dialog"] [role="status"]')?.textContent).toContain('Restored README.md');
+  });
+
+  it('keeps captured empty-trash revision, confirmation and operation identity across rejected retries', async () => {
+    const sourceList = { version: 1 as const, revision: 'captured-list-revision', entries: [{ ...trashEntry }] };
+    const listTrash = vi.fn(async () => sourceList);
+    const emptyTrash = vi.fn().mockRejectedValueOnce(new Error('FILE_CONFLICT: trash changed; refresh the list.')).mockResolvedValue(undefined);
+    await renderExplorer({ ...createAdapter().adapter, capabilities: r4Capabilities, listTrash, emptyTrash });
+    await act(async () => buttonNamed('Trash')?.click());
+    await act(async () => dialogButton('Empty trash…').click());
+    expect(document.querySelector('[role="dialog"]')?.textContent).toContain('This cannot be undone');
+    // A later host update cannot replace the visible confirmation's snapshot.
+    sourceList.revision = 'new-unreviewed-revision';
+    await act(async () => dialogButton('Empty trash permanently').click());
+    expect(listTrash).toHaveBeenCalledTimes(1);
+    expect(document.querySelector('[role="dialog"] [role="alert"]')?.textContent).toContain('FILE_CONFLICT');
+    const first = emptyTrash.mock.calls[0]![0];
+    expect(first).toEqual({ threadId: 'thread-1', workspaceId: 'workspace-1', expectedRevision: 'captured-list-revision', operationId: expect.any(String) });
+    await act(async () => dialogButton('Empty trash permanently').click());
+    expect(emptyTrash.mock.calls[1]![0]).toEqual(first);
+    expect(document.querySelector('[role="dialog"] [role="status"]')?.textContent).toContain('Trash emptied permanently');
+    expect(listTrash).toHaveBeenCalledTimes(2);
+  });
+
+  it.each(['throw', 'reject'])('surfaces trash %s failure without permanent deletion fallback and preserves operation identity', async (failure) => {
+    const trashFile = vi.fn<NonNullable<ThreadWorkspaceAdapter['trashFile']>>(() => { if (failure === 'throw') throw new Error('TURN_BUSY: file operation unavailable.'); return Promise.reject(new Error('TURN_BUSY: file operation unavailable.')); });
+    const deleteFile = vi.fn();
+    await renderExplorer({ ...createAdapter().adapter, capabilities: r4Capabilities, trashFile, listTrash: async () => ({ version: 1, revision: 'list-r1', entries: [] }), deleteFile });
+    await act(async () => buttonNamed('Trash selected file')?.click());
+    expect(host?.querySelector('[role="alert"]')?.textContent).toContain('TURN_BUSY');
+    const first = trashFile.mock.calls[0]![0];
+    await act(async () => buttonNamed('Trash selected file')?.click());
+    expect(trashFile.mock.calls[1]![0]).toEqual(first);
+    await act(async () => host?.querySelector<HTMLButtonElement>('[aria-label="Refresh workspace"]')?.click());
+    await act(async () => buttonNamed('Trash selected file')?.click());
+    expect(trashFile.mock.calls[2]![0]?.operationId).not.toBe((first as { operationId?: string }).operationId);
+    expect(deleteFile).not.toHaveBeenCalled();
+    expect(buttonNamed('Delete selected file…')).toBeUndefined();
+  });
+
+  it('disables unadvertised trash mutations and fences a late list response after a thread switch', async () => {
+    const list = deferred<import('../../adapters').ThreadWorkspaceTrashList>();
+    const trashFile = vi.fn();
+    const restoreTrash = vi.fn();
+    const emptyTrash = vi.fn();
+    const adapter = { ...createAdapter().adapter, capabilities: { ...r4Capabilities, trash: { version: 1 as const, files: false, restore: false, empty: false } }, listTrash: () => list.promise, trashFile, restoreTrash, emptyTrash };
+    await renderExplorer(adapter);
+    expect(buttonNamed('Trash selected file')?.disabled).toBe(true);
+    await act(async () => buttonNamed('Trash')?.click());
+    await renderExplorer(adapter, null, { ...detail, thread: { ...detail.thread, id: 'thread-2' } });
+    await act(async () => list.resolve({ version: 1, revision: 'old-thread-list', entries: [trashEntry] }));
+    expect(document.querySelector('[role="dialog"]')).toBeNull();
+    expect(trashFile).not.toHaveBeenCalled();
+    expect(restoreTrash).not.toHaveBeenCalled();
+    expect(emptyTrash).not.toHaveBeenCalled();
+  });
+
+  async function filterWorkspace(query: string) {
+    await act(async () => host?.querySelector<HTMLButtonElement>('[aria-label="Filter workspace"]')?.click());
+    const input = host!.querySelector<HTMLInputElement>('input[placeholder]')!;
+    await act(async () => {
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!.call(input, query);
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+  }
+
+  it('expands a filtered native directory to reveal its loaded children, then finds a child by name', async () => {
+    const path = 'W11-20261004-round3-folder-41588b22';
+    const listTree = vi.fn(async ({ path: requested }: { path?: string | null }) =>
+      requested === path ? directory(path, [file(`${path}/marker.txt`)]) : directory('', [directory(path, [], false)]),
+    );
+    await renderExplorer({ listTree, readFile: async ({ path }) => filePreview(path) });
+    await filterWorkspace('folder-41588b22');
+    const row = () => host!.querySelector<HTMLElement>(`[role="treeitem"][data-explorer-path="${path}"]`)!;
+    expect(row()).not.toBeNull();
+    expect(row().getAttribute('aria-expanded')).toBe('false');
+    await act(async () => row().querySelector<HTMLButtonElement>(`[aria-label="Expand ${path}"]`)!.click());
+    expect(listTree).toHaveBeenCalledWith({ threadId: 'thread-1', workspaceId: 'workspace-1', path });
+    expect(host!.querySelector(`[data-explorer-path="${path}/marker.txt"]`)).not.toBeNull();
+    await filterWorkspace('marker.txt');
+    expect(host!.querySelector(`[data-explorer-path="${path}/marker.txt"]`)).not.toBeNull();
+    expect(row().getAttribute('aria-expanded')).toBe('true');
+    await filterWorkspace('no-such-file');
+    expect(host!.querySelector(`[data-explorer-path="${path}/marker.txt"]`)).toBeNull();
+  });
 
   it('disables folder/root downloads until per-thread capability discovery finishes', async () => {
     const discovery = deferred<WorkspaceExplorerCapabilities>();

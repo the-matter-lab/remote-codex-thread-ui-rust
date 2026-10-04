@@ -13,6 +13,7 @@ import type { PluginContextValue } from '../../plugins/plugin-context';
 import { type WorkspaceTreeNode } from './workspaceTree';
 import { useWorkspaceExplorerController } from './explorer/useWorkspaceExplorerController';
 import { useWorkspaceExplorerActions } from './explorer/useWorkspaceExplorerActions';
+import { WorkspaceTrashDialog } from './explorer/WorkspaceTrashDialog';
 import { useWorkspaceFilePreview } from './explorer/useWorkspaceFilePreview';
 import { WorkspaceExplorerPanel } from './explorer/WorkspaceExplorerPanel';
 import type { WorkspaceFileTab } from './WorkspaceFileTabs';
@@ -129,6 +130,22 @@ export function GraphWorkspaceExplorer({
     canDownload,
     canDelete,
     canMove,
+    canTrash,
+    canListTrash,
+    canRestoreTrash,
+    canEmptyTrash,
+    trashFile,
+    openTrash,
+    restoreTrash,
+    emptyTrash,
+    showTrash,
+    setShowTrash,
+    trashList,
+    confirmTrashEmpty,
+    setConfirmTrashEmpty,
+    importFormats,
+    downloadFormats,
+    resetTrashRetry,
     deleteFile,
     moveFile,
     notice,
@@ -153,6 +170,7 @@ export function GraphWorkspaceExplorer({
     onError: setWorkspaceError,
     onLoadingChange: setLoadingTree,
     refreshTree: refreshWorkspaceTree,
+    focusFile: (path) => { setCollapsedPanel(null); return focusWorkspacePath(path); },
     workspaceRootPath: detail.workspace.absPath,
   });
 
@@ -327,15 +345,20 @@ export function GraphWorkspaceExplorer({
   const explorerActions = {
     onCopyPath: handleCopyPath,
     ...(workspaceAdapter?.downloadNode
-      ? { onDownload: (node: WorkspaceTreeNode) => void handleDownload(node) }
+      ? { onDownload: (node: WorkspaceTreeNode, format?: import('../../adapters').ThreadWorkspaceArchiveFormat) => void handleDownload(node, format) }
       : {}),
     canDownload: (node: WorkspaceTreeNode) => !pending && canDownload(node),
+    ...(workspaceAdapter?.downloadNode && downloadFormats.includes('zip')
+      ? { onDownloadZip: (node: WorkspaceTreeNode) => void handleDownload(node, 'zip') }
+      : {}),
     ...(workspaceAdapter?.emptyGarbage
       ? { onEmptyGarbage: handleOpenGarbage }
       : {}),
     ...(workspaceAdapter
       ? {
           onRefresh: () => {
+            if (pending) return;
+            resetTrashRetry();
             refreshCapabilities();
             void refreshWorkspaceTree(activeNode?.path ?? null);
           },
@@ -350,9 +373,11 @@ export function GraphWorkspaceExplorer({
       canUpload={Boolean(workspaceAdapter?.uploadFile)}
       pending={pending}
       canImportArchive={
-        capabilities?.archiveImport === 'tar' &&
+        importFormats.length > 0 &&
         Boolean((workspaceAdapter as WorkspaceExplorerAdapter)?.importArchive)
       }
+      importFormats={importFormats}
+      downloadFormats={downloadFormats}
       archiveLimits={
         capabilities
           ? `${capabilities.maxArchiveBytes?.toLocaleString() ?? 'bounded'} bytes expanded, ${capabilities.maxArchiveEntries?.toLocaleString() ?? 'bounded'} entries; no symlinks or paths outside the workspace.`
@@ -360,9 +385,13 @@ export function GraphWorkspaceExplorer({
       }
       onImportArchive={() => archiveInputRef.current?.click()}
       onDownloadWorkspace={() => void handleDownload(tree)}
+      onDownloadWorkspaceZip={() => void handleDownload(tree, 'zip')}
+      canTrash={canTrash}
+      onTrashFile={canListTrash ? () => void trashFile() : undefined}
+      onOpenTrash={canListTrash ? () => void openTrash() : undefined}
       canDelete={canDelete}
       canMove={canMove}
-      onDeleteFile={() => setFileOperation('delete')}
+      onDeleteFile={capabilities?.trash ? undefined : () => setFileOperation('delete')}
       onMoveFile={() => {
         setDestination(activeNode?.path ?? '');
         setFileOperation('move');
@@ -497,8 +526,8 @@ export function GraphWorkspaceExplorer({
             {workspaceError || capabilityError}
           </div>
         ) : null}
-        {notice ? (
-          <div role="status" className="px-3 py-2 text-sm">
+        {notice && !showTrash ? (
+          <div role="status" className="max-h-28 shrink-0 overflow-auto break-words px-3 py-2 text-sm">
             {notice}
           </div>
         ) : null}
@@ -509,6 +538,21 @@ export function GraphWorkspaceExplorer({
             onConfirm={() => void handleConfirmEmptyGarbage()}
           />
         ) : null}
+        <WorkspaceTrashDialog
+          open={showTrash}
+          list={trashList}
+          pending={pending}
+          error={workspaceError}
+          notice={notice}
+          canRestore={canRestoreTrash}
+          canEmpty={canEmptyTrash}
+          confirming={confirmTrashEmpty}
+          onClose={() => { setShowTrash(false); setConfirmTrashEmpty(false); }}
+          onRefresh={() => void openTrash()}
+          onRestore={(entry) => void restoreTrash(entry)}
+          onConfirmingChange={setConfirmTrashEmpty}
+          onEmpty={() => void emptyTrash()}
+        />
         <Dialog.Root
           open={fileOperation !== null}
           onOpenChange={(open) => {
@@ -582,7 +626,7 @@ export function GraphWorkspaceExplorer({
         <input
           ref={archiveInputRef}
           type="file"
-          accept=".tar,application/x-tar"
+          accept={importFormats.map((format) => `.${format}`).join(',')}
           aria-label="Workspace archive import input"
           data-testid="workspace-archive-import-input"
           className="hidden"

@@ -38,6 +38,16 @@ export function projectWorkspaceExplorerRows(
   >();
   const includedIds = new Set<string>();
   const query = options.filterQuery?.trim() ?? '';
+  // A directory match is navigable: explicitly expanding it reveals its
+  // children, even when their names do not match the folder-name query.
+  const includeExpandedChildren = (nodeId: string) => {
+    const node = model.nodes.get(nodeId);
+    if (!node || !expandedPaths.has(node.path)) return;
+    for (const childId of node.childIds) {
+      includedIds.add(childId);
+      includeExpandedChildren(childId);
+    }
+  };
 
   if (query) {
     for (const node of model.nodes.values()) {
@@ -46,6 +56,7 @@ export function projectWorkspaceExplorerRows(
         continue;
       }
       matches.set(node.id, match);
+      if (node.kind === 'directory') includeExpandedChildren(node.id);
       let current: typeof node | undefined = node;
       while (current) {
         includedIds.add(current.id);
@@ -97,9 +108,9 @@ export function projectWorkspaceExplorerRows(
 
     const expanded =
       projectedNode.kind === 'directory'
-        ? filtering ||
-          projectedNode.path === '' ||
-          expandedPaths.has(projectedNode.path)
+        ? projectedNode.path === '' ||
+          expandedPaths.has(projectedNode.path) ||
+          (filtering && projectedNode.childIds.some((id) => includedIds.has(id)))
         : undefined;
     indexById.set(projectedNode.id, rows.length);
     const match = matches.get(projectedNode.id);

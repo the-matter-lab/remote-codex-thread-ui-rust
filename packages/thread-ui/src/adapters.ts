@@ -75,7 +75,25 @@ export type ThreadWorkspaceUploadResult =
       archiveName: string;
       extractedCount: number;
       paths: string[];
+      /** First committed file (paths can also contain directory entries). */
+      firstFile?: string | null;
     };
+
+export type ThreadWorkspaceArchiveFormat = 'tar' | 'zip';
+
+export interface ThreadWorkspaceTrashEntry {
+  trashId: string;
+  path: string;
+  revision: string;
+  size: number;
+  trashedAt: string;
+}
+
+export interface ThreadWorkspaceTrashList {
+  version: 1;
+  revision: string;
+  entries: ThreadWorkspaceTrashEntry[];
+}
 
 export interface ThreadWorkspaceCapabilities {
   download: {file: boolean; directory: false | 'tar'};
@@ -87,12 +105,19 @@ export interface ThreadWorkspaceCapabilities {
   maxFileBytes?: number;
   maxArchiveBytes?: number;
   maxArchiveEntries?: number;
+  archives?: {version: 1; formats: ThreadWorkspaceArchiveFormat[]};
+  trash?: {version: 1; files: boolean; restore: boolean; empty: boolean};
 }
 
 export interface ThreadWorkspaceAdapter {
   capabilities?: ThreadWorkspaceCapabilities;
   getCapabilities?: (threadId: string) => Promise<ThreadWorkspaceCapabilities>;
-  importArchive?: (input: {threadId: string; workspaceId?: string | null; path: string; file: File}) => Promise<Extract<ThreadWorkspaceUploadResult, {kind: 'archive'}>>;
+  importArchive?: (input: {threadId: string; workspaceId?: string | null; path: string; file: File; format?: ThreadWorkspaceArchiveFormat}) => Promise<Extract<ThreadWorkspaceUploadResult, {kind: 'archive'}>>;
+  /** Host freezes the source revision and binds it to the supplied operationId. */
+  trashFile?: (input: {threadId: string; workspaceId?: string | null; path: string; operationId?: string}) => Promise<ThreadWorkspaceTrashEntry>;
+  listTrash?: (input: {threadId: string; workspaceId?: string | null}) => Promise<ThreadWorkspaceTrashList>;
+  restoreTrash?: (input: {threadId: string; workspaceId?: string | null; trashId: string; expectedRevision: string; expectedDestinationRevision: null; operationId?: string}) => Promise<void> | void;
+  emptyTrash?: (input: {threadId: string; workspaceId?: string | null; expectedRevision: string; operationId?: string}) => Promise<void> | void;
   deleteFile?: (input: {threadId: string; workspaceId?: string | null; path: string}) => Promise<void> | void;
   moveFile?: (input: {threadId: string; workspaceId?: string | null; path: string; destination: string}) => Promise<void> | void;
   /** Owner-only, read-only host files explicitly opened from a thread link. */
@@ -137,6 +162,7 @@ export interface ThreadWorkspaceAdapter {
     workspaceId?: string | null;
     path: string;
     kind: 'file' | 'directory';
+    format?: ThreadWorkspaceArchiveFormat;
   }) => Promise<void> | void;
   listGarbage?: (input: {
     threadId: string;

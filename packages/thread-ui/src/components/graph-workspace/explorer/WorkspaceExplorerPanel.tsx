@@ -20,6 +20,7 @@ import {
 } from 'react';
 
 import type { WorkspaceTreeNode } from '../workspaceTree';
+import type { ThreadWorkspaceArchiveFormat } from '../../../adapters';
 import { WorkspaceExplorerTree } from './WorkspaceExplorerTree';
 
 const iconButtonClassName =
@@ -35,6 +36,12 @@ export function WorkspaceExplorerPanel({
   archiveLimits,
   onImportArchive,
   onDownloadWorkspace,
+  onDownloadWorkspaceZip,
+  importFormats = ['tar'],
+  downloadFormats = ['tar'],
+  canTrash,
+  onTrashFile,
+  onOpenTrash,
   canDelete,
   canMove,
   onDeleteFile,
@@ -52,6 +59,7 @@ export function WorkspaceExplorerPanel({
   onCollapseAll,
   onCopyPath,
   onDownload,
+  onDownloadZip,
   canDownload,
   onEmptyGarbage,
   onExpandViewer,
@@ -79,9 +87,15 @@ export function WorkspaceExplorerPanel({
   archiveLimits?: string | undefined;
   onImportArchive?: () => void;
   onDownloadWorkspace?: () => void;
+  onDownloadWorkspaceZip?: () => void;
+  importFormats?: ThreadWorkspaceArchiveFormat[];
+  downloadFormats?: ThreadWorkspaceArchiveFormat[];
+  canTrash?: boolean;
+  onTrashFile?: (() => void) | undefined;
+  onOpenTrash?: (() => void) | undefined;
   canDelete?: boolean;
   canMove?: boolean;
-  onDeleteFile?: () => void;
+  onDeleteFile?: (() => void) | undefined;
   onMoveFile?: () => void;
   compactFolders?: boolean;
   directoryErrors?: ReadonlyMap<string, string>;
@@ -96,6 +110,7 @@ export function WorkspaceExplorerPanel({
   onCollapseAll: () => void;
   onCopyPath?: (node: WorkspaceTreeNode) => void;
   onDownload?: (node: WorkspaceTreeNode) => void;
+  onDownloadZip?: (node: WorkspaceTreeNode) => void;
   canDownload?: (node: WorkspaceTreeNode) => boolean;
   onEmptyGarbage?: () => void;
   onExpandViewer?: () => void;
@@ -176,7 +191,7 @@ export function WorkspaceExplorerPanel({
           <button
             type="button"
             onClick={onRefresh}
-            disabled={!onRefresh}
+            disabled={!onRefresh || pending}
             className={iconButtonClassName}
             title="Refresh workspace"
             aria-label="Refresh workspace"
@@ -185,7 +200,7 @@ export function WorkspaceExplorerPanel({
               className={`h-4 w-4 motion-reduce:animate-none ${loading ? 'animate-spin' : ''}`}
             />
           </button>
-          {canUpload || onDownloadWorkspace || onEmptyGarbage ? (
+          {canUpload || onDownloadWorkspace || onEmptyGarbage || onOpenTrash ? (
             <details className="thread-graph-explorer-more relative">
               <summary
                 className={`${iconButtonClassName} list-none cursor-pointer`}
@@ -194,7 +209,7 @@ export function WorkspaceExplorerPanel({
               >
                 <MoreHorizontal className="h-4 w-4" />
               </summary>
-              <div className="absolute right-0 top-7 z-40 min-w-44 rounded-md border border-[var(--theme-border)] bg-[var(--theme-panel)] p-1 shadow-lg">
+              <div className="absolute right-0 top-7 z-40 max-h-[min(50dvh,14rem)] min-w-44 overflow-y-auto rounded-md border border-[var(--theme-border)] bg-[var(--theme-panel)] p-1 shadow-lg">
                 {canUpload ? (
                   <button
                     type="button"
@@ -206,7 +221,7 @@ export function WorkspaceExplorerPanel({
                     Upload file
                   </button>
                 ) : null}
-                {onDownloadWorkspace ? (
+                {onDownloadWorkspace && (downloadFormats.includes('tar') || downloadFormats.length === 0) ? (
                   <button
                     type="button"
                     onClick={onDownloadWorkspace}
@@ -221,6 +236,9 @@ export function WorkspaceExplorerPanel({
                     Download Workspace (TAR)
                   </button>
                 ) : null}
+                {onDownloadWorkspaceZip && downloadFormats.includes('zip') ? (
+                  <button type="button" onClick={onDownloadWorkspaceZip} disabled={pending || !canDownload?.(tree)} className="flex h-9 w-full items-center rounded px-2 text-left text-sm disabled:opacity-50">Download Workspace (ZIP)</button>
+                ) : null}
                 {onImportArchive ? (
                   <>
                     <button
@@ -229,21 +247,23 @@ export function WorkspaceExplorerPanel({
                       disabled={pending || !canImportArchive}
                       title={
                         canImportArchive
-                          ? 'Extract an uncompressed TAR into the workspace root'
+                          ? `Extract ${importFormats.map((format) => format.toUpperCase()).join(' or ')} into the workspace root`
                           : 'Archive extraction is unavailable for this connection.'
                       }
                       className="flex h-9 w-full items-center rounded px-2 text-left text-sm disabled:opacity-50"
                     >
-                      Import TAR archive
+                      {importFormats.includes('zip') ? 'Import archive' : 'Import TAR archive'}
                     </button>
                     <p className="max-w-64 px-2 py-1 text-xs">
                       {canImportArchive
-                        ? `TAR only. ${archiveLimits ?? 'Extraction limits are enforced by the server.'}`
+                        ? `${importFormats.map((format) => format.toUpperCase()).join(' / ')}. ${archiveLimits ?? 'Extraction limits are enforced by the server.'}`
                         : 'Archive extraction is unsupported.'}{' '}
-                      ZIP uploads are stored without extraction.
+                      Regular uploads store archive bytes without extraction.
                     </p>
                   </>
                 ) : null}
+                {onTrashFile ? <button type="button" onClick={onTrashFile} disabled={pending || !canTrash} className="flex h-9 w-full items-center rounded px-2 text-left text-sm disabled:opacity-50">Trash selected file</button> : null}
+                {onOpenTrash ? <button type="button" onClick={onOpenTrash} disabled={pending} className="flex h-9 w-full items-center rounded px-2 text-left text-sm disabled:opacity-50">Trash</button> : null}
                 {onMoveFile ? (
                   <button
                     type="button"
@@ -456,6 +476,7 @@ export function WorkspaceExplorerPanel({
           scrollTopRef={explorerScrollTopRef}
           {...(onCopyPath ? { onCopyPath } : {})}
           {...(onDownload ? { onDownload } : {})}
+          {...(onDownloadZip ? { onDownloadZip } : {})}
           {...(canDownload ? { canDownload } : {})}
           onOpenFilter={openFilter}
           onFilterResultsChange={handleFilterResultsChange}

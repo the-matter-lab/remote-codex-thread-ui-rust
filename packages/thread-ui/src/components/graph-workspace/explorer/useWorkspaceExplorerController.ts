@@ -32,6 +32,7 @@ import type {
   WorkspaceExplorerCapabilities,
 } from './workspaceExplorerTypes';
 import { useWorkspaceExplorerPersistence } from './useWorkspaceExplorerPersistence';
+import { validateWorkspaceOperationCapabilities } from './workspaceOperationCapabilities';
 
 export interface UseWorkspaceExplorerControllerInput {
   activeView: 'chat' | 'shell';
@@ -87,25 +88,35 @@ export function useWorkspaceExplorerController({
     threadId: string;
     capabilities: WorkspaceExplorerCapabilities;
   } | null>(null);
-  const capabilities =
+  const discoveredCapabilities =
     capabilityState?.adapter === capabilityAdapter &&
     capabilityState?.threadId === workspaceIdentity.threadId
       ? capabilityState.capabilities
       : capabilityAdapter?.getCapabilities
         ? null
         : (capabilityAdapter?.capabilities ?? null);
+  const capabilities = useMemo(() => {
+    if (!discoveredCapabilities) return null;
+    try { return validateWorkspaceOperationCapabilities(discoveredCapabilities); }
+    catch { return null; }
+  }, [discoveredCapabilities]);
   const [capabilityEpoch, setCapabilityEpoch] = useState(0);
   const [capabilityError, setCapabilityError] = useState<string | null>(null);
   useEffect(() => {
     let cancelled = false;
     setCapabilityState(null);
     setCapabilityError(null);
+    if (!capabilityAdapter?.getCapabilities && capabilityAdapter?.capabilities) {
+      try { validateWorkspaceOperationCapabilities(capabilityAdapter.capabilities); }
+      catch (error) { setCapabilityError(error instanceof Error ? error.message : 'Unsupported workspace capabilities.'); }
+    }
     if (capabilityAdapter?.getCapabilities) {
       void (async () => {
         try {
           const result = await capabilityAdapter.getCapabilities!(
             workspaceIdentity.threadId,
           );
+          validateWorkspaceOperationCapabilities(result);
           if (!cancelled)
             setCapabilityState({
               adapter: capabilityAdapter,

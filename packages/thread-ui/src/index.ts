@@ -14,6 +14,9 @@ export type {
   ThreadTimelineAdapter,
   ThreadWorkspaceAdapter,
   ThreadWorkspaceCapabilities,
+  ThreadWorkspaceArchiveFormat,
+  ThreadWorkspaceTrashEntry,
+  ThreadWorkspaceTrashList,
 } from './adapters';
 export type {
   PromptAttachmentUpload,
