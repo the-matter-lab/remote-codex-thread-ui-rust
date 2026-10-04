@@ -77,7 +77,24 @@ export type ThreadWorkspaceUploadResult =
       paths: string[];
     };
 
+export interface ThreadWorkspaceCapabilities {
+  download: {file: boolean; directory: false | 'tar'};
+  archiveImport: false | 'tar';
+  create?: boolean;
+  mkdir?: boolean;
+  delete?: 'file' | false;
+  move?: 'file-new-destination' | false;
+  maxFileBytes?: number;
+  maxArchiveBytes?: number;
+  maxArchiveEntries?: number;
+}
+
 export interface ThreadWorkspaceAdapter {
+  capabilities?: ThreadWorkspaceCapabilities;
+  getCapabilities?: (threadId: string) => Promise<ThreadWorkspaceCapabilities>;
+  importArchive?: (input: {threadId: string; workspaceId?: string | null; path: string; file: File}) => Promise<Extract<ThreadWorkspaceUploadResult, {kind: 'archive'}>>;
+  deleteFile?: (input: {threadId: string; workspaceId?: string | null; path: string}) => Promise<void> | void;
+  moveFile?: (input: {threadId: string; workspaceId?: string | null; path: string; destination: string}) => Promise<void> | void;
   /** Owner-only, read-only host files explicitly opened from a thread link. */
   statLinkedFile?: (input: { threadId: string; path: string }) => Promise<ThreadWorkspaceTreeNode>;
   listTree(input: {

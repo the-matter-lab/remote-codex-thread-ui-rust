@@ -13,6 +13,7 @@ export type {
   ThreadShellAdapter,
   ThreadTimelineAdapter,
   ThreadWorkspaceAdapter,
+  ThreadWorkspaceCapabilities,
 } from './adapters';
 export type {
   PromptAttachmentUpload,
