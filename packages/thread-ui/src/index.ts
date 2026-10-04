@@ -80,6 +80,10 @@ export type {
   FrontendPluginModule,
   InlineCodeRenderContext,
   ThreadPanelContribution,
+  ExtensionHostAdapter,
+  ExtensionRenderContext,
+  ViewerToolbarContext,
+  ViewerToolbarContribution,
 } from './plugins/plugin-types';
 export {
   AppShellNavContext,
