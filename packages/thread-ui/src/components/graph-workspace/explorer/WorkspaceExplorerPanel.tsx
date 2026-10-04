@@ -30,6 +30,15 @@ const collapseButtonClassName =
 export function WorkspaceExplorerPanel({
   canEmptyGarbage,
   canUpload,
+  pending,
+  canImportArchive,
+  archiveLimits,
+  onImportArchive,
+  onDownloadWorkspace,
+  canDelete,
+  canMove,
+  onDeleteFile,
+  onMoveFile,
   compactFolders,
   directoryErrors,
   expandedPaths,
@@ -43,6 +52,7 @@ export function WorkspaceExplorerPanel({
   onCollapseAll,
   onCopyPath,
   onDownload,
+  canDownload,
   onEmptyGarbage,
   onExpandViewer,
   onFilterModeChange,
@@ -64,6 +74,15 @@ export function WorkspaceExplorerPanel({
 }: {
   canEmptyGarbage?: boolean;
   canUpload?: boolean;
+  pending?: boolean;
+  canImportArchive?: boolean;
+  archiveLimits?: string | undefined;
+  onImportArchive?: () => void;
+  onDownloadWorkspace?: () => void;
+  canDelete?: boolean;
+  canMove?: boolean;
+  onDeleteFile?: () => void;
+  onMoveFile?: () => void;
   compactFolders?: boolean;
   directoryErrors?: ReadonlyMap<string, string>;
   expandedPaths: ReadonlySet<string>;
@@ -77,6 +96,7 @@ export function WorkspaceExplorerPanel({
   onCollapseAll: () => void;
   onCopyPath?: (node: WorkspaceTreeNode) => void;
   onDownload?: (node: WorkspaceTreeNode) => void;
+  canDownload?: (node: WorkspaceTreeNode) => boolean;
   onEmptyGarbage?: () => void;
   onExpandViewer?: () => void;
   onFilterModeChange: (mode: 'highlight' | 'filter') => void;
@@ -165,7 +185,7 @@ export function WorkspaceExplorerPanel({
               className={`h-4 w-4 motion-reduce:animate-none ${loading ? 'animate-spin' : ''}`}
             />
           </button>
-          {canUpload || onEmptyGarbage ? (
+          {canUpload || onDownloadWorkspace || onEmptyGarbage ? (
             <details className="thread-graph-explorer-more relative">
               <summary
                 className={`${iconButtonClassName} list-none cursor-pointer`}
@@ -179,17 +199,94 @@ export function WorkspaceExplorerPanel({
                   <button
                     type="button"
                     onClick={onUpload}
+                    disabled={pending}
                     className="flex h-9 w-full items-center gap-2 rounded px-2 text-left text-sm hover:bg-[var(--theme-hover)]"
                   >
                     <Upload className="h-4 w-4" />
                     Upload file
                   </button>
                 ) : null}
+                {onDownloadWorkspace ? (
+                  <button
+                    type="button"
+                    onClick={onDownloadWorkspace}
+                    disabled={pending || !canDownload?.(tree)}
+                    title={
+                      canDownload?.(tree)
+                        ? 'Download the workspace as a TAR archive'
+                        : 'Folder downloads are unavailable for this connection.'
+                    }
+                    className="flex h-9 w-full items-center rounded px-2 text-left text-sm disabled:opacity-50"
+                  >
+                    Download Workspace (TAR)
+                  </button>
+                ) : null}
+                {onImportArchive ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={onImportArchive}
+                      disabled={pending || !canImportArchive}
+                      title={
+                        canImportArchive
+                          ? 'Extract an uncompressed TAR into the workspace root'
+                          : 'Archive extraction is unavailable for this connection.'
+                      }
+                      className="flex h-9 w-full items-center rounded px-2 text-left text-sm disabled:opacity-50"
+                    >
+                      Import TAR archive
+                    </button>
+                    <p className="max-w-64 px-2 py-1 text-xs">
+                      {canImportArchive
+                        ? `TAR only. ${archiveLimits ?? 'Extraction limits are enforced by the server.'}`
+                        : 'Archive extraction is unsupported.'}{' '}
+                      ZIP uploads are stored without extraction.
+                    </p>
+                  </>
+                ) : null}
+                {onMoveFile ? (
+                  <button
+                    type="button"
+                    onClick={onMoveFile}
+                    disabled={pending || !canMove}
+                    title={
+                      canMove
+                        ? 'Move selected file to a new path'
+                        : 'Select a workspace file; this connection must support file moves.'
+                    }
+                    className="flex h-9 w-full items-center rounded px-2 text-left text-sm disabled:opacity-50"
+                  >
+                    Move selected file
+                  </button>
+                ) : null}
+                {onDeleteFile ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={onDeleteFile}
+                      disabled={pending || !canDelete}
+                      title={
+                        canDelete
+                          ? 'Confirm permanent deletion of selected file'
+                          : 'Select a workspace file; this connection must support file deletion.'
+                      }
+                      className="flex h-9 w-full items-center rounded px-2 text-left text-sm disabled:opacity-50"
+                    >
+                      Delete selected file…
+                    </button>
+                    {!onEmptyGarbage ? (
+                      <p className="max-w-64 px-2 py-1 text-xs">
+                        Reversible trash and empty-trash are unsupported for
+                        this connection.
+                      </p>
+                    ) : null}
+                  </>
+                ) : null}
                 {onEmptyGarbage ? (
                   <button
                     type="button"
                     onClick={onEmptyGarbage}
-                    disabled={!canEmptyGarbage}
+                    disabled={pending || !canEmptyGarbage}
                     className="flex h-9 w-full items-center gap-2 rounded px-2 text-left text-sm text-rose-600 hover:bg-rose-500/10 disabled:opacity-50 dark:text-rose-300"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -359,6 +456,7 @@ export function WorkspaceExplorerPanel({
           scrollTopRef={explorerScrollTopRef}
           {...(onCopyPath ? { onCopyPath } : {})}
           {...(onDownload ? { onDownload } : {})}
+          {...(canDownload ? { canDownload } : {})}
           onOpenFilter={openFilter}
           onFilterResultsChange={handleFilterResultsChange}
           {...(onPreview ? { onPreview } : {})}

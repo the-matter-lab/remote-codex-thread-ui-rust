@@ -74,6 +74,7 @@ export function WorkspaceExplorerRow({
   onPin,
   onRetry,
   onDownload,
+  canDownload,
   onCopyPath,
 }: {
   row: WorkspaceExplorerRowProjection;
@@ -90,6 +91,7 @@ export function WorkspaceExplorerRow({
   onPin?: (node: WorkspaceTreeNode) => void;
   onRetry?: (path: string) => void;
   onDownload?: (node: WorkspaceTreeNode) => void;
+  canDownload?: (node: WorkspaceTreeNode) => boolean;
   onCopyPath?: (node: WorkspaceTreeNode) => void;
 }) {
   const node: WorkspaceTreeNode = {
@@ -216,9 +218,10 @@ export function WorkspaceExplorerRow({
           <CircleAlert className="h-3.5 w-3.5" />
         </button>
       ) : null}
-      {node.id !== 'linked-files' && (onDownload ||
-      (onCopyPath && node.path) ||
-      (!isDirectory && onPreview)) ? (
+      {node.id !== 'linked-files' &&
+      (onDownload ||
+        (onCopyPath && node.path) ||
+        (!isDirectory && onPreview)) ? (
         <div className="thread-graph-tree-actions absolute inset-y-0 right-1 flex items-center gap-0.5 pl-1">
           {!isDirectory && onPreview ? (
             <button
@@ -236,9 +239,14 @@ export function WorkspaceExplorerRow({
             <button
               type="button"
               tabIndex={-1}
+              disabled={canDownload ? !canDownload(node) : false}
               onClick={() => onDownload(node)}
               className="thread-graph-tree-action flex h-9 w-9 shrink-0 items-center justify-center rounded-md transition sm:h-7 sm:w-7"
-              title={`Download ${node.name}`}
+              title={
+                canDownload && !canDownload(node)
+                  ? `Downloads are unavailable for this ${isDirectory ? 'folder' : 'file'} connection.`
+                  : `Download ${node.name}`
+              }
               aria-label={`Download ${node.name}`}
             >
               <Download className="h-3.5 w-3.5" />

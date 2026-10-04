@@ -26,7 +26,11 @@ import {
   mergeWorkspaceExplorerSubtree,
   workspaceExplorerModelToTree,
 } from './workspaceExplorerModel';
-import type { WorkspaceExplorerModel } from './workspaceExplorerTypes';
+import type {
+  WorkspaceExplorerModel,
+  WorkspaceExplorerAdapter,
+  WorkspaceExplorerCapabilities,
+} from './workspaceExplorerTypes';
 import { useWorkspaceExplorerPersistence } from './useWorkspaceExplorerPersistence';
 
 export interface UseWorkspaceExplorerControllerInput {
@@ -69,6 +73,54 @@ export function useWorkspaceExplorerController({
     }),
     [detail.thread.id, detail.thread.workspaceId, detail.workspace.id],
   );
+  const capabilityAdapter = workspaceAdapter as
+    | WorkspaceExplorerAdapter
+    | null
+    | undefined;
+  const [capabilityState, setCapabilityState] = useState<{
+    adapter: WorkspaceExplorerAdapter;
+    threadId: string;
+    capabilities: WorkspaceExplorerCapabilities;
+  } | null>(null);
+  const capabilities =
+    capabilityState?.adapter === capabilityAdapter &&
+    capabilityState?.threadId === workspaceIdentity.threadId
+      ? capabilityState.capabilities
+      : capabilityAdapter?.getCapabilities
+        ? null
+        : (capabilityAdapter?.capabilities ?? null);
+  const [capabilityEpoch, setCapabilityEpoch] = useState(0);
+  const [capabilityError, setCapabilityError] = useState<string | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    setCapabilityState(null);
+    setCapabilityError(null);
+    if (capabilityAdapter?.getCapabilities) {
+      void (async () => {
+        try {
+          const result = await capabilityAdapter.getCapabilities!(
+            workspaceIdentity.threadId,
+          );
+          if (!cancelled)
+            setCapabilityState({
+              adapter: capabilityAdapter,
+              threadId: workspaceIdentity.threadId,
+              capabilities: result,
+            });
+        } catch (error) {
+          if (!cancelled)
+            setCapabilityError(
+              error instanceof Error
+                ? error.message
+                : 'Failed to discover file operations. Refresh the workspace to retry.',
+            );
+        }
+      })();
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [capabilityAdapter, workspaceIdentity.threadId, capabilityEpoch]);
   const persistence = useWorkspaceExplorerPersistence(workspaceIdentity);
   const fallbackTree = useMemo(
     () => collectWorkspaceItems(detail, artifacts, status, activeView),
@@ -85,14 +137,32 @@ export function useWorkspaceExplorerController({
   const [linkedFiles, setLinkedFiles] = useState<WorkspaceTreeNode[]>([]);
   const tree = useMemo(() => {
     const root = adapterTree ?? fallbackTree;
-    return linkedFiles.length ? {...root, children: [...root.children, {
-      id: 'linked-files', path: 'linked-files:', name: 'Linked files', kind: 'directory' as const,
-      children: linkedFiles, childrenLoaded: true, hasChildren: true,
-    }]} : root;
+    return linkedFiles.length
+      ? {
+          ...root,
+          children: [
+            ...root.children,
+            {
+              id: 'linked-files',
+              path: 'linked-files:',
+              name: 'Linked files',
+              kind: 'directory' as const,
+              children: linkedFiles,
+              childrenLoaded: true,
+              hasChildren: true,
+            },
+          ],
+        }
+      : root;
   }, [adapterTree, fallbackTree, linkedFiles]);
   const nodeMap = useMemo(() => flattenWorkspaceNodes(tree), [tree]);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(() => {
-    const selectedPath = focusPathRequest ? workspaceRelativeFocusPath(focusPathRequest.path, detail.workspace.absPath) : initialPersistedState.current.selectedPath;
+    const selectedPath = focusPathRequest
+      ? workspaceRelativeFocusPath(
+          focusPathRequest.path,
+          detail.workspace.absPath,
+        )
+      : initialPersistedState.current.selectedPath;
     return selectedPath
       ? `workspace:${selectedPath}`
       : (fallbackFirstSelectableNode?.id ?? null);
@@ -122,9 +192,7 @@ export function useWorkspaceExplorerController({
   const [workspaceError, setWorkspaceError] = useState<string | null>(null);
 
   const activeNode =
-    selectedNodeId === null
-      ? null
-      : (nodeMap.get(selectedNodeId) ?? null);
+    selectedNodeId === null ? null : (nodeMap.get(selectedNodeId) ?? null);
   const liveNodes = useMemo(
     () => tree.children.find((node) => node.path === 'live')?.children ?? [],
     [tree],
@@ -340,11 +408,16 @@ export function useWorkspaceExplorerController({
       const generation = ++focusGenerationRef.current;
       ++refreshGenerationRef.current;
       focusPendingRef.current = true;
-      const isCurrent = () => workspaceGenerationRef.current === workspaceGeneration && focusGenerationRef.current === generation;
+      const isCurrent = () =>
+        workspaceGenerationRef.current === workspaceGeneration &&
+        focusGenerationRef.current === generation;
       setSelectedNodeId(`workspace:${targetPath}`);
       setFilterQuery('');
-      const external = relativeWorkspacePath(path, detail.workspace.absPath) === null;
-      const ancestors = external ? ['linked-files:'] : ancestorDirectoryPaths(targetPath);
+      const external =
+        relativeWorkspacePath(path, detail.workspace.absPath) === null;
+      const ancestors = external
+        ? ['linked-files:']
+        : ancestorDirectoryPaths(targetPath);
       setExpandedPaths((current) => {
         const next = new Set(current);
         next.add('');
@@ -378,11 +451,23 @@ export function useWorkspaceExplorerController({
           return;
         }
         if (external) {
-          if (!workspaceAdapter.statLinkedFile) throw new Error('Only the device owner can preview files outside this workspace.');
-          const node = await workspaceAdapter.statLinkedFile({...workspaceIdentity, path: targetPath});
+          if (!workspaceAdapter.statLinkedFile)
+            throw new Error(
+              'Only the device owner can preview files outside this workspace.',
+            );
+          const node = await workspaceAdapter.statLinkedFile({
+            ...workspaceIdentity,
+            path: targetPath,
+          });
           if (!isCurrent()) return;
-          const linked = workspaceTreeNodeToGraphNode({...node, path: targetPath});
-          setLinkedFiles(current => [...current.filter(item => item.path !== targetPath), linked]);
+          const linked = workspaceTreeNodeToGraphNode({
+            ...node,
+            path: targetPath,
+          });
+          setLinkedFiles((current) => [
+            ...current.filter((item) => item.path !== targetPath),
+            linked,
+          ]);
           adapterModelRef.current = nextModel;
           setAdapterModel(nextModel);
           return;
@@ -468,7 +553,12 @@ export function useWorkspaceExplorerController({
     skipPersistenceWriteRef.current = true;
     const persisted = persistence.read();
     const fallbackNode = fallbackFirstSelectableNodeRef.current;
-    const selectedPath = focusPathRequest ? workspaceRelativeFocusPath(focusPathRequest.path, detail.workspace.absPath) : persisted.selectedPath;
+    const selectedPath = focusPathRequest
+      ? workspaceRelativeFocusPath(
+          focusPathRequest.path,
+          detail.workspace.absPath,
+        )
+      : persisted.selectedPath;
     const nextSelectedId = selectedPath
       ? `workspace:${selectedPath}`
       : (fallbackNode?.id ?? null);
@@ -580,6 +670,9 @@ export function useWorkspaceExplorerController({
   }, [refreshWorkspaceTree, workspaceAdapter, workspaceIdentity]);
 
   return {
+    capabilities,
+    capabilityError,
+    refreshCapabilities: () => setCapabilityEpoch((current) => current + 1),
     activeNode,
     adapterModel,
     collapseAll,

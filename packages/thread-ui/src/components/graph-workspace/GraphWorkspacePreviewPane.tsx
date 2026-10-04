@@ -22,7 +22,11 @@ import {
   X,
 } from 'lucide-react';
 import ReactMarkdown, { defaultUrlTransform } from 'react-markdown';
-import { localFileHref, relativeWorkspacePath, normalizeFileSystemPath } from '../workspacePaths';
+import {
+  localFileHref,
+  relativeWorkspacePath,
+  normalizeFileSystemPath,
+} from '../workspacePaths';
 import remarkGfm from 'remark-gfm';
 import type { HighlighterCore } from 'shiki/core';
 
@@ -38,10 +42,7 @@ import {
 } from './workspaceTree';
 import { WorkspaceInfoCard } from './GraphWorkspaceCards';
 import { GraphMoleculeViewer } from './GraphMoleculeViewer';
-import {
-  WorkspaceFileTabs,
-  type WorkspaceFileTab,
-} from './WorkspaceFileTabs';
+import { WorkspaceFileTabs, type WorkspaceFileTab } from './WorkspaceFileTabs';
 
 const GraphWorkspaceMonacoEditor = lazy(
   () => import('./GraphWorkspaceMonacoEditor'),
@@ -55,35 +56,60 @@ export type GraphWorkspacePreviewTarget =
   | { kind: 'meta'; node: WorkspaceTreeNode }
   | null;
 
-function DownloadFilePreview({ node, onDownload }: {
+function DownloadFilePreview({
+  node,
+  onDownload,
+}: {
   node: WorkspaceTreeNode;
   onDownload?: () => Promise<void> | void;
 }) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const size = node.size;
-  const sizeLabel = size === undefined ? null : size < 1024 ? `${size} B`
-    : size < 1024 * 1024 ? `${(size / 1024).toFixed(1)} KB`
-    : `${(size / (1024 * 1024)).toFixed(1)} MB`;
+  const sizeLabel =
+    size === undefined
+      ? null
+      : size < 1024
+        ? `${size} B`
+        : size < 1024 * 1024
+          ? `${(size / 1024).toFixed(1)} KB`
+          : `${(size / (1024 * 1024)).toFixed(1)} MB`;
   return (
     <div className="thread-graph-download-preview">
-      <Download aria-hidden="true" className="thread-graph-download-preview-icon" />
+      <Download
+        aria-hidden="true"
+        className="thread-graph-download-preview-icon"
+      />
       <strong>{node.name}</strong>
       {sizeLabel ? <span>{sizeLabel}</span> : null}
       <p>This file is available to download.</p>
       {onDownload ? (
-        <button type="button" disabled={pending} aria-label={`Download ${node.name}`}
+        <button
+          type="button"
+          disabled={pending}
+          aria-label={`Download ${node.name}`}
           onClick={async () => {
             setPending(true);
             setError(null);
-            try { await onDownload(); }
-            catch (caught) { setError(caught instanceof Error ? caught.message : 'Download failed. Please try again.'); }
-            finally { setPending(false); }
-          }}>
+            try {
+              await onDownload();
+            } catch (caught) {
+              setError(
+                caught instanceof Error
+                  ? caught.message
+                  : 'Download failed. Please try again.',
+              );
+            } finally {
+              setPending(false);
+            }
+          }}
+        >
           <Download aria-hidden="true" size={16} />
           {pending ? 'Downloading…' : 'Download file'}
         </button>
-      ) : <span>Downloads are unavailable for this connection.</span>}
+      ) : (
+        <span>Downloads are unavailable for this connection.</span>
+      )}
       {error ? <p role="alert">{error}</p> : null}
     </div>
   );
@@ -108,19 +134,35 @@ function transparentHighlightBackground(html: string) {
     .replace(/background:[^;"]+;?/g, 'background: transparent;');
 }
 
-export function resolveWorkspaceMarkdownPath({ markdownPath, resourceUrl, workspaceRootPath = '' }: {
-  markdownPath: string; resourceUrl: string; workspaceRootPath?: string;
+export function resolveWorkspaceMarkdownPath({
+  markdownPath,
+  resourceUrl,
+  workspaceRootPath = '',
+}: {
+  markdownPath: string;
+  resourceUrl: string;
+  workspaceRootPath?: string;
 }) {
-  const raw = localFileHref(resourceUrl, typeof window === 'undefined' ? undefined : window.location.origin);
+  const raw = localFileHref(
+    resourceUrl,
+    typeof window === 'undefined' ? undefined : window.location.origin,
+  );
   if (!raw) return null;
   const path = raw.split('#')[0] ?? '';
   if (path.startsWith('/') || /^[a-z]:\//i.test(path)) {
-    return workspaceRootPath ? relativeWorkspacePath(path, workspaceRootPath) : path.replace(/^\/+/, '');
+    return workspaceRootPath
+      ? relativeWorkspacePath(path, workspaceRootPath)
+      : path.replace(/^\/+/, '');
   }
-  const base = workspaceRootPath ? relativeWorkspacePath(markdownPath, workspaceRootPath) : normalizeFileSystemPath(markdownPath);
+  const base = workspaceRootPath
+    ? relativeWorkspacePath(markdownPath, workspaceRootPath)
+    : normalizeFileSystemPath(markdownPath);
   if (base === null) return null;
   const directory = base.slice(0, Math.max(0, base.lastIndexOf('/')));
-  return relativeWorkspacePath(directory ? `${directory}/${path}` : path, workspaceRootPath);
+  return relativeWorkspacePath(
+    directory ? `${directory}/${path}` : path,
+    workspaceRootPath,
+  );
 }
 
 function isSmallEditableTextFile(file: ThreadWorkspaceFilePreview) {
@@ -316,16 +358,40 @@ const GraphWorkspaceMarkdownPreview = memo(
     return (
       <div className="thread-graph-markdown thread-graph-markdown-preview min-h-0 flex-1 overflow-auto px-5 py-4 sm:px-7 sm:py-6">
         <ReactMarkdown
-          urlTransform={url => localFileHref(url, typeof window === 'undefined' ? undefined : window.location.origin) ? url : defaultUrlTransform(url)}
+          urlTransform={(url) =>
+            localFileHref(
+              url,
+              typeof window === 'undefined'
+                ? undefined
+                : window.location.origin,
+            )
+              ? url
+              : defaultUrlTransform(url)
+          }
           remarkPlugins={[remarkGfm]}
           components={{
             a({ href, children, ...props }) {
               const workspacePath = resolvePath(href);
               if (workspacePath && onOpenWorkspaceFile) {
                 return (
-                  <WorkspaceFileLink path={workspacePath} onOpen={({path})=>onOpenWorkspaceFile(path)}>{children}</WorkspaceFileLink>
+                  <WorkspaceFileLink
+                    path={workspacePath}
+                    onOpen={({ path }) => onOpenWorkspaceFile(path)}
+                  >
+                    {children}
+                  </WorkspaceFileLink>
                 );
               }
+              if (
+                href &&
+                localFileHref(
+                  href,
+                  typeof window === 'undefined'
+                    ? undefined
+                    : window.location.origin,
+                )
+              )
+                return <span>{children}</span>;
               return (
                 <a {...props} {...externalLinkProps(href)} href={href}>
                   {children}
@@ -334,8 +400,18 @@ const GraphWorkspaceMarkdownPreview = memo(
             },
             img({ src, alt, ...props }) {
               const workspacePath = resolvePath(src);
-              const resolvedSrc = workspacePath
-                ? (resolveWorkspaceFileUrl?.(workspacePath) ?? src)
+              const local =
+                src &&
+                localFileHref(
+                  src,
+                  typeof window === 'undefined'
+                    ? undefined
+                    : window.location.origin,
+                );
+              const resolvedSrc = local
+                ? workspacePath
+                  ? resolveWorkspaceFileUrl?.(workspacePath)
+                  : null
                 : src;
               if (!resolvedSrc) {
                 return null;
@@ -374,6 +450,7 @@ export function GraphWorkspacePreviewPane({
   onExpandExplorer,
   onOpenWorkspaceFile,
   onLoadMore,
+  onReloadFile,
   onSelectFileTab,
   onCollapse,
   pdfUrl,
@@ -402,6 +479,7 @@ export function GraphWorkspacePreviewPane({
   onExpandExplorer?: () => void;
   onOpenWorkspaceFile?: (path: string) => void;
   onLoadMore?: () => void;
+  onReloadFile?: () => void;
   onSelectFileTab?: (path: string) => void;
   onCollapse?: () => void;
   pdfUrl?: string | null;
@@ -413,8 +491,14 @@ export function GraphWorkspacePreviewPane({
   workspaceRootPath?: string;
 }) {
   const surfaceRef = useRef<HTMLElement | null>(null);
+  const drafts = useRef(new Map<string, string>());
+  const previousTabs = useRef(fileTabs);
+  const currentPath = useRef(previewFile?.path);
+  currentPath.current = previewFile?.path;
   const [editing, setEditing] = useState(false);
   const [draftContent, setDraftContent] = useState('');
+  const [saveNotice, setSaveNotice] = useState<string | null>(null);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [markdownView, setMarkdownView] = useState<'preview' | 'source'>(
@@ -483,11 +567,33 @@ export function GraphWorkspacePreviewPane({
   }, []);
 
   useEffect(() => {
-    setEditing(false);
-    setDraftContent(previewFile?.content ?? '');
+    setSaveNotice(null);
+  }, [previewFile?.path]);
+
+  useEffect(() => {
+    setSaving(false);
+    setDownloadError(null);
+    const draft = previewFile
+      ? drafts.current.get(previewFile.path)
+      : undefined;
+    setEditing(draft !== undefined);
+    setDraftContent(draft ?? previewFile?.content ?? '');
     setSaveError(null);
     setMarkdownView('preview');
   }, [previewFile?.path, previewFile?.content]);
+
+  useEffect(() => {
+    for (const tab of previousTabs.current) {
+      if (!fileTabs.some((current) => current.path === tab.path))
+        drafts.current.delete(tab.path);
+    }
+    previousTabs.current = fileTabs;
+  }, [fileTabs]);
+
+  function updateDraft(content: string) {
+    setDraftContent(content);
+    if (previewFile) drafts.current.set(previewFile.path, content);
+  }
 
   useEffect(() => {
     if (!previewFile) {
@@ -504,6 +610,8 @@ export function GraphWorkspacePreviewPane({
       return;
     }
 
+    const path = previewFile.path;
+    setSaveNotice(null);
     setSaving(true);
     setSaveError(null);
     try {
@@ -511,13 +619,18 @@ export function GraphWorkspacePreviewPane({
         path: previewFile.path,
         content: draftContent,
       });
-      setEditing(false);
+      drafts.current.delete(path);
+      if (currentPath.current === path) {
+        setEditing(false);
+        setSaveNotice(`Saved ${previewFile.name}.`);
+      }
     } catch (error) {
+      if (currentPath.current !== path) return;
       setSaveError(
         error instanceof Error ? error.message : 'Failed to save file.',
       );
     } finally {
-      setSaving(false);
+      if (currentPath.current === path) setSaving(false);
     }
   }
 
@@ -569,6 +682,7 @@ export function GraphWorkspacePreviewPane({
                 <button
                   type="button"
                   onClick={() => {
+                    drafts.current.delete(previewFile.path);
                     setDraftContent(previewFile.content);
                     setEditing(false);
                     setSaveError(null);
@@ -668,10 +782,15 @@ export function GraphWorkspacePreviewPane({
       ) : null}
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         {error ? (
-          <div className="border-b border-rose-200 bg-rose-50 px-5 py-3 text-sm text-rose-700 dark:border-rose-400/25 dark:bg-rose-400/10 dark:text-rose-200">
+          <div
+            role="alert"
+            className="border-b border-rose-200 bg-rose-50 px-5 py-3 text-sm text-rose-700 dark:border-rose-400/25 dark:bg-rose-400/10 dark:text-rose-200"
+          >
             {error}
           </div>
         ) : null}
+        {saveNotice ? <p role="status">{saveNotice}</p> : null}
+        {downloadError ? <p role="alert">{downloadError}</p> : null}
         {!selectedTarget ? (
           <div className="flex min-h-0 flex-1 items-center justify-center px-5 text-center text-sm text-slate-400 dark:text-slate-500">
             Pick a live molecule, workspace file, artifact, or thread event to
@@ -682,7 +801,11 @@ export function GraphWorkspacePreviewPane({
             Loading file preview...
           </div>
         ) : selectedTarget.kind === 'workspace-file' && downloadOnly ? (
-          <DownloadFilePreview key={selectedTarget.node.path} node={selectedTarget.node} onDownload={onDownloadFile} />
+          <DownloadFilePreview
+            key={selectedTarget.node.path}
+            node={selectedTarget.node}
+            onDownload={onDownloadFile}
+          />
         ) : selectedTarget.kind === 'workspace-file' && moleculeSnapshot ? (
           <div className="thread-graph-molecule-preview min-h-0 flex-1 overflow-hidden">
             <GraphMoleculeViewer
@@ -703,6 +826,7 @@ export function GraphWorkspacePreviewPane({
           <div className="thread-graph-file-preview-frame min-h-0 flex-1 overflow-hidden">
             <iframe
               src={pdfUrl}
+              referrerPolicy="no-referrer"
               title={`PDF preview: ${
                 selectedTarget.node.path || selectedTarget.node.name
               }`}
@@ -742,14 +866,41 @@ export function GraphWorkspacePreviewPane({
               </div>
             ) : null}
             {saveError ? (
-              <div className="border-b border-rose-200 bg-rose-50 px-4 py-2 text-sm text-rose-700 dark:border-rose-400/25 dark:bg-rose-400/10 dark:text-rose-200">
+              <div
+                role="alert"
+                className="border-b border-rose-200 bg-rose-50 px-4 py-2 text-sm text-rose-700 dark:border-rose-400/25 dark:bg-rose-400/10 dark:text-rose-200"
+              >
                 {saveError}
+                <p>
+                  Your unsaved text is still in the editor. Copy it before
+                  reloading the latest file if the revision changed.
+                </p>
+                {onReloadFile ? (
+                  <button
+                    type="button"
+                    disabled={saving}
+                    onClick={() => {
+                      if (
+                        !window.confirm(
+                          'Discard unsaved edits and reload the latest file? Copy your changes first.',
+                        )
+                      )
+                        return;
+                      drafts.current.delete(previewFile.path);
+                      setEditing(false);
+                      setSaveError(null);
+                      onReloadFile();
+                    }}
+                  >
+                    Reload latest file
+                  </button>
+                ) : null}
               </div>
             ) : null}
             {editing && compactViewer ? (
               <textarea
                 value={draftContent}
-                onChange={(event) => setDraftContent(event.currentTarget.value)}
+                onChange={(event) => updateDraft(event.currentTarget.value)}
                 spellCheck={false}
                 aria-label="Workspace file editor"
                 className="thread-graph-file-editor min-h-0 flex-1 resize-none border-0 bg-transparent p-4 font-mono text-[12px] leading-5 text-slate-900 outline-none dark:text-slate-100"
@@ -784,13 +935,47 @@ export function GraphWorkspacePreviewPane({
                   dark={dark}
                   focusLine={focusLine}
                   language={fileLanguage}
-                  onChange={setDraftContent}
+                  onChange={updateDraft}
                   onSave={() => void handleSaveFile()}
                   path={previewFile.path}
                   readOnly={!editing}
                 />
               </Suspense>
             )}
+            {onSaveFile &&
+            !canEditFile &&
+            !MOLECULAR_EXTENSIONS.has(extension) ? (
+              <p className="px-4 py-2 text-xs">
+                Editing requires the complete text file, at most 50 KiB and
+                1,000 lines.
+              </p>
+            ) : null}
+            {previewFile.truncated ? (
+              <p className="px-4 py-2 text-xs">
+                Text previews load in 24,000-byte chunks. Load more to continue,
+                or download the complete file.
+              </p>
+            ) : null}
+            {onDownloadFile ? (
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    setDownloadError(null);
+                    await onDownloadFile();
+                  } catch (error) {
+                    setDownloadError(
+                      error instanceof Error
+                        ? error.message
+                        : 'Download failed.',
+                    );
+                  }
+                }}
+                aria-label={`Download ${previewFile.name}`}
+              >
+                Download complete file
+              </button>
+            ) : null}
             {previewFile.truncated && onLoadMore ? (
               <div className="thread-graph-file-preview-footer flex justify-center border-t px-4 py-3">
                 <button

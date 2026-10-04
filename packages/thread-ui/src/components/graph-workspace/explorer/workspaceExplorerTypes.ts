@@ -47,3 +47,8 @@ export interface WorkspaceExplorerProjection {
   matchCount: number;
   hasUnresolvedDirectories: boolean;
 }
+
+export type WorkspaceExplorerCapabilities =
+  import('../../../adapters').ThreadWorkspaceCapabilities;
+export type WorkspaceExplorerAdapter =
+  import('../../../adapters').ThreadWorkspaceAdapter;

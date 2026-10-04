@@ -29,6 +29,7 @@ export function WorkspaceExplorerTree({
   scrollTopRef,
   onCopyPath,
   onDownload,
+  canDownload,
   onOpenFilter,
   onFilterResultsChange,
   onPreview,
@@ -51,6 +52,7 @@ export function WorkspaceExplorerTree({
   scrollTopRef?: MutableRefObject<number>;
   onCopyPath?: (node: WorkspaceTreeNode) => void;
   onDownload?: (node: WorkspaceTreeNode) => void;
+  canDownload?: (node: WorkspaceTreeNode) => boolean;
   onOpenFilter?: () => void;
   onFilterResultsChange?: (input: {
     matchCount: number;
@@ -138,9 +140,18 @@ export function WorkspaceExplorerTree({
     if (index === undefined) return;
     revealedSelectionRef.current = key;
     setFocusedId(selectedNodeId);
-    if (canVirtualize) virtualizer.scrollToIndex(index, {align: 'auto'});
-    else rowElementsRef.current.get(selectedNodeId)?.scrollIntoView?.({block: 'nearest'});
-  }, [selectedNodeId, revealRequestKey, projection.indexById, canVirtualize, virtualizer]);
+    if (canVirtualize) virtualizer.scrollToIndex(index, { align: 'auto' });
+    else
+      rowElementsRef.current
+        .get(selectedNodeId)
+        ?.scrollIntoView?.({ block: 'nearest' });
+  }, [
+    selectedNodeId,
+    revealRequestKey,
+    projection.indexById,
+    canVirtualize,
+    virtualizer,
+  ]);
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
@@ -268,6 +279,7 @@ export function WorkspaceExplorerTree({
                 {...(onPin ? { onPin } : {})}
                 {...(onRetryDirectory ? { onRetry: onRetryDirectory } : {})}
                 {...(onDownload ? { onDownload } : {})}
+                {...(canDownload ? { canDownload } : {})}
                 {...(onCopyPath ? { onCopyPath } : {})}
               />
             </div>

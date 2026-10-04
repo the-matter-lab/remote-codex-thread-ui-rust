@@ -113,6 +113,242 @@ describe('GraphWorkspacePreviewPane', () => {
     children: [],
   };
 
+  it('shows recoverable save conflicts while preserving the draft', async () => {
+    (
+      globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT: boolean }
+    ).IS_REACT_ACT_ENVIRONMENT = true;
+    const save = vi.fn(async () => {
+      throw new Error('FILE_CONFLICT: reopen the file.');
+    });
+    const reload = vi.fn();
+    const element = render(
+      <GraphWorkspacePreviewPane
+        plugins={createDefaultPluginContextValue()}
+        selectedTarget={{ kind: 'workspace-file', node: markdownNode }}
+        onSaveFile={save}
+        onReloadFile={reload}
+        previewFile={{
+          path: markdownNode.path,
+          name: markdownNode.name,
+          content: 'original',
+          language: 'markdown',
+          size: 8,
+          truncated: false,
+          nextOffset: 8,
+        }}
+      />,
+    );
+    await act(async () =>
+      element
+        .querySelector<HTMLButtonElement>('[aria-label="Edit file"]')
+        ?.click(),
+    );
+    const editor = element.querySelector<HTMLTextAreaElement>(
+      '[aria-label="Workspace file editor"]',
+    );
+    await act(async () => {
+      Object.getOwnPropertyDescriptor(
+        HTMLTextAreaElement.prototype,
+        'value',
+      )?.set?.call(editor, 'my unsaved draft');
+      editor?.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    await act(async () =>
+      element
+        .querySelector<HTMLButtonElement>('[aria-label="Save file"]')
+        ?.click(),
+    );
+    expect(save).toHaveBeenCalledWith({
+      path: markdownNode.path,
+      content: 'my unsaved draft',
+    });
+    expect(element.querySelector('[role="alert"]')?.textContent).toContain(
+      'FILE_CONFLICT',
+    );
+    expect(editor?.value).toBe('my unsaved draft');
+    const confirm = vi.spyOn(window, 'confirm').mockReturnValue(false);
+    const reloadButton = [
+      ...element.querySelectorAll<HTMLButtonElement>('button'),
+    ].find((button) => button.textContent === 'Reload latest file');
+    await act(async () => reloadButton?.click());
+    expect(reload).not.toHaveBeenCalled();
+    confirm.mockReturnValue(true);
+    await act(async () => reloadButton?.click());
+    expect(reload).toHaveBeenCalledTimes(1);
+    confirm.mockRestore();
+  });
+
+  it('preserves unsaved drafts when selecting another file tab', async () => {
+    const first = {
+      path: markdownNode.path,
+      name: markdownNode.name,
+      content: 'original',
+      language: 'markdown',
+      size: 8,
+      truncated: false,
+      nextOffset: 8,
+    };
+    const second = {
+      ...first,
+      path: 'other.md',
+      name: 'other.md',
+      content: 'other',
+    };
+    const tabs = [
+      { path: first.path, name: first.name, pinned: true },
+      { path: second.path, name: second.name, pinned: true },
+    ];
+    const pane = (file: typeof first) => (
+      <GraphWorkspacePreviewPane
+        plugins={createDefaultPluginContextValue()}
+        selectedTarget={{
+          kind: 'workspace-file',
+          node: { ...markdownNode, path: file.path, name: file.name },
+        }}
+        previewFile={file}
+        fileTabs={tabs}
+        onCloseFileTab={vi.fn()}
+        onSelectFileTab={vi.fn()}
+        onSaveFile={vi.fn()}
+      />
+    );
+    const element = render(pane(first));
+    await act(async () =>
+      element
+        .querySelector<HTMLButtonElement>('[aria-label="Edit file"]')
+        ?.click(),
+    );
+    const editor = element.querySelector<HTMLTextAreaElement>(
+      '[aria-label="Workspace file editor"]',
+    );
+    await act(async () => {
+      Object.getOwnPropertyDescriptor(
+        HTMLTextAreaElement.prototype,
+        'value',
+      )?.set?.call(editor, 'retained draft');
+      editor?.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    await act(async () => root?.render(pane(second)));
+    expect(
+      element.querySelector('[aria-label="Workspace file editor"]'),
+    ).toBeNull();
+    await act(async () => root?.render(pane(first)));
+    expect(
+      element.querySelector<HTMLTextAreaElement>(
+        '[aria-label="Workspace file editor"]',
+      )?.value,
+    ).toBe('retained draft');
+  });
+
+  it.each(['throw', 'reject'])(
+    'reports complete-file download %s errors',
+    async (failure) => {
+      const download = () => {
+        if (failure === 'throw') throw new Error('Download unavailable');
+        return Promise.reject(new Error('Download unavailable'));
+      };
+      const element = render(
+        <GraphWorkspacePreviewPane
+          plugins={createDefaultPluginContextValue()}
+          selectedTarget={{ kind: 'workspace-file', node: markdownNode }}
+          onDownloadFile={download}
+          previewFile={{
+            path: markdownNode.path,
+            name: markdownNode.name,
+            content: 'text',
+            language: 'markdown',
+            size: 4,
+            truncated: false,
+            nextOffset: 4,
+          }}
+        />,
+      );
+      await act(async () =>
+        element
+          .querySelector<HTMLButtonElement>(
+            '[aria-label="Download architecture.md"]',
+          )
+          ?.click(),
+      );
+      expect(element.querySelector('[role="alert"]')?.textContent).toContain(
+        'Download unavailable',
+      );
+    },
+  );
+
+  it('explains preview and edit limits and provides load-more/download controls', () => {
+    const element = render(
+      <GraphWorkspacePreviewPane
+        plugins={createDefaultPluginContextValue()}
+        selectedTarget={{ kind: 'workspace-file', node: markdownNode }}
+        onSaveFile={vi.fn()}
+        onLoadMore={vi.fn()}
+        onDownloadFile={vi.fn()}
+        previewFile={{
+          path: markdownNode.path,
+          name: markdownNode.name,
+          content: 'partial',
+          language: 'markdown',
+          size: 100000,
+          truncated: true,
+          nextOffset: 24000,
+        }}
+      />,
+    );
+    expect(element.textContent).toContain('50 KiB and 1,000 lines');
+    expect(element.textContent).toContain('24,000-byte chunks');
+    expect(element.querySelector('[aria-label="Edit file"]')).toBeNull();
+    expect(
+      element.querySelector('[aria-label="Load more workspace preview"]'),
+    ).not.toBeNull();
+    expect(
+      element.querySelector('[aria-label="Download architecture.md"]'),
+    ).not.toBeNull();
+  });
+
+  it('renders untrusted HTML as text and blocks local resources outside the workspace', () => {
+    const element = render(
+      <GraphWorkspacePreviewPane
+        plugins={createDefaultPluginContextValue()}
+        selectedTarget={{ kind: 'workspace-file', node: markdownNode }}
+        workspaceRootPath="/home/u/treer"
+        resolveWorkspaceFileUrl={vi.fn((path) => `/files?path=${path}`)}
+        onOpenWorkspaceFile={vi.fn()}
+        previewFile={{
+          path: markdownNode.path,
+          name: markdownNode.name,
+          content:
+            '<script>alert(1)</script>\n\n[Outside](/etc/passwd)\n\n![Outside](/etc/password.png)',
+          language: 'markdown',
+          size: 80,
+          truncated: false,
+          nextOffset: 80,
+        }}
+      />,
+    );
+    expect(element.querySelector('script')).toBeNull();
+    expect(element.querySelector('a[href="/etc/passwd"]')).toBeNull();
+    expect(element.querySelector('img')).toBeNull();
+  });
+
+  it('keeps the native PDF preview URL and suppresses referrers', () => {
+    const element = render(
+      <GraphWorkspacePreviewPane
+        plugins={createDefaultPluginContextValue()}
+        selectedTarget={{
+          kind: 'workspace-file',
+          node: { ...markdownNode, name: 'report.pdf', path: 'report.pdf' },
+        }}
+        pdfUrl="/files/report.pdf"
+      />,
+    );
+    expect(element.querySelector('iframe')?.getAttribute('src')).toBe('/files/report.pdf');
+    expect(element.querySelector('iframe')?.hasAttribute('sandbox')).toBe(false);
+    expect(
+      element.querySelector('iframe')?.getAttribute('referrerpolicy'),
+    ).toBe('no-referrer');
+  });
+
   it('renders Markdown by default and resolves workspace images through the adapter', () => {
     const resolveWorkspaceFileUrl = vi.fn(
       (path: string) => `/relay/files/raw?path=${encodeURIComponent(path)}`,
@@ -264,7 +500,19 @@ describe('GraphWorkspacePreviewPane', () => {
 });
 
 it('resolves Windows Markdown resources with case-insensitive roots and browser drive prefixes', () => {
-  for (const resourceUrl of ['C:/WORK/demo/assets/a.png', '/C:/Work/demo/assets/a.png', 'file:///C:/work/demo/assets/a.png', `${window.location.origin}/C%3A/Work/demo/assets/a.png`, '../assets/a.png']) {
-    expect(resolveWorkspaceMarkdownPath({markdownPath:'C:\\Work\\demo\\docs\\readme.md', resourceUrl, workspaceRootPath:'c:\\work\\demo'})).toBe('assets/a.png');
+  for (const resourceUrl of [
+    'C:/WORK/demo/assets/a.png',
+    '/C:/Work/demo/assets/a.png',
+    'file:///C:/work/demo/assets/a.png',
+    `${window.location.origin}/C%3A/Work/demo/assets/a.png`,
+    '../assets/a.png',
+  ]) {
+    expect(
+      resolveWorkspaceMarkdownPath({
+        markdownPath: 'C:\\Work\\demo\\docs\\readme.md',
+        resourceUrl,
+        workspaceRootPath: 'c:\\work\\demo',
+      }),
+    ).toBe('assets/a.png');
   }
 });

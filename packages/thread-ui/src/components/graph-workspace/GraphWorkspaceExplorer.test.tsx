@@ -12,6 +12,10 @@ import type {
 } from '../../adapters';
 import { createDefaultPluginContextValue } from '../../plugins/plugin-context';
 import { GraphWorkspaceExplorer } from './GraphWorkspaceExplorer';
+import type {
+  WorkspaceExplorerAdapter,
+  WorkspaceExplorerCapabilities,
+} from './explorer/workspaceExplorerTypes';
 
 vi.mock('./GraphWorkspacePreviewPane', () => ({
   graphWorkspacePreviewTargetFromNode: (
@@ -30,7 +34,12 @@ vi.mock('./GraphWorkspacePreviewPane', () => ({
     previewFile?: ThreadWorkspaceFilePreview | null;
     downloadOnly?: boolean;
   }) => (
-    <div data-testid="preview-file" data-focus-line={focusLine ?? undefined} data-content={previewFile?.content} data-download-only={downloadOnly}>
+    <div
+      data-testid="preview-file"
+      data-focus-line={focusLine ?? undefined}
+      data-content={previewFile?.content}
+      data-download-only={downloadOnly}
+    >
       {previewFile?.path ?? 'none'}
       {onCollapse ? (
         <button type="button" aria-label="Hide Editor" onClick={onCollapse} />
@@ -206,27 +215,395 @@ describe('GraphWorkspaceExplorer', () => {
     vi.restoreAllMocks();
   });
 
-  it.each(['xyz', 'sdf', 'mol', 'cif', 'pdb'])('loads all %s pages before publishing a molecular preview', async (extension) => {
-    const path = `structure.${extension}`;
-    const tail = deferred<ThreadWorkspaceFilePreview>();
-    const readFile = vi.fn<ThreadWorkspaceAdapter['readFile']>(async ({offset}) =>
-      offset ? tail.promise : {...filePreview(path), content: 'first frame\n', size: 48_000, truncated: true, nextOffset: 24_000});
-    await renderExplorer({listTree: vi.fn(async () => directory('', [file(path)])), readFile});
-    await vi.waitFor(() => expect(readFile).toHaveBeenCalledTimes(2));
-    expect(readFile.mock.calls[1]?.[0]).toMatchObject({path, offset: 24_000, limit: 256 * 1024});
-    expect(host?.querySelector('[data-testid="preview-file"]')?.getAttribute('data-content')).toBeNull();
-    await act(async () => tail.resolve({...filePreview(path), content: 'last frame\n', size: 48_000, nextOffset: 48_000}));
-    await vi.waitFor(() => expect(host?.querySelector('[data-testid="preview-file"]')?.getAttribute('data-content')).toBe('first frame\nlast frame\n'));
+  const archiveCapabilities: WorkspaceExplorerCapabilities = {
+    download: { file: true, directory: 'tar' },
+    archiveImport: 'tar',
+    delete: 'file',
+    move: 'file-new-destination',
+    maxFileBytes: 20,
+    maxArchiveBytes: 100,
+    maxArchiveEntries: 10,
+  };
+
+  async function chooseFile(testId: string, chosen: File) {
+    const input = host!.querySelector<HTMLInputElement>(
+      `[data-testid="${testId}"]`,
+    )!;
+    Object.defineProperty(input, 'files', {
+      configurable: true,
+      value: [chosen],
+    });
+    await act(async () =>
+      input.dispatchEvent(new Event('change', { bubbles: true })),
+    );
+  }
+
+  it('disables folder/root downloads until per-thread capability discovery finishes', async () => {
+    const discovery = deferred<WorkspaceExplorerCapabilities>();
+    const adapter: WorkspaceExplorerAdapter = {
+      ...createAdapter().adapter,
+      getCapabilities: vi.fn(() => discovery.promise),
+      downloadNode: vi.fn(),
+    };
+    await renderExplorer(adapter);
+    expect(buttonNamed('Download Workspace (TAR)')?.disabled).toBe(true);
+    expect(
+      host?.querySelector<HTMLButtonElement>('[aria-label="Download src"]')
+        ?.disabled,
+    ).toBe(true);
+    await act(async () => discovery.resolve(archiveCapabilities));
+    expect(buttonNamed('Download Workspace (TAR)')?.disabled).toBe(false);
+    await act(async () => buttonNamed('Download Workspace (TAR)')?.click());
+    expect(adapter.downloadNode).toHaveBeenCalledWith({
+      threadId: 'thread-1',
+      workspaceId: 'workspace-1',
+      path: '',
+      kind: 'directory',
+    });
+    expect(host?.querySelector('[role="status"]')?.textContent).toContain(
+      'TAR archive',
+    );
   });
+
+  it.each(['throw', 'reject'])(
+    'shows directory download %s errors while the viewer is collapsed',
+    async (failure) => {
+      const downloadNode = vi.fn(() => {
+        if (failure === 'throw')
+          throw new Error('Archive conflict: refresh and retry.');
+        return Promise.reject(
+          new Error('Archive conflict: refresh and retry.'),
+        );
+      });
+      await renderExplorer({
+        ...createAdapter().adapter,
+        capabilities: archiveCapabilities,
+        downloadNode,
+      } as WorkspaceExplorerAdapter);
+      await act(async () =>
+        host
+          ?.querySelector<HTMLButtonElement>('[aria-label="Hide Editor"]')
+          ?.click(),
+      );
+      await act(async () => buttonNamed('Download Workspace (TAR)')?.click());
+      expect(host?.querySelector('[role="alert"]')?.textContent).toContain(
+        'Archive conflict',
+      );
+      expect(downloadNode).toHaveBeenCalledTimes(1);
+    },
+  );
+
+  it('keeps directory downloads disabled for handler-only connections', async () => {
+    const downloadNode = vi.fn();
+    await renderExplorer({ ...createAdapter().adapter, downloadNode });
+    const button = host?.querySelector<HTMLButtonElement>(
+      '[aria-label="Download src"]',
+    );
+    expect(button?.disabled).toBe(true);
+    await act(async () => button?.click());
+    expect(downloadNode).not.toHaveBeenCalled();
+    expect(
+      host?.querySelector<HTMLButtonElement>(
+        '[aria-label="Download README.md"]',
+      )?.disabled,
+    ).toBe(false);
+  });
+
+  it('resets capabilities on thread change and ignores old discovery results', async () => {
+    const first = deferred<WorkspaceExplorerCapabilities>();
+    const second = deferred<WorkspaceExplorerCapabilities>();
+    const adapter: WorkspaceExplorerAdapter = {
+      ...createAdapter().adapter,
+      downloadNode: vi.fn(),
+      getCapabilities: vi.fn((id) =>
+        id === 'thread-1' ? first.promise : second.promise,
+      ),
+    };
+    await renderExplorer(adapter);
+    await act(async () =>
+      root?.render(
+        <GraphWorkspaceExplorer
+          activeView="chat"
+          detail={{ ...detail, thread: { ...detail.thread, id: 'thread-2' } }}
+          artifacts={[]}
+          plugins={createDefaultPluginContextValue()}
+          status={null}
+          workspaceAdapter={adapter}
+        />,
+      ),
+    );
+    await act(async () => first.resolve(archiveCapabilities));
+    expect(buttonNamed('Download Workspace (TAR)')?.disabled).toBe(true);
+    await act(async () =>
+      second.resolve({
+        ...archiveCapabilities,
+        download: { file: true, directory: false },
+        archiveImport: false,
+      }),
+    );
+    expect(buttonNamed('Download Workspace (TAR)')?.disabled).toBe(true);
+  });
+
+  it('shows synchronous capability errors and retries discovery on refresh', async () => {
+    const getCapabilities = vi.fn(() => {
+      throw new Error('Capability discovery unavailable');
+    });
+    await renderExplorer({
+      ...createAdapter().adapter,
+      getCapabilities,
+    } as WorkspaceExplorerAdapter);
+    expect(host?.querySelector('[role="alert"]')?.textContent).toContain(
+      'Capability discovery unavailable',
+    );
+    await act(async () =>
+      host
+        ?.querySelector<HTMLButtonElement>('[aria-label="Refresh workspace"]')
+        ?.click(),
+    );
+    expect(getCapabilities).toHaveBeenCalledTimes(2);
+  });
+
+  it('imports TAR separately from upload, selects its first extracted file, and keeps inputs after collapse', async () => {
+    const importArchive = vi.fn(async () => ({
+      kind: 'archive' as const,
+      archiveName: 'bundle.tar',
+      extractedCount: 1,
+      paths: ['README.md'],
+    }));
+    const uploadFile = vi.fn();
+    const { adapter, listTree } = createAdapter();
+    await renderExplorer({
+      ...adapter,
+      capabilities: archiveCapabilities,
+      importArchive,
+      uploadFile,
+    } as WorkspaceExplorerAdapter);
+    await act(async () =>
+      host
+        ?.querySelector<HTMLButtonElement>('[aria-label="Hide Editor"]')
+        ?.click(),
+    );
+    const archive = new File(['tar bytes'], 'bundle.tar');
+    await chooseFile('workspace-archive-import-input', archive);
+    expect(importArchive).toHaveBeenCalledWith({
+      threadId: 'thread-1',
+      workspaceId: 'workspace-1',
+      path: '',
+      file: archive,
+    });
+    expect(uploadFile).not.toHaveBeenCalled();
+    expect(
+      listTree.mock.calls.filter(([request]) => request.path === '').length,
+    ).toBe(2);
+    expect(host?.querySelector('[role="status"]')?.textContent).toContain(
+      'Imported bundle.tar',
+    );
+  });
+
+  it.each([
+    ['bundle.zip', 'uncompressed .tar'],
+    ['large.tar', 'byte import limit'],
+  ])(
+    'rejects invalid or oversized archive %s visibly before transport',
+    async (name, message) => {
+      const importArchive = vi.fn();
+      await renderExplorer({
+        ...createAdapter().adapter,
+        capabilities: { ...archiveCapabilities, maxArchiveBytes: 3 },
+        importArchive,
+      } as WorkspaceExplorerAdapter);
+      await chooseFile(
+        'workspace-archive-import-input',
+        new File([name === 'large.tar' ? 'x'.repeat(12000) : '1234'], name),
+      );
+      expect(importArchive).not.toHaveBeenCalled();
+      expect(host?.querySelector('[role="alert"]')?.textContent).toContain(
+        message,
+      );
+    },
+  );
+
+  it.each([
+    'FILE_CONFLICT: workspace changed. Retry import.',
+    'INVALID_ARCHIVE: symlinks and traversal rejected.',
+    'ARCHIVE_LIMIT: expanded size or entry count exceeded.',
+  ])(
+    'shows server archive failure %s without success or refresh',
+    async (message) => {
+      const { adapter, listTree } = createAdapter();
+      const importArchive = vi.fn(() => Promise.reject(new Error(message)));
+      await renderExplorer({
+        ...adapter,
+        capabilities: archiveCapabilities,
+        importArchive,
+      } as WorkspaceExplorerAdapter);
+      await chooseFile(
+        'workspace-archive-import-input',
+        new File(['1234'], 'bundle.tar'),
+      );
+      expect(host?.querySelector('[role="alert"]')?.textContent).toContain(
+        message,
+      );
+      expect(host?.querySelector('[role="status"]')).toBeNull();
+      expect(listTree).toHaveBeenCalledTimes(1);
+    },
+  );
+
+  it.each(['throw', 'reject'])(
+    'reports clipboard %s failures visibly',
+    async (failure) => {
+      Object.defineProperty(navigator, 'clipboard', {
+        configurable: true,
+        value: {
+          writeText: vi.fn(() => {
+            if (failure === 'throw') throw new Error('Clipboard denied');
+            return Promise.reject(new Error('Clipboard denied'));
+          }),
+        },
+      });
+      await renderExplorer(createAdapter().adapter);
+      await act(async () =>
+        host
+          ?.querySelector<HTMLButtonElement>(
+            '[aria-label="Copy path for README.md"]',
+          )
+          ?.click(),
+      );
+      expect(host?.querySelector('[role="alert"]')?.textContent).toContain(
+        'Clipboard denied',
+      );
+    },
+  );
+
+  it('reports a synchronous upload picker failure without an uncaught exception', async () => {
+    await renderExplorer({
+      ...createAdapter().adapter,
+      uploadFile: vi.fn(),
+      pickUploadFile: () => {
+        throw new Error('Picker failed');
+      },
+    });
+    await act(async () => buttonNamed('Upload file')?.click());
+    expect(host?.querySelector('[role="alert"]')?.textContent).toContain(
+      'Picker failed',
+    );
+  });
+
+  it('confirms permanent file deletion and forwards a new move destination', async () => {
+    const deleteFile = vi.fn(async () => {});
+    const moveFile = vi.fn(async () => {});
+    await renderExplorer({
+      ...createAdapter().adapter,
+      capabilities: archiveCapabilities,
+      deleteFile,
+      moveFile,
+    } as WorkspaceExplorerAdapter);
+    await act(async () => buttonNamed('Delete selected file…')?.click());
+    expect(host?.querySelector('[role="dialog"]')?.textContent).toContain(
+      'no reversible trash',
+    );
+    expect(deleteFile).not.toHaveBeenCalled();
+    await act(async () => buttonNamed('Delete permanently')?.click());
+    expect(deleteFile).toHaveBeenCalledWith({
+      threadId: 'thread-1',
+      workspaceId: 'workspace-1',
+      path: 'README.md',
+    });
+    await act(async () => buttonNamed('Move selected file')?.click());
+    const input = host?.querySelector<HTMLInputElement>(
+      '[aria-label="New file path"]',
+    );
+    await act(async () => {
+      Object.getOwnPropertyDescriptor(
+        HTMLInputElement.prototype,
+        'value',
+      )?.set?.call(input, 'renamed.md');
+      input?.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    await act(async () => buttonNamed('Move file')?.click());
+    expect(moveFile).toHaveBeenCalledWith({
+      threadId: 'thread-1',
+      workspaceId: 'workspace-1',
+      path: 'README.md',
+      destination: 'renamed.md',
+    });
+  });
+
+  it.each(['xyz', 'sdf', 'mol', 'cif', 'pdb'])(
+    'loads all %s pages before publishing a molecular preview',
+    async (extension) => {
+      const path = `structure.${extension}`;
+      const tail = deferred<ThreadWorkspaceFilePreview>();
+      const readFile = vi.fn<ThreadWorkspaceAdapter['readFile']>(
+        async ({ offset }) =>
+          offset
+            ? tail.promise
+            : {
+                ...filePreview(path),
+                content: 'first frame\n',
+                size: 48_000,
+                truncated: true,
+                nextOffset: 24_000,
+              },
+      );
+      await renderExplorer({
+        listTree: vi.fn(async () => directory('', [file(path)])),
+        readFile,
+      });
+      await vi.waitFor(() => expect(readFile).toHaveBeenCalledTimes(2));
+      expect(readFile.mock.calls[1]?.[0]).toMatchObject({
+        path,
+        offset: 24_000,
+        limit: 256 * 1024,
+      });
+      expect(
+        host
+          ?.querySelector('[data-testid="preview-file"]')
+          ?.getAttribute('data-content'),
+      ).toBeNull();
+      await act(async () =>
+        tail.resolve({
+          ...filePreview(path),
+          content: 'last frame\n',
+          size: 48_000,
+          nextOffset: 48_000,
+        }),
+      );
+      await vi.waitFor(() =>
+        expect(
+          host
+            ?.querySelector('[data-testid="preview-file"]')
+            ?.getAttribute('data-content'),
+        ).toBe('first frame\nlast frame\n'),
+      );
+    },
+  );
 
   it('offers download instead of a partial molecular preview above the size limit', async () => {
     const path = 'large.xyz';
-    const readFile = vi.fn<ThreadWorkspaceAdapter['readFile']>(async () =>
-      ({...filePreview(path), size: 11 * 1024 * 1024, truncated: true, nextOffset: 24_000}));
-    await renderExplorer({listTree: vi.fn(async () => directory('', [file(path)])), readFile});
-    await vi.waitFor(() => expect(host?.querySelector('[data-testid="preview-file"]')?.getAttribute('data-download-only')).toBe('true'));
+    const readFile = vi.fn<ThreadWorkspaceAdapter['readFile']>(async () => ({
+      ...filePreview(path),
+      size: 11 * 1024 * 1024,
+      truncated: true,
+      nextOffset: 24_000,
+    }));
+    await renderExplorer({
+      listTree: vi.fn(async () => directory('', [file(path)])),
+      readFile,
+    });
+    await vi.waitFor(() =>
+      expect(
+        host
+          ?.querySelector('[data-testid="preview-file"]')
+          ?.getAttribute('data-download-only'),
+      ).toBe('true'),
+    );
     expect(readFile).toHaveBeenCalledTimes(1);
-    expect(host?.querySelector('[data-testid="preview-file"]')?.getAttribute('data-content')).toBeNull();
+    expect(
+      host
+        ?.querySelector('[data-testid="preview-file"]')
+        ?.getAttribute('data-content'),
+    ).toBeNull();
   });
 
   it('loads the root, previews the first file, and preserves expanded directories on refresh', async () => {
@@ -283,33 +660,75 @@ describe('GraphWorkspaceExplorer', () => {
 
   it('does not preview a fallback file while opening a deep link and ignores stale root refreshes', async () => {
     const staleRoot = deferred<ThreadWorkspaceTreeNode>();
-    const targetRoot = directory('', [directory('src', [], false), file('WRONG.md')]);
+    const targetRoot = directory('', [
+      directory('src', [], false),
+      file('WRONG.md'),
+    ]);
     let rootReads = 0;
-    const readFile = vi.fn<ThreadWorkspaceAdapter['readFile']>(async ({path})=>filePreview(path));
+    const readFile = vi.fn<ThreadWorkspaceAdapter['readFile']>(
+      async ({ path }) => filePreview(path),
+    );
     const adapter: ThreadWorkspaceAdapter = {
-      listTree: vi.fn(async ({path}) => path === 'src' ? directory('src', [file('src/index.ts')]) : ++rootReads === 1 ? staleRoot.promise : targetRoot),
+      listTree: vi.fn(async ({ path }) =>
+        path === 'src'
+          ? directory('src', [file('src/index.ts')])
+          : ++rootReads === 1
+            ? staleRoot.promise
+            : targetRoot,
+      ),
       readFile,
     };
     await renderExplorer(adapter);
-    await renderExplorer(adapter, {path:'/workspace/demo/src/index.ts', requestId:1});
-    await vi.waitFor(()=>expect(host?.querySelector('[data-testid="preview-file"]')?.textContent).toBe('src/index.ts'));
-    await act(async()=>staleRoot.resolve(directory('', [file('OLDER.md')])));
-    expect(host?.querySelector('[data-testid="preview-file"]')?.textContent).toBe('src/index.ts');
-    expect(readFile.mock.calls.map(([input])=>input.path)).toEqual(['src/index.ts']);
+    await renderExplorer(adapter, {
+      path: '/workspace/demo/src/index.ts',
+      requestId: 1,
+    });
+    await vi.waitFor(() =>
+      expect(
+        host?.querySelector('[data-testid="preview-file"]')?.textContent,
+      ).toBe('src/index.ts'),
+    );
+    await act(async () => staleRoot.resolve(directory('', [file('OLDER.md')])));
+    expect(
+      host?.querySelector('[data-testid="preview-file"]')?.textContent,
+    ).toBe('src/index.ts');
+    expect(readFile.mock.calls.map(([input]) => input.path)).toEqual([
+      'src/index.ts',
+    ]);
   });
 
   it('the newest link wins when ancestor loads finish out of order', async () => {
     const slow = deferred<ThreadWorkspaceTreeNode>();
-    const readFile = vi.fn<ThreadWorkspaceAdapter['readFile']>(async ({path})=>filePreview(path));
+    const readFile = vi.fn<ThreadWorkspaceAdapter['readFile']>(
+      async ({ path }) => filePreview(path),
+    );
     const adapter: ThreadWorkspaceAdapter = {
-      listTree: vi.fn(async ({path}) => path === 'src' ? slow.promise : path === 'docs' ? directory('docs',[file('docs/new.md')]) : directory('',[directory('src',[],false),directory('docs',[],false)])), readFile,
+      listTree: vi.fn(async ({ path }) =>
+        path === 'src'
+          ? slow.promise
+          : path === 'docs'
+            ? directory('docs', [file('docs/new.md')])
+            : directory('', [
+                directory('src', [], false),
+                directory('docs', [], false),
+              ]),
+      ),
+      readFile,
     };
-    await renderExplorer(adapter, {path:'src/old.md',requestId:1});
-    await renderExplorer(adapter, {path:'docs/new.md',requestId:2});
-    await vi.waitFor(()=>expect(host?.querySelector('[data-testid="preview-file"]')?.textContent).toBe('docs/new.md'));
-    await act(async()=>slow.resolve(directory('src',[file('src/old.md')])));
-    expect(host?.querySelector('[data-testid="preview-file"]')?.textContent).toBe('docs/new.md');
-    expect(readFile.mock.calls.map(([input])=>input.path)).toEqual(['docs/new.md']);
+    await renderExplorer(adapter, { path: 'src/old.md', requestId: 1 });
+    await renderExplorer(adapter, { path: 'docs/new.md', requestId: 2 });
+    await vi.waitFor(() =>
+      expect(
+        host?.querySelector('[data-testid="preview-file"]')?.textContent,
+      ).toBe('docs/new.md'),
+    );
+    await act(async () => slow.resolve(directory('src', [file('src/old.md')])));
+    expect(
+      host?.querySelector('[data-testid="preview-file"]')?.textContent,
+    ).toBe('docs/new.md');
+    expect(readFile.mock.calls.map(([input]) => input.path)).toEqual([
+      'docs/new.md',
+    ]);
   });
 
   it('loads missing ancestors and selects a deep focus request', async () => {
@@ -470,9 +889,7 @@ describe('GraphWorkspaceExplorer', () => {
         ?.click();
     });
     expect(host?.querySelector('[role="tree"]')).toBeNull();
-    expect(
-      host?.querySelector('[aria-label="Show Explorer"]'),
-    ).toBeTruthy();
+    expect(host?.querySelector('[aria-label="Show Explorer"]')).toBeTruthy();
 
     await act(async () => {
       host
