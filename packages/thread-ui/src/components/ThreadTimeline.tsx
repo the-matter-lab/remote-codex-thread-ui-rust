@@ -1,3 +1,6 @@
+import { latestUsage, mergeTimelineItem, scopeUsageItems } from './timeline/structuredEvidence';
+import { StructuredUsageInline } from './timeline/StructuredUsageInline';
+import type { StructuredUsage } from '@remote-codex/shared';
 import { mergeThreadHistoryItem } from '@remote-codex/shared';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -19,6 +22,7 @@ import {
   isRunningHistoryStatus,
   parseHookPromptText,
   type TimelineTurn,
+  type TimelineUsageByScope,
 } from './timeline/timelineItems';
 import {
   buildActivityNoteAnchors,
@@ -41,8 +45,9 @@ import { useDeferredHistoryDetail } from './timeline/useDeferredHistoryDetail';
 import { useTimelineScroll } from './timeline/useTimelineScroll';
 
 export interface ThreadTimelineProps {
+  roomUsage?: StructuredUsage | null;
   threadId?: string | undefined;
-  turns: ThreadTurnDto[];
+  turns: Array<ThreadTurnDto & { usageByScope?: TimelineUsageByScope }>;
   totalTurnCount?: number;
   pendingRequests?: ThreadActionRequestDto[];
   activeTurnId?: string | null;
@@ -149,6 +154,7 @@ function mergeOptimisticTurnItems(
 }
 
 function ThreadTimelineComponent({
+  roomUsage,
   threadId,
   turns,
   totalTurnCount,
@@ -582,6 +588,11 @@ function ThreadTimelineComponent({
           style={bottomSpacer > 0 ? { paddingBottom: bottomSpacer } : undefined}
         >
           <div ref={scrollContentRef} className="thread-graph-scroll-content">
+          <div className="px-3 py-2 sm:px-5">
+            <StructuredUsageInline scope="room" error={roomUsage && threadId && roomUsage.scopeId !== threadId ? 'Room usage scope ID mismatch' : undefined} usage={roomUsage ?? latestUsage([
+              ...turns.flatMap(scopeUsageItems), ...(liveItems?.items ?? []),
+            ], 'room', threadId)} />
+          </div>
           <div ref={topSentinelRef} aria-hidden="true" className="h-px" />
           {turns.length > 0 && (
             <div className="thread-graph-history-control px-3 pb-1 pt-2 sm:px-5 sm:pb-1.5 sm:pt-3">
@@ -660,7 +671,7 @@ function ThreadTimelineComponent({
                     // A summary refresh must update messages/usage without dropping the
                     // operations explicitly loaded earlier or restoring stale text.
                     const mergedItems = new Map(loadedTurn?.items.map((item) => [item.id, item]));
-                    for (const item of turn.items) mergedItems.set(item.id, mergeThreadHistoryItem(mergedItems.get(item.id), item));
+                    for (const item of turn.items) mergedItems.set(item.id, mergedItems.has(item.id) ? mergeTimelineItem(mergedItems.get(item.id)!, item, mergeThreadHistoryItem) : item);
                     const hydratedTurn = loadedTurn
                       ? { ...loadedTurn, ...turn, items: [...mergedItems.values()] }
                       : turn;

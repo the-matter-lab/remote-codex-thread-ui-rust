@@ -103,8 +103,8 @@ function TokenReasonIcon() {
 }
 
 export function formatCompactTokenCount(value: number) {
-  if (!Number.isFinite(value) || value <= 0) {
-    return '0';
+  if (!Number.isFinite(value) || value < 0) {
+    return 'unavailable';
   }
 
   if (value >= 1_000_000) {
@@ -123,7 +123,10 @@ export function formatCompactTokenCount(value: number) {
 }
 
 export function formatCompactUsd(value: number) {
-  if (!Number.isFinite(value) || value <= 0) {
+  if (!Number.isFinite(value) || value < 0) {
+    return 'unavailable';
+  }
+  if (value === 0) {
     return '$0';
   }
 
@@ -155,8 +158,8 @@ export function formatCompactUsd(value: number) {
 }
 
 export function formatDetailedUsd(value: number) {
-  if (!Number.isFinite(value) || value <= 0) {
-    return '$0.0000';
+  if (!Number.isFinite(value) || value < 0) {
+    return 'unavailable';
   }
 
   return `$${value.toFixed(4)}`;
@@ -239,7 +242,7 @@ export function buildTurnTokenDetails(turn: TimelineTurn) {
           tokenCompactValue: formatCompactTokenCount(cacheWriteInputTokens),
           tokenRawValue: cacheWriteInputTokens,
           usdCompactValue: turn.priceEstimate
-            ? formatDetailedUsd(turn.priceEstimate.cacheWriteInputUsd ?? 0)
+            ? formatDetailedUsd(turn.priceEstimate.cacheWriteInputUsd ?? NaN)
             : '--',
           usdRawValue: turn.priceEstimate?.cacheWriteInputUsd ?? null,
           className: 'token-badge-cache',
@@ -258,7 +261,7 @@ export function buildTurnTokenDetails(turn: TimelineTurn) {
                   turn.priceEstimate.outputUsd,
                   Math.max(usage.outputTokens, 0),
                   nonReasoningOutputTokens,
-                ) ?? 0,
+                ) ?? NaN,
               )
             : '--',
           usdRawValue: proportionalOutputUsd(
@@ -282,7 +285,7 @@ export function buildTurnTokenDetails(turn: TimelineTurn) {
                   turn.priceEstimate.outputUsd,
                   Math.max(usage.outputTokens, 0),
                   reasoningOutputTokens,
-                ) ?? 0,
+                ) ?? NaN,
               )
             : '--',
           usdRawValue: proportionalOutputUsd(

@@ -167,7 +167,7 @@ export const GraphChatMarkdownAwareBody = memo(
       top: number;
     } | null>(null);
     const [expanded, setExpanded] = useMessageExpansion(messageId, text, streaming);
-    const shouldRenderMarkdown = hasLikelyMarkdownSyntax(text);
+    const shouldRenderMarkdown = hasLikelyMarkdownSyntax(text) || /\\\(|\\\[/.test(text);
     const isLargeText = !streaming && text.length > LARGE_MESSAGE_PREVIEW_CHARS;
     const displayText =
       isLargeText && !expanded

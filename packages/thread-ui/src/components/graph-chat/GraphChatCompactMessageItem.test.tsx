@@ -30,7 +30,7 @@ describe("GraphChatCompactMessageItem", () => {
     expect(container.querySelector('.thread-graph-message-status')).toBeNull();
   });
 
-  it("does not mount chain-of-thought content until its toggle is opened", async () => {
+  it("does not mount reasoning-summary content until its toggle is opened", async () => {
     const container = document.createElement("div");
     document.body.appendChild(container);
     const root = createRoot(container);
@@ -63,7 +63,7 @@ describe("GraphChatCompactMessageItem", () => {
       "Inspect the failing command first.",
     );
     const toggle = container.querySelector<HTMLButtonElement>(
-      '[aria-label="Show chain of thought"]',
+      '[aria-label="Show reasoning summary"]',
     );
     expect(toggle).toBeTruthy();
 

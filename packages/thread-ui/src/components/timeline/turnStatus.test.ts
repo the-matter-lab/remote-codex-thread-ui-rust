@@ -25,7 +25,7 @@ describe('turn status helpers', () => {
     expect(normalizePlanStepStatus('custom')).toBe('other');
   });
 
-  it('advances a displayed active live plan when execution evidence appears', () => {
+  it('retains explicit plan statuses when unrelated execution evidence appears', () => {
     const result = deriveDisplayedLivePlan(
       basePlan,
       [
@@ -39,8 +39,8 @@ describe('turn status helpers', () => {
     );
 
     expect(result?.plan.map((step) => step.status)).toEqual([
-      'completed',
       'in_progress',
+      'pending',
       'pending',
     ]);
   });

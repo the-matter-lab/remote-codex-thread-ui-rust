@@ -21,7 +21,7 @@ function activeTurn(overrides: Partial<TimelineTurn> = {}): TimelineTurn {
 }
 
 describe('TurnStatusBar footer', () => {
-  it('renders a compact transparent summary without unavailable cost or tokens', () => {
+  it('renders a compact transparent summary with explicit unavailable usage', () => {
     const now = Date.now();
     const html = renderToStaticMarkup(
       <TurnStatusBar
@@ -37,7 +37,7 @@ describe('TurnStatusBar footer', () => {
     expect(html).toContain('gpt-5.4 · medium');
     expect(html).toContain('1m 12s');
     expect(html.match(/animate-pulse/g)).toHaveLength(3);
-    expect(html).not.toContain('token-badge');
+    expect(html).toContain('Turn usage unavailable');
     expect(html).not.toContain('--');
   });
 

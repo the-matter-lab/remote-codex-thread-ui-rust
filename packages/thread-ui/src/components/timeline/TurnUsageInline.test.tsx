@@ -63,7 +63,7 @@ describe('turn usage in the visible timeline', () => {
         expect(summary?.textContent).toContain('Worked for 1m 12s');
         expect(summary?.textContent).toContain('gpt-6-astra · high');
         expect(summary?.textContent).toContain('3.5k tok');
-        expect(summary?.textContent).toContain('1k in');
+        expect(summary?.textContent).toContain('1.5k in');
         expect(summary?.textContent).toContain('2k out');
         expect(summary?.textContent).toContain('500 cached');
         expect(summary?.textContent).toContain('$0.11');

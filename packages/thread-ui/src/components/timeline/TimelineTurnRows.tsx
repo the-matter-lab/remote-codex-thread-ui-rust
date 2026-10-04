@@ -1,3 +1,6 @@
+import { progressEvidence, scopeUsageItems, usageEvidenceResult, usageEvidence } from './structuredEvidence';
+import { StructuredToolEvidence } from './StructuredToolEvidence';
+import { GraphChatMarkdownAwareBody } from '../graph-chat/GraphChatMessageBody';
 import {
   memo,
   useCallback,
@@ -110,6 +113,7 @@ interface HistoryItemRowProps {
   timeTitle?: string | null | undefined;
   timeMeta?: ReactNode;
   autoOpenToolDetails?: boolean;
+  turnStatus?: TimelineTurn['status'] | undefined;
   onOpenExpandedText: OpenExpandedTextHandler;
   onOpenCommandDetail: OpenCommandDetailHandler;
   onOpenToolCallDetail: OpenToolCallDetailHandler;
@@ -134,9 +138,16 @@ export const HistoryItemRow = memo(function HistoryItemRow({
   timeTitle,
   timeMeta,
   autoOpenToolDetails = false,
+  turnStatus,
 }: HistoryItemRowProps) {
   const shellNav = useAppShellNav();
-  if (item.kind === 'reasoning' && !shellNav?.showReasoningSummaries) return null;
+  if (item.kind === 'reasoning' && shellNav?.showReasoningSummaries === false) return null;
+  if (item.progress !== undefined || item.extension?.type === 'elagente.progress') {
+    return <StructuredToolEvidence item={item} scrollRootRef={scrollRootRef} adapter={adapter} onBeforeResize={onBeforeMessageResize} turnStatus={turnStatus} />;
+  }
+  const usageError = usageEvidenceResult(item).error;
+  if (usageError) return <div role="alert">Usage unavailable: {usageError}</div>;
+  if (item.extension?.type === 'elagente.usage') return null;
   if (isCompactChatItem(item.kind)) {
     return (
       <CompactMessageItem
@@ -157,17 +168,12 @@ export const HistoryItemRow = memo(function HistoryItemRow({
 
   if (item.kind === 'reasoning') {
     return (
-      <CompactMessageItem
-        item={{
-          ...item,
-          kind: 'agentMessage',
-          status: item.status ?? null,
-        }}
-        scrollRootRef={scrollRootRef}
-        timeLabel={timeLabel}
-        timeTitle={timeTitle}
-        {...(onBeforeMessageResize ? { onBeforeMessageResize } : {})}
-      />
+      <details className="thread-graph-message-thinking my-2 rounded-lg border p-3">
+        <summary className="cursor-pointer text-sm" onClick={onBeforeMessageResize}>Reasoning summary</summary>
+        <GraphChatMarkdownAwareBody text={item.text} messageId={item.id} scrollRootRef={scrollRootRef}
+          onBeforeResize={onBeforeMessageResize} onOpenWorkspaceFile={adapter?.onOpenWorkspaceFile}
+          workspaceRootPath={adapter?.workspaceRootPath} resolveHref={adapter?.resolveHref} />
+      </details>
     );
   }
 
@@ -574,29 +580,21 @@ export const ThreadTurnRow = memo(function ThreadTurnRow({
   onBeforeMessageResize,
   scrollRootRef,
   articleRef,
-  isLatestVisibleTurn = false,
 }: ThreadTurnRowProps) {
-  const showReasoningSummaries = useAppShellNav()?.showReasoningSummaries ?? false;
+  const showReasoningSummaries = useAppShellNav()?.showReasoningSummaries ?? true;
   const hasLiveActivity =
     Boolean(livePlan) ||
     Boolean(liveOutput) ||
     Boolean(liveItems && liveItems.length > 0);
-  const activeForRendering =
-    forceActive ||
-    isActiveTurnStatus(turn.status) ||
-    hasLiveActivity ||
-    isLatestVisibleTurn;
-  const activeFooterTurn: TimelineTurn =
-    activeForRendering && !isActiveTurnStatus(turn.status)
-      ? {
-          ...turn,
-          status: 'inProgress',
-        }
-      : turn;
+  const activeForRendering = !isTerminalTurnStatus(turn.status) && turn.status !== 'recovering' &&
+    (forceActive || isActiveTurnStatus(turn.status) || hasLiveActivity);
+  const activeFooterTurn: TimelineTurn = activeForRendering && !isActiveTurnStatus(turn.status)
+    ? { ...turn, status: 'inProgress' } : turn;
   const mergedItems = useMemo(
     () => mergeLiveTurnItems(turn.items, liveItems),
     [liveItems, turn.items],
   );
+  const usageTurn = { ...turn, items: mergedItems };
   const lastActivityAt = useMemo(
     () => latestActivityTimestamp(turn.startedAt, mergedItems, liveActivityAt),
     [liveActivityAt, mergedItems, turn.startedAt],
@@ -609,10 +607,23 @@ export const ThreadTurnRow = memo(function ThreadTurnRow({
     () => getLiveOutputTailForTurn(liveOutput, mergedItems),
     [liveOutput, mergedItems],
   );
-  const preparedItems = useMemo(
-    () => prepareTurnItemsForRendering(mergedItems, activeForRendering).filter(item => showReasoningSummaries || item.kind !== 'reasoning'),
-    [activeForRendering, mergedItems, showReasoningSummaries],
-  );
+  const preparedItems = useMemo(() => {
+    const tools = new Map<string, NonNullable<ThreadHistoryItemDto['usage']>>();
+    for (const item of scopeUsageItems({ id: turn.id, items: mergedItems, usageByScope: turn.usageByScope })) {
+      const usage = usageEvidence(item);
+      if (usage?.scope !== 'tool') continue;
+      const previous = tools.get(usage.scopeId);
+      if (!previous || Date.parse(usage.observedAt) >= Date.parse(previous.observedAt)) tools.set(usage.scopeId, usage);
+    }
+    return prepareTurnItemsForRendering(mergedItems, activeForRendering)
+      .filter(item => showReasoningSummaries || item.kind !== 'reasoning')
+      .filter(item => !(item.kind === 'other' && !item.text?.trim() && !item.progress && usageEvidence(item)))
+      .map(item => {
+        const progress = progressEvidence(item).data;
+        const usage = progress ? tools.get(progress.callId) : undefined;
+        return usage ? { ...item, usage } : item;
+      });
+  }, [activeForRendering, mergedItems, showReasoningSummaries, turn.id, turn.usageByScope]);
   const groupedItems = useMemo(
     // Published results belong below the reply, outside the work disclosure.
     // Separate them before grouping so a tool/activity group cannot hide them.
@@ -657,8 +668,9 @@ export const ThreadTurnRow = memo(function ThreadTurnRow({
       fallbackTimestamp={turn.startedAt}
       fallbackTimeLabel={turnTimeLabel}
       fallbackTimeTitle={turnTimeTitle}
+      turnStatus={turn.status}
       turnStartedAt={turn.startedAt}
-      autoOpenLatestToolDetails={autoOpenLatestToolDetails && entries.at(-1)?.key === groupedItems.at(-1)?.key}
+      autoOpenLatestToolDetails={activeForRendering && autoOpenLatestToolDetails && entries.at(-1)?.key === groupedItems.at(-1)?.key}
       {...(onSelectArtifact ? { onSelectArtifact } : {})}
       {...(adapter ? { adapter } : {})}
     />
@@ -706,7 +718,7 @@ export const ThreadTurnRow = memo(function ThreadTurnRow({
     ) : null;
   const footerNode = activeForRendering ? (
     <TurnStatusBar
-      turn={activeFooterTurn}
+      turn={{ ...activeFooterTurn, items: mergedItems }}
       variant="footer"
       lastActivityAt={lastActivityAt}
     />
@@ -720,9 +732,9 @@ export const ThreadTurnRow = memo(function ThreadTurnRow({
     [activeForRendering, mergedItems, turn.completedAt, turn.startedAt, turn.status],
   );
   const interruptedLabel =
-    turn.status === 'interrupted' ? (
+    turn.status === 'interrupted' || turn.status === 'failed' ? (
       <span className="thread-graph-worked-interrupted shrink-0 text-[11px]">
-        Interrupted
+        {turn.status === 'failed' ? 'Failed' : 'Interrupted'}
       </span>
     ) : null;
   const hasCollapsedHiddenItems =
@@ -738,7 +750,7 @@ export const ThreadTurnRow = memo(function ThreadTurnRow({
           {workedLabel}
         </span>
         {interruptedLabel}
-        <TurnUsageInline turn={turn} />
+        <TurnUsageInline turn={usageTurn} />
         <span
           className="thread-graph-worked-rule h-px min-w-0 flex-1"
           aria-hidden="true"
@@ -788,7 +800,7 @@ export const ThreadTurnRow = memo(function ThreadTurnRow({
           <ChevronRight className={`h-4 w-4 shrink-0 transition ${effectiveCollapsed ? '' : 'rotate-90'}`} />
           </button>
           <span className="thread-execution-step-count">{turn.deferredItemCount ?? countActivities(collapsedSummary.hiddenEntries)} {(turn.deferredItemCount ?? countActivities(collapsedSummary.hiddenEntries)) === 1 ? 'activity' : 'activities'}</span>
-          <TurnUsageInline turn={turn} />
+          <TurnUsageInline turn={usageTurn} />
           <span
             className="thread-graph-worked-rule h-px min-w-0 flex-1"
             aria-hidden="true"
@@ -886,6 +898,7 @@ interface TimelineHistoryEntriesProps {
   fallbackTimeTitle?: string | null | undefined;
   turnStartedAt?: string | null | undefined;
   autoOpenLatestToolDetails?: boolean;
+  turnStatus?: TimelineTurn['status'] | undefined;
   onOpenExpandedText: OpenExpandedTextHandler;
   onOpenCommandDetail: OpenCommandDetailHandler;
   onOpenToolCallDetail: OpenToolCallDetailHandler;
@@ -912,6 +925,7 @@ function TimelineHistoryEntries({
   fallbackTimeLabel,
   fallbackTimeTitle,
   turnStartedAt,
+  turnStatus,
   autoOpenLatestToolDetails = false,
 }: TimelineHistoryEntriesProps) {
   const latestEntryKey = entries.at(-1)?.key ?? null;
@@ -1010,6 +1024,7 @@ function TimelineHistoryEntries({
             fallbackTimestamp={fallbackTimestamp}
             fallbackTimeLabel={fallbackTimeLabel}
             fallbackTimeTitle={fallbackTimeTitle}
+            turnStatus={turnStatus}
             turnStartedAt={turnStartedAt}
             autoOpenLatestToolDetails={false}
             {...(onSelectArtifact ? { onSelectArtifact } : {})}
@@ -1043,6 +1058,7 @@ function TimelineHistoryEntries({
                 : fallbackTimeTitle
             }
             timeMeta={relativeTimeMeta(timestamp)}
+            turnStatus={turnStatus}
             autoOpenToolDetails={
               autoOpenLatestToolDetails && entry.key === latestEntryKey
             }

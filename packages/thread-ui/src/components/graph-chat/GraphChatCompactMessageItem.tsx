@@ -12,7 +12,7 @@ import type { ThreadHistoryItemDto } from '@remote-codex/shared';
 import type { ThreadTimelineAdapter } from '../../adapters';
 import {
   GraphChatAgentMessageBody,
-  GraphChatLinkifiedPlainText,
+  GraphChatMarkdownAwareBody,
   GraphChatUserMessageBody,
 } from './GraphChatMessageBody';
 import { GraphChatMessageFrame } from './GraphChatMessageFrame';
@@ -174,10 +174,10 @@ export const GraphChatCompactMessageItem = memo(
         <button
           type="button"
           aria-label={
-            reasoningOpen ? 'Hide chain of thought' : 'Show chain of thought'
+            reasoningOpen ? 'Hide reasoning summary' : 'Show reasoning summary'
           }
           aria-expanded={reasoningOpen}
-          title={reasoningOpen ? 'Hide CoT' : 'Show CoT'}
+          title={reasoningOpen ? 'Hide reasoning summary' : 'Show reasoning summary'}
           onClick={toggleReasoning}
           className={`thread-graph-thinking-toggle inline-flex h-7 shrink-0 items-center gap-1.5 rounded-md border px-2 text-xs font-medium transition ${
             reasoningOpen ? 'is-open' : ''
@@ -186,7 +186,7 @@ export const GraphChatCompactMessageItem = memo(
           <Brain
             className={`h-3.5 w-3.5 ${hasRunningReasoning ? 'animate-pulse' : ''}`}
           />
-          <span>CoT</span>
+          <span>Reasoning summary</span>
           {hasRunningReasoning ? <GraphChatRunningDots tone="sky" /> : null}
         </button>
       ) : null;
@@ -203,9 +203,12 @@ export const GraphChatCompactMessageItem = memo(
           >
             <AccordionItem value="thoughts" className="border-b-0">
               <AccordionContent className="thread-graph-thinking-content pb-0">
-                <pre className="thread-graph-thinking-body my-1 max-h-56 overflow-auto whitespace-pre-wrap break-words rounded-xl border p-3 text-[12px] leading-5">
-                  <GraphChatLinkifiedPlainText text={reasoningText} />
-                </pre>
+                <div className="thread-graph-thinking-body my-1 max-h-56 overflow-auto rounded-xl border p-3 text-[12px] leading-5">
+                  <GraphChatMarkdownAwareBody text={reasoningText} scrollRootRef={scrollRootRef}
+                    messageId={`${item.id}:reasoning`} onBeforeResize={onBeforeMessageResize}
+                    workspaceRootPath={adapter?.workspaceRootPath} onOpenWorkspaceFile={adapter?.onOpenWorkspaceFile}
+                    resolveHref={adapter?.resolveHref} />
+                </div>
               </AccordionContent>
             </AccordionItem>
           </Accordion>

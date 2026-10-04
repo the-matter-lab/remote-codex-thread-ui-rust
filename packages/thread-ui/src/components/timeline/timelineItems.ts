@@ -1,5 +1,6 @@
+import { mergeTimelineItem } from './structuredEvidence';
 import { mergeThreadHistoryItem } from '@remote-codex/shared';
-import type { ThreadHistoryItemDto, ThreadTurnDto } from "@remote-codex/shared";
+import type { StructuredUsage, ThreadHistoryItemDto, ThreadTurnDto } from "@remote-codex/shared";
 
 export interface CommandHistoryItem extends ThreadHistoryItemDto {
   kind: "commandExecution";
@@ -77,7 +78,9 @@ export type TimelineHistoryEntry =
       itemCount: number;
     };
 
+export type TimelineUsageByScope = Record<string, { usage?: StructuredUsage }>;
 export type TimelineTurn = Omit<ThreadTurnDto, "status"> & {
+  usageByScope?: TimelineUsageByScope;
   status: ThreadTurnDto["status"] | "sending";
 };
 
@@ -334,7 +337,7 @@ export function mergeLiveTurnItems(
     }
 
     liveItemsById.delete(item.id);
-    const mergedItem = mergeThreadHistoryItem(item, liveItem);
+    const mergedItem = mergeTimelineItem(item, liveItem, mergeThreadHistoryItem);
     return mergedItem;
   });
   const uniqueLiveItems = [...liveItemsById.values()];
@@ -450,6 +453,7 @@ function groupConsecutiveTimelineHistoryItems(items: ThreadHistoryItemDto[]) {
     }
 
     if (
+      (current.progress !== undefined || current.extension?.type === "elagente.progress") ||
       current.kind !== "commandExecution" &&
       current.kind !== "fileChange" &&
       current.kind !== "webSearch" &&
@@ -468,7 +472,7 @@ function groupConsecutiveTimelineHistoryItems(items: ThreadHistoryItemDto[]) {
     }
 
     const groupedItems: ThreadHistoryItemDto[] = [];
-    while (index < items.length && items[index]?.kind === current.kind) {
+    while (index < items.length && items[index]?.kind === current.kind && items[index]?.progress === undefined && items[index]?.extension?.type !== "elagente.progress") {
       groupedItems.push(items[index]!);
       index += 1;
     }
