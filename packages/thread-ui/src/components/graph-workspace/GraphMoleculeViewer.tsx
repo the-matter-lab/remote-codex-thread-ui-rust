@@ -1,12 +1,42 @@
-import { Pause, Play, SkipBack, SkipForward, ChevronLeft, ChevronRight, PanelRightOpen } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Pause,
+  Play,
+  SkipBack,
+  SkipForward,
+  ChevronLeft,
+  ChevronRight,
+  PanelRightOpen,
+} from 'lucide-react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import type {
+  ArtifactMetadata,
+  ScientificTarget,
+  ViewerRequest,
+  ViewerAcknowledgement,
+} from '@remote-codex/shared';
+import type { ExtensionHostAdapter } from '../../plugins/plugin-types';
+import {
+  createViewerCommandExecutor,
+  sameScientificTarget,
+  type ViewerCommand,
+  type ViewerStyle,
+  type ViewerAnnotation,
+} from './GraphMoleculeViewerCommands';
 import GraphMoleculeViewerLowerButtonGroup from './GraphMoleculeViewerLowerButtonGroup';
 import GraphMoleculeViewerUpperButtonGroup from './GraphMoleculeViewerUpperButtonGroup';
 import type { GraphMoleculeCameraInfo } from './GraphMoleculeViewerControls';
-import { load3Dmol, type GLModel, type GLViewer } from './load3Dmol';
+import type {
+  RenderModel,
+  RenderViewer,
+} from './GraphMoleculeViewerRenderTypes';
+import { load3Dmol, type GLViewer } from './load3Dmol';
 import { Button } from '../graph-ui/Button';
 import {
   readGraphMoleculeViewerData,
+  applyStructureMetadata,
+  readExtXyzCell,
+  frameTarget,
+  structureRenderFrame,
   type GraphMoleculeViewerSource,
 } from './GraphMoleculeViewerData';
 
@@ -34,11 +64,50 @@ type ThreeDmolAtom = {
 export type GraphMoleculeScreenshot = {
   moleculeId: string | null;
   image: string;
+  target?: ScientificTarget;
+  trajectoryIndex: number;
+  camera: number[];
 };
-
 export type GraphMoleculeAtomSelection = {
   moleculeId: string | null;
   atoms: number[];
+  selectedIds: string[];
+  target?: ScientificTarget;
+};
+export type GraphMoleculeSelectionSubmission = {
+  selections: GraphMoleculeAtomSelection[];
+};
+export type GraphMoleculeViewerHandle = {
+  captureScreenshot: () => string;
+  trajectoryIndex: number;
+  target?: ScientificTarget;
+  execute: (request: ViewerRequest) => Promise<ViewerAcknowledgement>;
+};
+export type GraphMoleculeViewerProps = {
+  className?: string;
+  presentation?: 'timeline' | 'workspace';
+  onOpenFile?: () => void;
+  moleculeId?: string | null;
+  onScreenshot?: (screenshot: GraphMoleculeScreenshot) => void | Promise<void>;
+  onSelectionChange?: (selection: GraphMoleculeAtomSelection) => void;
+  onSelectionSubmit?: (
+    selection: GraphMoleculeSelectionSubmission,
+  ) => void | Promise<void>;
+  onReady?: (view: GraphMoleculeViewerHandle) => void;
+  source: GraphMoleculeViewerSource;
+  title?: string | null;
+  extensionHost?: ExtensionHostAdapter;
+  /** Build-time reviewed UI slots. Runtime data never selects executable code. */
+  toolbar?: (context: {
+    target?: ScientificTarget;
+    selectedIds: string[];
+  }) => ReactNode;
+  rendererSlot?: (context: {
+    target?: ScientificTarget;
+    selectedIds: string[];
+  }) => ReactNode;
+  onDownloadSource?: () => void;
+  loading?: boolean;
 };
 
 export function GraphMoleculeViewer({
@@ -46,26 +115,24 @@ export function GraphMoleculeViewer({
   moleculeId = null,
   onScreenshot,
   onSelectionChange,
+  onSelectionSubmit,
   onReady,
   source,
   title = 'Molecular structure',
   presentation = 'workspace',
   onOpenFile,
-}: {
-  className?: string;
-  presentation?: 'timeline' | 'workspace';
-  onOpenFile?: () => void;
-  moleculeId?: string | null;
-  onScreenshot?: (screenshot: GraphMoleculeScreenshot) => void;
-  onSelectionChange?: (selection: GraphMoleculeAtomSelection) => void;
-  onReady?: (view: { captureScreenshot: () => string; trajectoryIndex: number }) => void;
-  source: GraphMoleculeViewerSource;
-  title?: string | null;
-}) {
+  extensionHost,
+  toolbar,
+  rendererSlot,
+  onDownloadSource,
+  loading = false,
+}: GraphMoleculeViewerProps) {
   const viewerHostRef = useRef<HTMLDivElement | null>(null);
-  const viewerRef = useRef<GLViewer | null>(null);
-  const modelRef = useRef<GLModel | null>(null);
+  const viewerRef = useRef<RenderViewer | null>(null);
+  const modelRef = useRef<RenderModel | null>(null);
   const [viewerReady, setViewerReady] = useState(false);
+  const loadingRef = useRef(loading);
+  loadingRef.current = loading;
   const onReadyRef = useRef(onReady);
   onReadyRef.current = onReady;
   const zoomedRef = useRef(false);
@@ -83,19 +150,256 @@ export function GraphMoleculeViewer({
   >({});
   const [selectedSerials, setSelectedSerials] = useState<number[]>([]);
   const [stagedSelections, setStagedSelections] = useState<
-    Record<string, number[]>
+    Record<string, GraphMoleculeAtomSelection>
   >({});
+  const [status, setStatus] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const busyRef = useRef(false);
+  const [live, setLive] = useState(true);
+  const [style, setStyle] = useState<ViewerStyle>(
+    (typeof source === 'object' && source?.metadata?.render?.style) ||
+      'ball-stick',
+  );
+  const [cartoonAvailable, setCartoonAvailable] = useState(false);
+  const applyingCommandRef = useRef(false);
+  const [annotations, setAnnotations] = useState<ViewerAnnotation[]>([]);
+  const atomIdsRef = useRef<string[]>([]);
+  const cellRef = useRef<ArtifactMetadata['cell']>(undefined);
+  const renderedTargetRef = useRef<ScientificTarget | undefined>(undefined);
   const [unitCellAvailable, setUnitCellAvailable] = useState(false);
   const [unitCellVisible, setUnitCellVisible] = useState(false);
   const [viewerInitError, setViewerInitError] = useState<string | null>(null);
 
-  const viewerData = useMemo(() => readGraphMoleculeViewerData(source), [source]);
+  const viewerData = useMemo(
+    () => readGraphMoleculeViewerData(source),
+    [source],
+  );
   const xyzArray = viewerData.frames;
   const xyzFormat = viewerData.format;
   const xyzContent = xyzArray[currentIndex] ?? null;
-  const moleculeKey = moleculeId ?? 'current';
+  const snapshot = typeof source === 'object' && source ? source : undefined;
+  const target = frameTarget(snapshot, currentIndex, xyzArray.length);
+  const currentFrameRef = useRef('');
+  currentFrameRef.current = `${currentIndex}:${xyzFormat}:${xyzContent}`;
+  const renderedFrameRef = useRef('');
+  const renderedReadyRef = useRef(false);
+  const targetKey = JSON.stringify(target);
+  const targetRef = useRef(target);
+  targetRef.current = target;
+  const activeObject =
+    snapshot?.target?.objectId ?? snapshot?.uuid ?? moleculeId;
+  const objectRef = useRef(activeObject);
+  const selectedIds = selectedSerials
+    .map((index) => atomIdsRef.current[index]!)
+    .filter(Boolean);
+  const supportedStyles: ViewerStyle[] = [
+    'ball-stick',
+    'stick',
+    'spacefill',
+    'surface',
+    ...(cartoonAvailable ? ['cartoon' as const] : []),
+  ];
+  const selection = (): GraphMoleculeAtomSelection => ({
+    moleculeId,
+    atoms: [...selectedSerials],
+    selectedIds: selectedSerials
+      .map((index) => atomIdsRef.current[index]!)
+      .filter(Boolean),
+    ...(target ? { target } : {}),
+  });
+  const cellShapesRef = useRef<ReturnType<RenderViewer['addLine']>[]>([]);
+  function drawCell(visible: boolean) {
+    const viewer = viewerRef.current,
+      model = modelRef.current;
+    if (!viewer || !model) return;
+    cellShapesRef.current.forEach((shape) => viewer.removeShape(shape));
+    cellShapesRef.current = [];
+    try {
+      viewer.removeUnitCell(model);
+    } catch {
+      /* No cell yet. */
+    }
+    const cell = cellRef.current;
+    if (visible && cell) {
+      const factor = cell.unit === 'bohr' ? 0.529177210903 : 1;
+      const point = (bits: number) => ({
+        x: cell.vectors.reduce(
+          (v, row, i) => v + ((bits >> i) & 1) * row[0] * factor,
+          0,
+        ),
+        y: cell.vectors.reduce(
+          (v, row, i) => v + ((bits >> i) & 1) * row[1] * factor,
+          0,
+        ),
+        z: cell.vectors.reduce(
+          (v, row, i) => v + ((bits >> i) & 1) * row[2] * factor,
+          0,
+        ),
+      });
+      for (let bits = 0; bits < 8; bits++)
+        for (let axis = 0; axis < 3; axis++)
+          if (!(bits & (1 << axis)))
+            cellShapesRef.current.push(
+              viewer.addLine({
+                start: point(bits),
+                end: point(bits | (1 << axis)),
+                color: 'black',
+              }),
+            );
+    } else if (visible) viewer.addUnitCell(model, {});
+  }
+  function applyStyle(next: ViewerStyle, indices = selectedSerials) {
+    const viewer = viewerRef.current,
+      model = modelRef.current;
+    if (!viewer || !model) return;
+    viewer.removeAllSurfaces();
+    model.setStyle(
+      {},
+      next === 'spacefill'
+        ? { sphere: { scale: 1 } }
+        : next === 'stick'
+          ? { stick: { radius: 0.2 } }
+          : next === 'cartoon'
+            ? { cartoon: { color: 'spectrum' } }
+            : next === 'surface'
+              ? {}
+              : { stick: { radius: 0.2 }, sphere: { scale: 0.3 } },
+    );
+    const surface =
+      next === 'surface'
+        ? viewer.addSurface('VDW', { opacity: 0.8 }, {})
+        : undefined;
+    if (indices.length)
+      model.setStyle(
+        { index: indices },
+        {
+          stick: { radius: 0.3, color: 'yellow' },
+          sphere: { scale: 0.4, color: 'yellow' },
+        },
+      );
+    return surface;
+  }
+  function drawAnnotations(next: ViewerAnnotation[]) {
+    const viewer = viewerRef.current,
+      model = modelRef.current;
+    if (!viewer || !model) return;
+    viewer.removeAllLabels();
+    const atoms = model.selectedAtoms({});
+    next.forEach((annotation) => {
+      const atom = atoms[atomIdsRef.current.indexOf(annotation.atomId)];
+      if (atom)
+        viewer.addLabel(annotation.text, {
+          position: atom,
+          backgroundColor: 'white',
+          fontColor: 'black',
+          fontSize: 12,
+        });
+    });
+  }
+  const commandState = useRef({
+    target,
+    discovery: extensionHost?.discovery,
+    atomIds: atomIdsRef.current,
+    styles: supportedStyles,
+    cellAvailable: unitCellAvailable,
+    ready: false,
+  });
+  commandState.current = {
+    target,
+    discovery: extensionHost?.discovery,
+    atomIds: atomIdsRef.current,
+    styles: supportedStyles,
+    cellAvailable: unitCellAvailable,
+    ready:
+      !loading &&
+      !viewerInitError &&
+      Boolean(
+        viewerRef.current &&
+        modelRef.current &&
+        renderedReadyRef.current &&
+        currentFrameRef.current === renderedFrameRef.current &&
+        sameScientificTarget(renderedTargetRef.current, target),
+      ),
+  };
+  const applyCommandsRef = useRef<
+    (commands: ViewerCommand[]) => void | Promise<void>
+  >(() => {});
+  applyCommandsRef.current = async (commands) => {
+    applyingCommandRef.current = true;
+    try {
+      let nextStyle = style,
+        nextSelection = selectedSerials;
+      commands.forEach((command) => {
+        switch (command.type) {
+          case 'selection':
+            nextSelection = command.selectedIds.map((id) =>
+              atomIdsRef.current.indexOf(id),
+            );
+            setSelectedSerials(nextSelection);
+            break;
+          case 'style':
+            nextStyle = command.style;
+            setStyle(nextStyle);
+            break;
+          case 'camera':
+            viewerRef.current!.setView(command.view);
+            break;
+          case 'annotations':
+            setAnnotations(command.annotations);
+            drawAnnotations(command.annotations);
+            break;
+          case 'unit-cell':
+            unitCellPreferenceRef.current = command.visible;
+            setUnitCellVisible(command.visible);
+            drawCell(command.visible);
+            break;
+        }
+      });
+      const viewer = viewerRef.current!;
+      await applyStyle(nextStyle, nextSelection);
+      viewer.render();
+    } finally {
+      applyingCommandRef.current = false;
+    }
+  };
+  const executorRef = useRef<ReturnType<
+    typeof createViewerCommandExecutor
+  > | null>(null);
+  executorRef.current ??= createViewerCommandExecutor(
+    () => commandState.current,
+    (commands) => applyCommandsRef.current(commands),
+  );
+  const runOperation = async (
+    operation: () => void | Promise<void>,
+    message: string,
+  ) => {
+    if (busyRef.current || loadingRef.current) return;
+    busyRef.current = true;
+    setBusy(true);
+    setStatus(null);
+    try {
+      await operation();
+      setStatus(message);
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : String(error));
+    } finally {
+      busyRef.current = false;
+      setBusy(false);
+    }
+  };
+  useEffect(() => {
+    if (objectRef.current !== activeObject) {
+      objectRef.current = activeObject;
+      zoomedRef.current = false;
+      setCurrentIndex(0);
+      setLive(true);
+      setAnnotations([]);
+      setSelectedSerials([]);
+      setStyle(snapshot?.metadata?.render?.style ?? 'ball-stick');
+    }
+  }, [activeObject]);
   const stagedAtoms = Object.values(stagedSelections).reduce(
-    (sum, atoms) => sum + atoms.length,
+    (sum, entry) => sum + entry.atoms.length,
     0,
   );
   const stagedMolecules = Object.keys(stagedSelections).length;
@@ -105,8 +409,10 @@ export function GraphMoleculeViewer({
       setCurrentIndex(0);
       return;
     }
-    setCurrentIndex(xyzArray.length - 1);
-  }, [xyzArray.length]);
+    setCurrentIndex((previous) =>
+      live ? xyzArray.length - 1 : Math.min(previous, xyzArray.length - 1),
+    );
+  }, [xyzArray.length, live]);
 
   useEffect(() => {
     if (!isPlaying || xyzArray.length <= 1) {
@@ -174,7 +480,7 @@ export function GraphMoleculeViewer({
         }
 
         try {
-          const viewer = $3Dmol.createViewer(host, {});
+          const viewer = $3Dmol.createViewer(host, {}) as RenderViewer;
           viewerRef.current = viewer;
           setViewerReady(true);
           viewer.setBackgroundColor('#f8fafc', 0.8);
@@ -210,24 +516,66 @@ export function GraphMoleculeViewer({
     }
 
     try {
+      renderedReadyRef.current = false;
+      commandState.current.ready = false;
       viewer.removeAllModels();
       viewer.removeAllShapes();
       viewer.removeAllLabels();
 
-      const model = viewer.addModel(xyzContent, xyzFormat || 'xyz');
+      setViewerInitError(null);
+      const renderFrame = structureRenderFrame(xyzContent, xyzFormat);
+      const model = viewer.addModel(renderFrame.content, renderFrame.format, {
+        keepH: true,
+        doAssembly: false,
+        assignBonds:
+          snapshot?.metadata?.render?.bonding !== 'none' &&
+          snapshot?.metadata?.render?.bonding !== 'provided',
+      });
+      setCartoonAvailable(
+        model
+          .selectedAtoms({})
+          .some((atom) => atom.atom === 'CA' || atom.atom === 'P'),
+      );
+      const oldIds = atomIdsRef.current;
+      atomIdsRef.current = applyStructureMetadata(model, snapshot?.metadata);
+      setSelectedSerials((previous) =>
+        previous
+          .map((index) => atomIdsRef.current.indexOf(oldIds[index]!))
+          .filter((index) => index >= 0),
+      );
+      viewer.setBackgroundColor(
+        snapshot?.metadata?.render?.background ?? '#f8fafc',
+        0.8,
+      );
+      cellRef.current =
+        snapshot?.metadata?.cell ??
+        (xyzFormat === 'extxyz' || xyzFormat === 'xyz'
+          ? readExtXyzCell(xyzContent)
+          : undefined);
+      renderedTargetRef.current = target;
+      commandState.current.atomIds = atomIdsRef.current;
+
+      cellShapesRef.current = [];
       modelRef.current = model;
-      model.setStyle({}, { stick: { radius: 0.2 }, sphere: { scale: 0.3 } });
+      applyStyle(style);
 
       const crystalData = model.getCrystData();
       const hasUnitCell = Boolean(
-        crystalData &&
+        cellRef.current ||
+        (crystalData &&
           typeof crystalData === 'object' &&
-          Object.keys(crystalData).length,
+          Object.keys(crystalData).length),
       );
+      commandState.current.cellAvailable = hasUnitCell;
       setUnitCellAvailable(hasUnitCell);
       setUnitCellVisible(hasUnitCell ? unitCellPreferenceRef.current : false);
-      setSelectedSerials([]);
-      setSelectedAtomLabels({});
+      setSelectedAtomLabels(
+        Object.fromEntries(
+          model
+            .selectedAtoms({})
+            .map((atom, index) => [index, atom.elem ?? 'Atom']),
+        ),
+      );
 
       const frameAtomLabels = xyzContent
         .split('\n')
@@ -239,7 +587,9 @@ export function GraphMoleculeViewer({
       if (!zoomedRef.current) {
         viewer.zoomTo();
         const host = viewerHostRef.current;
-        const scale = host?.clientHeight ? Math.min(1, host.clientWidth / host.clientHeight) : 1;
+        const scale = host?.clientHeight
+          ? Math.min(1, host.clientWidth / host.clientHeight)
+          : 1;
         // 3Dmol fits vertically; a tall, narrow Explorer also needs a
         // horizontal fit. Keep this framing across trajectory frames.
         viewer.zoom((hasUnitCell ? 0.5 : 0.85) * scale);
@@ -251,11 +601,12 @@ export function GraphMoleculeViewer({
         {},
         true,
         (atom: ThreeDmolAtom, _viewer: GLViewer, event?: MouseEvent) => {
-          const serial = atom.serial ?? atom.index;
+          const serial = atom.index;
           if (serial === undefined) {
             return;
           }
-          const label = atom.atom || atom.elem || frameAtomLabels[serial] || 'Atom';
+          const label =
+            atom.atom || atom.elem || frameAtomLabels[serial] || 'Atom';
 
           setSelectedSerials((previous) => {
             const isMulti = Boolean(
@@ -308,72 +659,62 @@ export function GraphMoleculeViewer({
         () => setHoveredAtom(null),
       );
 
+      drawCell(hasUnitCell && unitCellPreferenceRef.current);
+      drawAnnotations(annotations);
       viewer.render();
-      onReadyRef.current?.({ captureScreenshot: () => {
-        viewer.render();
-        if (!viewer.pngURI) throw new Error('Screenshot is unavailable');
-        return viewer.pngURI();
-      }, trajectoryIndex: currentIndex });
+      renderedReadyRef.current = true;
+      commandState.current.ready = !loading;
+      const readyFrame = currentFrameRef.current;
+      renderedFrameRef.current = readyFrame;
+      const readyTarget = target;
+      onReadyRef.current?.({
+        captureScreenshot: () => {
+          if (
+            viewerRef.current !== viewer ||
+            !renderedReadyRef.current ||
+            readyFrame !== currentFrameRef.current ||
+            loadingRef.current ||
+            (!sameScientificTarget(readyTarget, targetRef.current) &&
+              (readyTarget || targetRef.current))
+          )
+            throw new Error('The inspected target changed.');
+          viewer.render();
+          if (!viewer.pngURI) throw new Error('Screenshot is unavailable');
+          return viewer.pngURI();
+        },
+        trajectoryIndex: target?.frameIndex ?? currentIndex,
+        target,
+        execute: executorRef.current!,
+      });
     } catch (error) {
+      renderedReadyRef.current = false;
+      commandState.current.ready = false;
       console.error('Failed to render molecule:', error);
       setViewerInitError('Unable to render this molecular structure.');
     }
-  }, [xyzContent, xyzFormat, viewerReady, currentIndex]);
+  }, [
+    xyzContent,
+    xyzFormat,
+    viewerReady,
+    currentIndex,
+    snapshot?.metadata,
+    targetKey,
+    activeObject,
+    loading,
+  ]);
 
   useEffect(() => {
-    const viewer = viewerRef.current;
-    const model = modelRef.current;
-    if (!viewer || !model) {
-      return;
-    }
-
-    try {
-      viewer.removeUnitCell(model);
-    } catch {
-      // 3Dmol can throw before a unit cell has been created.
-    }
-
-    if (unitCellVisible && unitCellAvailable) {
-      try {
-        viewer.addUnitCell(model, {
-          box: { color: 'black', opacity: 1, linewidth: 5 },
-          astyle: { radius: 0.12, mid: 0.85, color: 'red', opacity: 0.6 },
-          bstyle: { radius: 0.12, mid: 0.85, color: 'green', opacity: 0.6 },
-          cstyle: { radius: 0.12, mid: 0.85, color: 'blue', opacity: 0.6 },
-          alabel: 'a',
-          blabel: 'b',
-          clabel: 'c',
-        });
-      } catch {
-        setUnitCellAvailable(false);
-        setUnitCellVisible(false);
-      }
-    }
-
-    viewer.render();
-  }, [unitCellAvailable, unitCellVisible, xyzContent, xyzFormat]);
+    if (!viewerReady) return;
+    drawCell(unitCellVisible && unitCellAvailable);
+    viewerRef.current?.render();
+  }, [unitCellAvailable, unitCellVisible, viewerReady]);
 
   useEffect(() => {
-    const viewer = viewerRef.current;
-    const model = modelRef.current;
-    if (!viewer || !model || !xyzContent) {
-      return;
-    }
-
-    model.setStyle({}, { stick: { radius: 0.2 }, sphere: { scale: 0.3 } });
-    if (selectedSerials.length > 0) {
-      model.setStyle(
-        { serial: selectedSerials as unknown as number },
-        {
-          stick: { radius: 0.3, color: 'yellow' },
-          sphere: { scale: 0.4, color: 'yellow' },
-        },
-      );
-    }
-
-    viewer.render();
-    onSelectionChange?.({ moleculeId, atoms: selectedSerials });
-  }, [moleculeId, onSelectionChange, selectedSerials, xyzContent]);
+    if (!viewerReady || applyingCommandRef.current) return;
+    applyStyle(style);
+    viewerRef.current?.render();
+    onSelectionChange?.(selection());
+  }, [moleculeId, selectedSerials, style, viewerReady, xyzContent]);
 
   useEffect(() => {
     if (!xyzContent) {
@@ -407,39 +748,50 @@ export function GraphMoleculeViewer({
           });
         }
       }
-      animationFrame = window.requestAnimationFrame(tick);
+      animationFrame = window.setTimeout(tick, 200);
     };
 
-    animationFrame = window.requestAnimationFrame(tick);
-    return () => window.cancelAnimationFrame(animationFrame);
+    animationFrame = window.setTimeout(tick, 200);
+    return () => window.clearTimeout(animationFrame);
   }, [xyzContent]);
 
-  const handleScreenshot = useCallback(async () => {
+  const capture = (): GraphMoleculeScreenshot => {
     const viewer = viewerRef.current;
-    if (!viewer?.pngURI) {
-      return;
-    }
-
+    if (loading || !viewer?.pngURI || !renderedReadyRef.current)
+      throw new Error('Screenshot is unavailable');
     viewer.render();
     const image = viewer.pngURI();
-    if (!image) {
-      return;
-    }
-
-    try {
-      const response = await fetch(image);
-      const blob = await response.blob();
-      const clipboardItem = new ClipboardItem({
-        [blob.type || 'image/png']: blob,
-      });
-      await navigator.clipboard.write([clipboardItem]);
-    } catch {
-      // Clipboard image writes are not supported in every host browser.
-    }
-
-    onScreenshot?.({ moleculeId, image });
-  }, [moleculeId, onScreenshot]);
-
+    if (!image.startsWith('data:image/png'))
+      throw new Error('Viewer did not produce a PNG');
+    return {
+      moleculeId,
+      image,
+      target,
+      trajectoryIndex: target?.frameIndex ?? currentIndex,
+      camera: [...viewer.getView()],
+    };
+  };
+  const handleScreenshot = async () => {
+    const screenshot = capture();
+    const blob = await (await fetch(screenshot.image)).blob();
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+  };
+  function assertSubmissionTargets(entries: GraphMoleculeAtomSelection[]) {
+    if (loading) throw new Error('Wait for the verified structure to load.');
+    entries.forEach((entry) => {
+      if (
+        entry.target?.objectId === target?.objectId &&
+        !snapshot?.frameTargets?.some((frame) =>
+          sameScientificTarget(frame, entry.target),
+        ) &&
+        (entry.target?.sourceRevision !== target?.sourceRevision ||
+          entry.target?.checksum !== target?.checksum)
+      )
+        throw new Error(
+          'A staged selection refers to an older source revision. Select its atoms again.',
+        );
+    });
+  }
   function handleToggleUnitCell() {
     if (!unitCellAvailable) {
       return;
@@ -455,13 +807,11 @@ export function GraphMoleculeViewer({
     if (selectedSerials.length === 0) {
       return;
     }
-    setStagedSelections((current) => {
-      const existing = current[moleculeKey] ?? [];
-      return {
-        ...current,
-        [moleculeKey]: Array.from(new Set([...existing, ...selectedSerials])),
-      };
-    });
+    const entry = selection();
+    const key = JSON.stringify(
+      entry.target ?? { moleculeId, frameIndex: currentIndex },
+    );
+    setStagedSelections((current) => ({ ...current, [key]: entry }));
   }
 
   return (
@@ -471,9 +821,19 @@ export function GraphMoleculeViewer({
       <div className="thread-graph-molecule-header flex shrink-0 items-center justify-between gap-3 border-b border-slate-200 px-3 py-2 sm:px-4 sm:py-3">
         <div className="min-w-0">
           <h2 className="truncate text-sm font-semibold text-slate-900">
-            {onOpenFile ? <button type="button" onClick={onOpenFile} className="thread-graph-molecule-file-link" title="Open in workspace">
-              <span className="truncate">{title}</span><PanelRightOpen className="size-4 shrink-0" />
-            </button> : title}
+            {onOpenFile ? (
+              <button
+                type="button"
+                onClick={onOpenFile}
+                className="thread-graph-molecule-file-link"
+                title="Open in workspace"
+              >
+                <span className="truncate">{title}</span>
+                <PanelRightOpen className="size-4 shrink-0" />
+              </button>
+            ) : (
+              title
+            )}
           </h2>
           <p className="mt-1 hidden text-[11px] text-slate-400 sm:block">
             Structure and trajectory
@@ -523,7 +883,22 @@ export function GraphMoleculeViewer({
         <div className="thread-graph-molecule-controls shrink-0">
           <div className="thread-graph-molecule-control-row">
             <div className="min-w-0">
-              <p className="thread-graph-molecule-control-title">Ball & Stick</p>
+              <label>
+                Representation{' '}
+                <select
+                  aria-label="Representation"
+                  value={style}
+                  onChange={(event) =>
+                    setStyle(event.target.value as ViewerStyle)
+                  }
+                >
+                  {supportedStyles.map((entry) => (
+                    <option key={entry} value={entry}>
+                      {entry}
+                    </option>
+                  ))}
+                </select>
+              </label>
               <p className="thread-graph-molecule-control-subtitle">
                 XYZ / PDB / CIF preview
               </p>
@@ -532,7 +907,11 @@ export function GraphMoleculeViewer({
               currentIndex={currentIndex}
               exportContent={viewerData.exportContent}
               moleculeId={moleculeId}
-              onScreenshot={() => void handleScreenshot()}
+              onScreenshot={() =>
+                void runOperation(handleScreenshot, 'PNG copied to clipboard.')
+              }
+              onDownloadSource={onDownloadSource}
+              onFeedback={setStatus}
               viewerRef={viewerRef}
               viewerHostRef={viewerHostRef}
               hasUnitCell={unitCellAvailable}
@@ -542,53 +921,172 @@ export function GraphMoleculeViewer({
           </div>
 
           {xyzArray.length > 1 ? (
-            <div className="thread-graph-molecule-trajectory" role="group" aria-label="Trajectory controls">
+            <div
+              className="thread-graph-molecule-trajectory"
+              role="group"
+              aria-label="Trajectory controls"
+            >
               <div className="thread-graph-molecule-playback-row">
-                <Button type="button" variant="ghost" className="thread-graph-molecule-play-button"
-                  aria-label={isPlaying ? 'Pause trajectory' : 'Play trajectory'}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="thread-graph-molecule-play-button"
+                  aria-label={
+                    isPlaying ? 'Pause trajectory' : 'Play trajectory'
+                  }
                   onClick={() => {
-                    if (!isPlaying && currentIndex === xyzArray.length - 1) setCurrentIndex(0);
-                    setIsPlaying(current => !current);
-                  }}>
-                  {isPlaying ? <Pause className="size-4" /> : <Play className="size-4" />}
+                    setLive(false);
+                    if (!isPlaying && currentIndex === xyzArray.length - 1)
+                      setCurrentIndex(0);
+                    setIsPlaying((current) => !current);
+                  }}
+                >
+                  {isPlaying ? (
+                    <Pause className="size-4" />
+                  ) : (
+                    <Play className="size-4" />
+                  )}
                   {isPlaying ? 'Pause' : 'Play'}
                 </Button>
-                <span className="thread-graph-molecule-frame-count">Frame <strong>{currentIndex + 1}</strong> / {xyzArray.length}</span>
+                <span className="thread-graph-molecule-frame-count">
+                  Frame <strong>{currentIndex + 1}</strong> / {xyzArray.length}
+                </span>
                 <div className="thread-graph-molecule-frame-buttons">
                   {[
-                    {label: 'First frame', index: 0, Icon: SkipBack, disabled: currentIndex === 0},
-                    {label: 'Previous frame', index: currentIndex - 1, Icon: ChevronLeft, disabled: currentIndex === 0},
-                    {label: 'Next frame', index: currentIndex + 1, Icon: ChevronRight, disabled: currentIndex === xyzArray.length - 1},
-                    {label: 'Last frame', index: xyzArray.length - 1, Icon: SkipForward, disabled: currentIndex === xyzArray.length - 1},
-                  ].map(({label, index, Icon, disabled}) => <Button key={label} type="button" variant="ghost"
-                    className="thread-graph-molecule-button" aria-label={label} title={label} disabled={disabled}
-                    onClick={() => {setIsPlaying(false); setCurrentIndex(index);}}><Icon className="size-4" /></Button>)}
+                    {
+                      label: 'First frame',
+                      index: 0,
+                      Icon: SkipBack,
+                      disabled: currentIndex === 0,
+                    },
+                    {
+                      label: 'Previous frame',
+                      index: currentIndex - 1,
+                      Icon: ChevronLeft,
+                      disabled: currentIndex === 0,
+                    },
+                    {
+                      label: 'Next frame',
+                      index: currentIndex + 1,
+                      Icon: ChevronRight,
+                      disabled: currentIndex === xyzArray.length - 1,
+                    },
+                    {
+                      label: 'Last frame',
+                      index: xyzArray.length - 1,
+                      Icon: SkipForward,
+                      disabled: currentIndex === xyzArray.length - 1,
+                    },
+                  ].map(({ label, index, Icon, disabled }) => (
+                    <Button
+                      key={label}
+                      type="button"
+                      variant="ghost"
+                      className="thread-graph-molecule-button"
+                      aria-label={label}
+                      title={label}
+                      disabled={disabled}
+                      onClick={() => {
+                        setLive(false);
+                        setIsPlaying(false);
+                        setCurrentIndex(index);
+                      }}
+                    >
+                      <Icon className="size-4" />
+                    </Button>
+                  ))}
                 </div>
               </div>
-              <input type="range" className="thread-graph-molecule-scrubber"
-                min={1} max={xyzArray.length} step={1} value={currentIndex + 1}
-                aria-label="Trajectory frame" aria-valuetext={`Frame ${currentIndex + 1} of ${xyzArray.length}`}
-                style={{backgroundSize: `${currentIndex / (xyzArray.length - 1) * 100}% 6px`}}
-                onChange={event => {setIsPlaying(false); setCurrentIndex(Number(event.target.value) - 1);}} />
-              <div className="thread-graph-molecule-frame-scale" aria-hidden="true"><span>1</span><span>{xyzArray.length} frames</span></div>
+              <input
+                type="range"
+                className="thread-graph-molecule-scrubber"
+                min={1}
+                max={xyzArray.length}
+                step={1}
+                value={currentIndex + 1}
+                aria-label="Trajectory frame"
+                aria-valuetext={`Frame ${currentIndex + 1} of ${xyzArray.length}`}
+                style={{
+                  backgroundSize: `${(currentIndex / (xyzArray.length - 1)) * 100}% 6px`,
+                }}
+                onChange={(event) => {
+                  setLive(false);
+                  setIsPlaying(false);
+                  setCurrentIndex(Number(event.target.value) - 1);
+                }}
+              />
+              <div
+                className="thread-graph-molecule-frame-scale"
+                aria-hidden="true"
+              >
+                <span>1</span>
+                <span>{xyzArray.length} frames</span>
+              </div>
             </div>
           ) : null}
 
-          {presentation === 'workspace' && <GraphMoleculeViewerLowerButtonGroup
+          <div role="group" aria-label="Viewer contributions">
+            {!loading && !viewerInitError && toolbar?.({ target, selectedIds })}
+          </div>
+          {rendererSlot?.({ target, selectedIds })}
+          <Button
+            type="button"
+            onClick={() => {
+              setLive(true);
+              setIsPlaying(false);
+            }}
+            aria-pressed={live}
+          >
+            LIVE{live ? ' following' : ''}
+          </Button>
+          {onScreenshot && (
+            <Button
+              type="button"
+              disabled={
+                loading ||
+                busy ||
+                !viewerReady ||
+                !target ||
+                !renderedReadyRef.current ||
+                Boolean(viewerInitError)
+              }
+              onClick={() =>
+                void runOperation(
+                  () => onScreenshot(capture()),
+                  'PNG submitted.',
+                )
+              }
+            >
+              Send screenshot
+            </Button>
+          )}
+          {status && <p role="status">{status}</p>}
+          <GraphMoleculeViewerLowerButtonGroup
             cameraInfo={cameraInfo}
             onClearSelection={() => setSelectedSerials([])}
             onClearStaged={() => setStagedSelections({})}
-            onSendSelection={() =>
-              onSelectionChange?.({ moleculeId, atoms: selectedSerials })
+            canSubmit={
+              Boolean(onSelectionSubmit && target) &&
+              !loading &&
+              !busy &&
+              !viewerInitError &&
+              renderedReadyRef.current
             }
-            onSendStaged={() => {
-              Object.entries(stagedSelections).forEach(([key, atoms]) => {
-                onSelectionChange?.({
-                  moleculeId: key === 'current' ? moleculeId : key,
-                  atoms,
-                });
-              });
-            }}
+            onSendSelection={() =>
+              void runOperation(async () => {
+                const entries = [selection()];
+                assertSubmissionTargets(entries);
+                await onSelectionSubmit?.({ selections: entries });
+              }, 'Selection submitted.')
+            }
+            onSendStaged={() =>
+              void runOperation(async () => {
+                const entries = Object.values(stagedSelections);
+                assertSubmissionTargets(entries);
+                await onSelectionSubmit?.({ selections: entries });
+                setStagedSelections({});
+              }, 'Staged selections submitted.')
+            }
             onStageSelection={handleStageSelection}
             onToggleUnitCell={handleToggleUnitCell}
             selectedAtomLabels={selectedAtomLabels}
@@ -597,7 +1095,7 @@ export function GraphMoleculeViewer({
             stagedMolecules={stagedMolecules}
             unitCellAvailable={unitCellAvailable}
             unitCellVisible={unitCellVisible}
-          />}
+          />
         </div>
       </div>
     </div>

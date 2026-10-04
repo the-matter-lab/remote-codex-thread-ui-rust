@@ -1,0 +1,33 @@
+import type { GLModel, GLViewer } from './load3Dmol';
+export type RenderAtom = {
+  atom?: string;
+  elem?: string;
+  index?: number;
+  serial?: number;
+  x: number;
+  y: number;
+  z: number;
+  bonds?: number[];
+  bondOrder?: number[];
+};
+export type RenderModel = GLModel & {
+  selectedAtoms(selection: Record<string, unknown>): RenderAtom[];
+};
+export type RenderViewer = Omit<GLViewer, 'addModel' | 'getView'> & {
+  addModel(
+    content: string,
+    format: string,
+    options?: Record<string, unknown>,
+  ): RenderModel;
+  getView(): number[];
+  setView(view: number[]): void;
+  addLine(spec: Record<string, unknown>): object;
+  removeShape(shape: object): void;
+  removeAllSurfaces(): void;
+  addSurface(
+    type: string,
+    style: Record<string, unknown>,
+    selection: Record<string, unknown>,
+  ): unknown;
+  addLabel(text: string, options: Record<string, unknown>): unknown;
+};

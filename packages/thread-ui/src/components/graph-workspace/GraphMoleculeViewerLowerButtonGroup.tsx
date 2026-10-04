@@ -22,6 +22,7 @@ import {
 
 export default function GraphMoleculeViewerLowerButtonGroup({
   cameraInfo,
+  canSubmit = false,
   onClearSelection,
   onClearStaged,
   onSendSelection,
@@ -35,6 +36,7 @@ export default function GraphMoleculeViewerLowerButtonGroup({
   unitCellAvailable,
   unitCellVisible,
 }: {
+  canSubmit?: boolean;
   cameraInfo: GraphMoleculeCameraInfo | null;
   onClearSelection: () => void;
   onClearStaged: () => void;
@@ -56,25 +58,46 @@ export default function GraphMoleculeViewerLowerButtonGroup({
     <>
       <div className="flex w-full justify-between gap-2 overflow-x-auto">
         <GraphMoleculeButtonGroup>
-          <GraphMoleculeIconButton label="Distance">
+          <GraphMoleculeIconButton
+            label="Distance: unavailable; requires an agent contribution"
+            disabled
+          >
             <AlignVerticalDistributeCenter className="size-4" />
           </GraphMoleculeIconButton>
-          <GraphMoleculeIconButton label="Connectivity">
+          <GraphMoleculeIconButton
+            label="Connectivity: unavailable; requires an agent contribution"
+            disabled
+          >
             <Share2 className="size-4" />
           </GraphMoleculeIconButton>
-          <GraphMoleculeIconButton label="Angle">
+          <GraphMoleculeIconButton
+            label="Angle: unavailable; requires an agent contribution"
+            disabled
+          >
             <Waypoints className="size-4" />
           </GraphMoleculeIconButton>
-          <GraphMoleculeIconButton label="Dihedral">
+          <GraphMoleculeIconButton
+            label="Dihedral: unavailable; requires an agent contribution"
+            disabled
+          >
             <Spline className="size-4" />
           </GraphMoleculeIconButton>
-          <GraphMoleculeIconButton label="Add dummy atoms">
+          <GraphMoleculeIconButton
+            label="Add dummy atoms: unavailable; requires an agent contribution"
+            disabled
+          >
             <Bubbles className="size-4" />
           </GraphMoleculeIconButton>
-          <GraphMoleculeIconButton label="Delete atoms">
+          <GraphMoleculeIconButton
+            label="Delete atoms: unavailable; requires an agent contribution"
+            disabled
+          >
             <CircleX className="size-4" />
           </GraphMoleculeIconButton>
-          <GraphMoleculeIconButton label="Rotate">
+          <GraphMoleculeIconButton
+            label="Rotate: unavailable; requires an agent contribution"
+            disabled
+          >
             <Rotate3d className="size-4" />
           </GraphMoleculeIconButton>
         </GraphMoleculeButtonGroup>
@@ -96,7 +119,7 @@ export default function GraphMoleculeViewerLowerButtonGroup({
           </GraphMoleculeIconButton>
           <GraphMoleculeIconButton
             label="Send selection"
-            disabled={!hasSelection}
+            disabled={!hasSelection || !canSubmit}
             onClick={onSendSelection}
           >
             <Send className="size-4" />
@@ -117,7 +140,7 @@ export default function GraphMoleculeViewerLowerButtonGroup({
           </GraphMoleculeIconButton>
           <GraphMoleculeIconButton
             label="Send staged selections"
-            disabled={!hasStaged}
+            disabled={!hasStaged || !canSubmit}
             onClick={onSendStaged}
           >
             <ArrowUpRight className="size-4" />

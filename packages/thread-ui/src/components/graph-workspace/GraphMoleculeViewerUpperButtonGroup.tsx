@@ -1,6 +1,14 @@
 import type { GLViewer } from '3dmol';
-import { Box, Camera, Copy, Download, RotateCcw, ZoomIn, ZoomOut } from 'lucide-react';
-import type { RefObject } from 'react';
+import {
+  Box,
+  Camera,
+  Copy,
+  Download,
+  RotateCcw,
+  ZoomIn,
+  ZoomOut,
+} from 'lucide-react';
+import { useState, type RefObject } from 'react';
 
 import { ButtonGroupSeparator } from '../graph-ui/ButtonGroup';
 import {
@@ -12,6 +20,8 @@ import {
 
 export default function GraphMoleculeViewerUpperButtonGroup({
   currentIndex,
+  onDownloadSource,
+  onFeedback,
   exportContent,
   moleculeId,
   onScreenshot,
@@ -21,6 +31,8 @@ export default function GraphMoleculeViewerUpperButtonGroup({
   xyzContent,
   xyzFormat,
 }: {
+  onDownloadSource?: () => void;
+  onFeedback?: (message: string) => void;
   currentIndex: number;
   exportContent: string;
   moleculeId?: string | null;
@@ -31,13 +43,19 @@ export default function GraphMoleculeViewerUpperButtonGroup({
   xyzContent: string | null;
   xyzFormat: string;
 }) {
+  const [inspect, setInspect] = useState(false);
   const slug = moleculeSlug(moleculeId);
 
   async function handleCopyXYZ() {
     if (!xyzContent) {
       return;
     }
-    await navigator.clipboard.writeText(xyzContent);
+    try {
+      await navigator.clipboard.writeText(xyzContent);
+      onFeedback?.('Coordinates copied.');
+    } catch (error) {
+      onFeedback?.(String(error));
+    }
   }
 
   function handleDownloadXYZ() {
@@ -52,6 +70,10 @@ export default function GraphMoleculeViewerUpperButtonGroup({
 
   function handleDownloadAllXYZ() {
     if (!exportContent) {
+      return;
+    }
+    if (onDownloadSource) {
+      onDownloadSource();
       return;
     }
     downloadTextFile(exportContent, `${slug}_trajectory.${xyzFormat || 'xyz'}`);
@@ -79,63 +101,89 @@ export default function GraphMoleculeViewerUpperButtonGroup({
     }
     viewerRef.current.zoomTo();
     const host = viewerHostRef.current;
-    viewerRef.current.zoom((hasUnitCell ? 0.5 : 0.85) * (host?.clientHeight ? Math.min(1, host.clientWidth / host.clientHeight) : 1));
+    viewerRef.current.zoom(
+      (hasUnitCell ? 0.5 : 0.85) *
+        (host?.clientHeight
+          ? Math.min(1, host.clientWidth / host.clientHeight)
+          : 1),
+    );
     viewerRef.current.setCameraParameters({});
     viewerRef.current.render();
   }
 
   return (
-    <GraphMoleculeButtonGroup className="ml-auto justify-end">
-      <GraphMoleculeIconButton
-        label="Copy current structure"
-        onClick={() => void handleCopyXYZ()}
-        disabled={!xyzContent}
-      >
-        <Copy className="size-3.5" />
-      </GraphMoleculeIconButton>
-      <GraphMoleculeIconButton
-        label="Download current structure"
-        onClick={handleDownloadXYZ}
-        disabled={!xyzContent}
-      >
-        <Download className="size-3.5" />
-      </GraphMoleculeIconButton>
-      <GraphMoleculeIconButton
-        label="Download full trajectory"
-        onClick={handleDownloadAllXYZ}
-        disabled={!exportContent}
-      >
-        <Box className="size-3.5" />
-      </GraphMoleculeIconButton>
-      <GraphMoleculeIconButton
-        label="Copy screenshot"
-        onClick={onScreenshot}
-        disabled={!viewerRef.current || !xyzContent}
-      >
-        <Camera className="size-3.5" />
-      </GraphMoleculeIconButton>
-      <ButtonGroupSeparator className="thread-graph-molecule-button-divider" />
-      <GraphMoleculeIconButton
-        label="Zoom in"
-        onClick={handleZoomIn}
-        disabled={!viewerRef.current || !xyzContent}
-      >
-        <ZoomIn className="size-3.5" />
-      </GraphMoleculeIconButton>
-      <GraphMoleculeIconButton
-        label="Zoom out"
-        onClick={handleZoomOut}
-        disabled={!viewerRef.current || !xyzContent}
-      >
-        <ZoomOut className="size-3.5" />
-      </GraphMoleculeIconButton>
-      <GraphMoleculeIconButton
-        label="Reset camera"
-        onClick={handleReset}
-        disabled={!viewerRef.current || !xyzContent}
-      >
-        <RotateCcw className="size-3.5" />
-      </GraphMoleculeIconButton>
-    </GraphMoleculeButtonGroup>
+    <>
+      {inspect && (
+        <div role="dialog" aria-label="Structure coordinates">
+          <p>
+            {xyzFormat}, frame {currentIndex + 1}
+          </p>
+          <textarea
+            readOnly
+            aria-label="Immutable coordinates"
+            value={xyzContent ?? ''}
+          />
+          <button onClick={() => setInspect(false)}>Close coordinates</button>
+        </div>
+      )}
+      <GraphMoleculeButtonGroup className="ml-auto justify-end">
+        <GraphMoleculeIconButton
+          label="Inspect coordinates"
+          onClick={() => setInspect(true)}
+        >
+          <Copy className="size-3.5" />
+        </GraphMoleculeIconButton>
+        <GraphMoleculeIconButton
+          label="Copy current structure"
+          onClick={() => void handleCopyXYZ()}
+          disabled={!xyzContent}
+        >
+          <Copy className="size-3.5" />
+        </GraphMoleculeIconButton>
+        <GraphMoleculeIconButton
+          label="Download current structure"
+          onClick={handleDownloadXYZ}
+          disabled={!xyzContent}
+        >
+          <Download className="size-3.5" />
+        </GraphMoleculeIconButton>
+        <GraphMoleculeIconButton
+          label="Download full trajectory"
+          onClick={handleDownloadAllXYZ}
+          disabled={!exportContent}
+        >
+          <Box className="size-3.5" />
+        </GraphMoleculeIconButton>
+        <GraphMoleculeIconButton
+          label="Copy screenshot"
+          onClick={onScreenshot}
+          disabled={!viewerRef.current || !xyzContent}
+        >
+          <Camera className="size-3.5" />
+        </GraphMoleculeIconButton>
+        <ButtonGroupSeparator className="thread-graph-molecule-button-divider" />
+        <GraphMoleculeIconButton
+          label="Zoom in"
+          onClick={handleZoomIn}
+          disabled={!viewerRef.current || !xyzContent}
+        >
+          <ZoomIn className="size-3.5" />
+        </GraphMoleculeIconButton>
+        <GraphMoleculeIconButton
+          label="Zoom out"
+          onClick={handleZoomOut}
+          disabled={!viewerRef.current || !xyzContent}
+        >
+          <ZoomOut className="size-3.5" />
+        </GraphMoleculeIconButton>
+        <GraphMoleculeIconButton
+          label="Reset camera"
+          onClick={handleReset}
+          disabled={!viewerRef.current || !xyzContent}
+        >
+          <RotateCcw className="size-3.5" />
+        </GraphMoleculeIconButton>
+      </GraphMoleculeButtonGroup>
+    </>
   );
 }
