@@ -13,7 +13,10 @@ export type RenderAtom = {
 export type RenderModel = GLModel & {
   selectedAtoms(selection: Record<string, unknown>): RenderAtom[];
 };
-export type RenderViewer = Omit<GLViewer, 'addModel' | 'getView'> & {
+export type RenderViewer = Omit<
+  GLViewer,
+  'addModel' | 'getView' | 'addLabel'
+> & {
   addModel(
     content: string,
     format: string,
@@ -29,5 +32,10 @@ export type RenderViewer = Omit<GLViewer, 'addModel' | 'getView'> & {
     style: Record<string, unknown>,
     selection: Record<string, unknown>,
   ): unknown;
-  addLabel(text: string, options: Record<string, unknown>): unknown;
+  addLabel(
+    text: string,
+    options: Record<string, unknown>,
+    selection?: Record<string, unknown>,
+    noshow?: boolean,
+  ): unknown;
 };

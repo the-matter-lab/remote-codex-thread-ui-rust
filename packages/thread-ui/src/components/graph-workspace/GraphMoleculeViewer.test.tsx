@@ -563,6 +563,8 @@ it('captures the applied batch camera and selection before React commits and ren
     expect(runtime.viewer.addLabel).toHaveBeenCalledWith(
       'hydrogen',
       expect.objectContaining({ fontColor: 'blue' }),
+      undefined,
+      true,
     );
     expect(model.setStyle).toHaveBeenCalledWith(
       { index: [1] },
@@ -602,4 +604,169 @@ it('a retained unmounted handle rejects commands before renderer effects', async
     error: { code: 'VIEWER_UNAVAILABLE' },
   });
   expect(runtime.viewer.render).toHaveBeenCalledTimes(before);
+});
+
+it('rebinds append identities without drawing/reparsing a pinned unchanged frame; renders real frame and metadata changes', async () => {
+  const frames = [
+    first,
+    first.replace('first', 'second').replace('H 1 0 0', 'H 2 0 0'),
+  ];
+  const makeSource = (
+    count: number,
+    revision: string,
+    bonds?: { atomIds: [string, string]; order: number }[],
+  ) => {
+    const nextTarget = {
+      ...target,
+      artifactId: 'artifact-' + revision,
+      sourceRevision: revision,
+      checksum: revision.padEnd(64, 'a'),
+    };
+    return {
+      content: [...frames, ...Array(count - 2).fill(first)],
+      target: nextTarget,
+      frameTargets: Array.from({ length: count }, (_, i) => ({
+        ...nextTarget,
+        frameId: 'frame-' + i,
+        frameIndex: i,
+      })),
+      metadata: {
+        version: 1 as const,
+        objectId: 'o',
+        sourceRevision: revision,
+        checksum: nextTarget.checksum,
+        format: 'xyz',
+        atoms: [
+          { id: 'O', element: 'O' },
+          { id: 'H', element: 'H' },
+        ],
+        ...(bonds ? { bonds } : {}),
+        render: {
+          coordinateUnit: 'angstrom' as const,
+          bonding: 'provided' as const,
+        },
+      },
+      uuid: 'o',
+    };
+  };
+  // Provided metadata always supplies bonds, even an explicitly empty list.
+  let source = makeSource(2, 'r1', []);
+  const render = async (loading = false) =>
+    act(async () =>
+      root.render(
+        <GraphMoleculeViewer
+          source={source}
+          onReady={onReady}
+          loading={loading}
+        />,
+      ),
+    );
+  await render();
+  await click('First frame');
+  await act(async () => runtime.click({ index: 0 }, runtime.viewer));
+  camera = [3, 4, 5, 6, 0, 0, 0, 1];
+  const old = handle;
+  for (const fn of [
+    runtime.viewer.addModel,
+    runtime.viewer.removeAllLabels,
+    runtime.viewer.removeAllSurfaces,
+    runtime.viewer.setBackgroundColor,
+    runtime.viewer.render,
+    model.setStyle,
+  ])
+    vi.mocked(fn).mockClear();
+  for (let count = 3; count <= 6; count++) {
+    source = makeSource(count, 'r' + count, []);
+    await render(true);
+    expect(handle.isAvailable()).toBe(false);
+    await render();
+    expect(handle.target).toMatchObject({
+      artifactId: 'artifact-r' + count,
+      frameIndex: 0,
+    });
+    expect(runtime.viewer.render).not.toHaveBeenCalled();
+    expect(handle.captureView().selectedIds).toEqual(['O']);
+    vi.mocked(runtime.viewer.render).mockClear();
+  }
+  // captureView above intentionally renders; appends themselves do not.
+  expect(runtime.viewer.addModel).not.toHaveBeenCalled();
+  expect(runtime.viewer.removeAllLabels).not.toHaveBeenCalled();
+  expect(runtime.viewer.removeAllSurfaces).not.toHaveBeenCalled();
+  expect(runtime.viewer.setBackgroundColor).not.toHaveBeenCalled();
+  expect(model.setStyle).not.toHaveBeenCalled();
+  expect(camera).toEqual([3, 4, 5, 6, 0, 0, 0, 1]);
+  expect(old.isAvailable()).toBe(false);
+  await click('Next frame');
+  expect(runtime.viewer.addModel).toHaveBeenCalledTimes(1);
+  expect(vi.mocked(runtime.viewer.addModel).mock.calls[0]![0]).toContain(
+    'H 2 0 0',
+  );
+  expect(runtime.viewer.render).toHaveBeenCalledTimes(1);
+  vi.mocked(runtime.viewer.addModel).mockClear();
+  vi.mocked(runtime.viewer.render).mockClear();
+  source = makeSource(6, 'r7', [{ atomIds: ['O', 'H'], order: 1 }]);
+  await render();
+  expect(runtime.viewer.addModel).toHaveBeenCalledTimes(1);
+  expect(runtime.viewer.render).toHaveBeenCalledTimes(1);
+});
+
+it('clears actual surfaces and labels when changing representations/annotations, while batching label additions', async () => {
+  const { VIEWER_COMMAND_BATCH_ACTION } =
+    await import('./GraphMoleculeViewerCommands');
+  const discovery = structuredClone(EXTENSION_FIXTURES.grafico.discovery);
+  discovery.actions.push(VIEWER_COMMAND_BATCH_ACTION);
+  discovery.capabilities[VIEWER_COMMAND_BATCH_ACTION.id] = true;
+  await act(async () =>
+    root.render(
+      <GraphMoleculeViewer
+        source={{ content: [first], target }}
+        onReady={onReady}
+        extensionHost={{ discovery }}
+      />,
+    ),
+  );
+  const execute = async (operationId: string, commands: unknown[]) =>
+    act(async () => {
+      const result = await handle.execute({
+        version: 1,
+        requestId: operationId,
+        operationId,
+        actionId: VIEWER_COMMAND_BATCH_ACTION.id,
+        target,
+        payload: { version: 1, commands } as never,
+      });
+      expect(result.status).toBe('applied');
+    });
+  expect(runtime.viewer.removeAllSurfaces).not.toHaveBeenCalled();
+  expect(runtime.viewer.removeAllLabels).not.toHaveBeenCalled();
+  await execute('surface', [{ type: 'style', style: 'surface' }]);
+  expect(runtime.viewer.addSurface).toHaveBeenCalledTimes(1);
+  await execute('stick', [{ type: 'style', style: 'stick' }]);
+  expect(runtime.viewer.removeAllSurfaces).toHaveBeenCalledTimes(1);
+  await execute('annotations', [
+    {
+      type: 'annotations',
+      annotations: [
+        { id: 'a', atomId: '0', text: 'first' },
+        { id: 'b', atomId: '1', text: 'second' },
+      ],
+    },
+  ]);
+  expect(runtime.viewer.removeAllLabels).not.toHaveBeenCalled();
+  expect(runtime.viewer.addLabel).toHaveBeenCalledWith(
+    'first',
+    expect.any(Object),
+    undefined,
+    true,
+  );
+  expect(runtime.viewer.addLabel).toHaveBeenCalledWith(
+    'second',
+    expect.any(Object),
+    undefined,
+    true,
+  );
+  await execute('clear-annotations', [
+    { type: 'annotations', annotations: [] },
+  ]);
+  expect(runtime.viewer.removeAllLabels).toHaveBeenCalledTimes(1);
 });

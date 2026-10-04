@@ -202,12 +202,39 @@ export function GraphMoleculeViewer({
   const currentFrameRef = useRef('');
   currentFrameRef.current = `${currentIndex}:${xyzFormat}:${xyzContent}`;
   const renderedFrameRef = useRef('');
+  const renderedModelKeyRef = useRef<string | null>(null);
+  const surfaceActiveRef = useRef(false);
+  const labelsActiveRef = useRef(false);
+  const backgroundRef = useRef<string | null>(null);
+  const styledRef = useRef('');
+  const cellDrawRef = useRef('');
   const renderedReadyRef = useRef(false);
   const targetKey = JSON.stringify(target);
   const targetRef = useRef(target);
   targetRef.current = target;
   const activeObject =
     snapshot?.target?.objectId ?? snapshot?.uuid ?? moleculeId;
+  const modelDataKey = useMemo(
+    () =>
+      JSON.stringify([
+        activeObject,
+        xyzFormat,
+        xyzContent,
+        snapshot?.metadata?.atoms,
+        snapshot?.metadata?.bonds,
+        snapshot?.metadata?.cell,
+        snapshot?.metadata?.render,
+      ]),
+    [
+      activeObject,
+      xyzFormat,
+      xyzContent,
+      snapshot?.metadata?.atoms,
+      snapshot?.metadata?.bonds,
+      snapshot?.metadata?.cell,
+      snapshot?.metadata?.render,
+    ],
+  );
   const objectRef = useRef(activeObject);
   const selectedIds = selectedSerials
     .map((index) => atomIdsRef.current[index]!)
@@ -232,6 +259,9 @@ export function GraphMoleculeViewer({
     const viewer = viewerRef.current,
       model = modelRef.current;
     if (!viewer || !model) return;
+    const key = JSON.stringify([visible, cellRef.current]);
+    if (cellDrawRef.current === key) return;
+    cellDrawRef.current = key;
     cellShapesRef.current.forEach((shape) => viewer.removeShape(shape));
     cellShapesRef.current = [];
     try {
@@ -272,7 +302,14 @@ export function GraphMoleculeViewer({
     const viewer = viewerRef.current,
       model = modelRef.current;
     if (!viewer || !model) return;
-    viewer.removeAllSurfaces();
+    const key = JSON.stringify([next, indices, selectionStyleRef.current]);
+    if (styledRef.current === key) return;
+    styledRef.current = key;
+    // 3Dmol clears draw immediately, even for empty collections.
+    if (surfaceActiveRef.current) {
+      viewer.removeAllSurfaces();
+      surfaceActiveRef.current = false;
+    }
     model.setStyle(
       {},
       next === 'spacefill'
@@ -289,6 +326,7 @@ export function GraphMoleculeViewer({
       next === 'surface'
         ? viewer.addSurface('VDW', { opacity: 0.8 }, {})
         : undefined;
+    surfaceActiveRef.current = next === 'surface';
     if (indices.length)
       model.setStyle(
         { index: indices },
@@ -308,17 +346,24 @@ export function GraphMoleculeViewer({
     const viewer = viewerRef.current,
       model = modelRef.current;
     if (!viewer || !model) return;
-    viewer.removeAllLabels();
+    if (labelsActiveRef.current) viewer.removeAllLabels();
+    labelsActiveRef.current = next.length > 0;
     const atoms = model.selectedAtoms({});
     next.forEach((annotation) => {
       const atom = atoms[atomIdsRef.current.indexOf(annotation.atomId)];
       if (atom)
-        viewer.addLabel(annotation.text, {
-          position: atom,
-          backgroundColor: 'white',
-          fontColor: annotation.color ?? 'black',
-          fontSize: 12,
-        });
+        viewer.addLabel(
+          annotation.text,
+          {
+            position: atom,
+            backgroundColor: 'white',
+            fontColor: annotation.color ?? 'black',
+            fontSize: 12,
+          },
+          undefined,
+          // Batch label additions into the caller's final render.
+          true,
+        );
     });
   }
   const commandState = useRef({
@@ -494,13 +539,13 @@ export function GraphMoleculeViewer({
 
     const resizeViewer = () => {
       if (cancelled || !host.clientWidth || !host.clientHeight) return;
-      viewerRef.current?.resize();
       const scale = Math.min(1, host.clientWidth / host.clientHeight);
+      // 3Dmol owns canvas sizing and draws on resize. Only adjust horizontal
+      // framing here when the container's aspect ratio actually changes.
       if (zoomedRef.current && scale !== viewportScaleRef.current) {
         viewerRef.current?.zoom(scale / viewportScaleRef.current);
       }
       viewportScaleRef.current = scale;
-      viewerRef.current?.render();
     };
     const resizeObserver = new ResizeObserver(resizeViewer);
     resizeObserver.observe(host);
@@ -515,8 +560,6 @@ export function GraphMoleculeViewer({
           const viewer = $3Dmol.createViewer(host, {}) as RenderViewer;
           viewerRef.current = viewer;
           setViewerReady(true);
-          viewer.setBackgroundColor('#f8fafc', 0.8);
-          window.addEventListener('resize', resizeViewer);
           window.setTimeout(resizeViewer, 100);
         } catch (error) {
           console.error('Failed to initialize 3Dmol viewer:', error);
@@ -535,7 +578,6 @@ export function GraphMoleculeViewer({
     return () => {
       cancelled = true;
       resizeObserver.disconnect();
-      window.removeEventListener('resize', resizeViewer);
       viewerRef.current = null;
       modelRef.current = null;
       renderedReadyRef.current = false;
@@ -553,151 +595,170 @@ export function GraphMoleculeViewer({
     try {
       renderedReadyRef.current = false;
       commandState.current.ready = false;
-      viewer.removeAllModels();
-      viewer.removeAllShapes();
-      viewer.removeAllLabels();
+      // Publication identity and verification state may change while a pinned
+      // historical frame/render metadata stays identical. Rebind its exact
+      // handle below without rebuilding or drawing the unchanged model.
+      if (renderedModelKeyRef.current !== modelDataKey) {
+        viewer.removeAllModels();
+        viewer.removeAllShapes();
+        styledRef.current = '';
+        cellDrawRef.current = '';
+        if (labelsActiveRef.current) {
+          viewer.removeAllLabels();
+          labelsActiveRef.current = false;
+        }
 
-      setViewerInitError(null);
-      const renderFrame = structureRenderFrame(xyzContent, xyzFormat);
-      const model = viewer.addModel(renderFrame.content, renderFrame.format, {
-        keepH: true,
-        doAssembly: false,
-        assignBonds:
-          snapshot?.metadata?.render?.bonding !== 'none' &&
-          snapshot?.metadata?.render?.bonding !== 'provided',
-      });
-      setCartoonAvailable(
-        model
-          .selectedAtoms({})
-          .some((atom) => atom.atom === 'CA' || atom.atom === 'P'),
-      );
-      const oldIds = atomIdsRef.current;
-      atomIdsRef.current = applyStructureMetadata(model, snapshot?.metadata);
-      setSelectedSerials((previous) =>
-        previous
-          .map((index) => atomIdsRef.current.indexOf(oldIds[index]!))
-          .filter((index) => index >= 0),
-      );
-      viewer.setBackgroundColor(
-        snapshot?.metadata?.render?.background ?? '#f8fafc',
-        0.8,
-      );
-      cellRef.current =
-        snapshot?.metadata?.cell ??
-        (xyzFormat === 'extxyz' || xyzFormat === 'xyz'
-          ? readExtXyzCell(xyzContent)
-          : undefined);
-      renderedTargetRef.current = target;
-      commandState.current.atomIds = atomIdsRef.current;
-
-      cellShapesRef.current = [];
-      modelRef.current = model;
-      applyStyle(style);
-
-      const crystalData = model.getCrystData();
-      const hasUnitCell = Boolean(
-        cellRef.current ||
-        (crystalData &&
-          typeof crystalData === 'object' &&
-          Object.keys(crystalData).length),
-      );
-      commandState.current.cellAvailable = hasUnitCell;
-      setUnitCellAvailable(hasUnitCell);
-      setUnitCellVisible(hasUnitCell ? unitCellPreferenceRef.current : false);
-      setSelectedAtomLabels(
-        Object.fromEntries(
+        setViewerInitError(null);
+        const renderFrame = structureRenderFrame(xyzContent, xyzFormat);
+        const model = viewer.addModel(renderFrame.content, renderFrame.format, {
+          keepH: true,
+          doAssembly: false,
+          assignBonds:
+            snapshot?.metadata?.render?.bonding !== 'none' &&
+            snapshot?.metadata?.render?.bonding !== 'provided',
+        });
+        setCartoonAvailable(
           model
             .selectedAtoms({})
-            .map((atom, index) => [index, atom.elem ?? 'Atom']),
-        ),
-      );
+            .some((atom) => atom.atom === 'CA' || atom.atom === 'P'),
+        );
+        const oldIds = atomIdsRef.current;
+        atomIdsRef.current = applyStructureMetadata(model, snapshot?.metadata);
+        const previous = selectedSerialsRef.current;
+        const remapped = previous
+          .map((index) => atomIdsRef.current.indexOf(oldIds[index]!))
+          .filter((index) => index >= 0);
+        selectedSerialsRef.current = remapped;
+        setSelectedSerials(
+          previous.length === remapped.length &&
+            previous.every((value, index) => value === remapped[index])
+            ? previous
+            : remapped,
+        );
+        const background = snapshot?.metadata?.render?.background ?? '#f8fafc';
+        if (backgroundRef.current !== background) {
+          viewer.setBackgroundColor(background, 0.8);
+          backgroundRef.current = background;
+        }
+        cellRef.current =
+          snapshot?.metadata?.cell ??
+          (xyzFormat === 'extxyz' || xyzFormat === 'xyz'
+            ? readExtXyzCell(xyzContent)
+            : undefined);
+        renderedTargetRef.current = target;
+        commandState.current.atomIds = atomIdsRef.current;
 
-      const frameAtomLabels = xyzContent
-        .split('\n')
-        .slice(2)
-        .map((line) => line.trim())
-        .filter(Boolean)
-        .map((line) => line.split(/\s+/)[0] ?? 'Atom');
+        cellShapesRef.current = [];
+        modelRef.current = model;
+        applyStyle(style, remapped);
 
-      if (!zoomedRef.current) {
-        viewer.zoomTo();
-        const host = viewerHostRef.current;
-        const scale = host?.clientHeight
-          ? Math.min(1, host.clientWidth / host.clientHeight)
-          : 1;
-        // 3Dmol fits vertically; a tall, narrow Explorer also needs a
-        // horizontal fit. Keep this framing across trajectory frames.
-        viewer.zoom((hasUnitCell ? 0.5 : 0.85) * scale);
-        viewportScaleRef.current = scale;
-        zoomedRef.current = true;
-      }
+        const crystalData = model.getCrystData();
+        const hasUnitCell = Boolean(
+          cellRef.current ||
+          (crystalData &&
+            typeof crystalData === 'object' &&
+            Object.keys(crystalData).length),
+        );
+        commandState.current.cellAvailable = hasUnitCell;
+        setUnitCellAvailable(hasUnitCell);
+        setUnitCellVisible(hasUnitCell ? unitCellPreferenceRef.current : false);
+        setSelectedAtomLabels(
+          Object.fromEntries(
+            model
+              .selectedAtoms({})
+              .map((atom, index) => [index, atom.elem ?? 'Atom']),
+          ),
+        );
 
-      model.setClickable(
-        {},
-        true,
-        (atom: ThreeDmolAtom, _viewer: GLViewer, event?: MouseEvent) => {
-          const serial = atom.index;
-          if (serial === undefined) {
-            return;
-          }
-          selectionStyleRef.current = { color: 'yellow' };
-          const label =
-            atom.atom || atom.elem || frameAtomLabels[serial] || 'Atom';
+        const frameAtomLabels = xyzContent
+          .split('\n')
+          .slice(2)
+          .map((line) => line.trim())
+          .filter(Boolean)
+          .map((line) => line.split(/\s+/)[0] ?? 'Atom');
 
-          setSelectedSerials((previous) => {
-            const isMulti = Boolean(
-              event?.shiftKey || event?.metaKey || event?.ctrlKey,
-            );
-            const next = !isMulti
-              ? previous.length === 1 && previous[0] === serial
-                ? []
-                : [serial]
-              : previous.includes(serial)
-                ? previous.filter((entry) => entry !== serial)
-                : [...previous, serial];
+        if (!zoomedRef.current) {
+          viewer.zoomTo();
+          const host = viewerHostRef.current;
+          const scale = host?.clientHeight
+            ? Math.min(1, host.clientWidth / host.clientHeight)
+            : 1;
+          // 3Dmol fits vertically; a tall, narrow Explorer also needs a
+          // horizontal fit. Keep this framing across trajectory frames.
+          viewer.zoom((hasUnitCell ? 0.5 : 0.85) * scale);
+          viewportScaleRef.current = scale;
+          zoomedRef.current = true;
+        }
 
-            setSelectedAtomLabels((current) => {
-              if (next.length === 0) {
-                return {};
-              }
-              const labelsBySerial: Record<number, string> = {};
-              next.forEach((entry) => {
-                labelsBySerial[entry] =
-                  current[entry] || frameAtomLabels[entry] || label;
+        model.setClickable(
+          {},
+          true,
+          (atom: ThreeDmolAtom, _viewer: GLViewer, event?: MouseEvent) => {
+            const serial = atom.index;
+            if (serial === undefined) {
+              return;
+            }
+            selectionStyleRef.current = { color: 'yellow' };
+            const label =
+              atom.atom || atom.elem || frameAtomLabels[serial] || 'Atom';
+
+            setSelectedSerials((previous) => {
+              const isMulti = Boolean(
+                event?.shiftKey || event?.metaKey || event?.ctrlKey,
+              );
+              const next = !isMulti
+                ? previous.length === 1 && previous[0] === serial
+                  ? []
+                  : [serial]
+                : previous.includes(serial)
+                  ? previous.filter((entry) => entry !== serial)
+                  : [...previous, serial];
+
+              setSelectedAtomLabels((current) => {
+                if (next.length === 0) {
+                  return {};
+                }
+                const labelsBySerial: Record<number, string> = {};
+                next.forEach((entry) => {
+                  labelsBySerial[entry] =
+                    current[entry] || frameAtomLabels[entry] || label;
+                });
+                return labelsBySerial;
               });
-              return labelsBySerial;
+              return next;
             });
-            return next;
-          });
-        },
-      );
+          },
+        );
 
-      model.setHoverable(
-        {},
-        true,
-        (atom: ThreeDmolAtom, _viewer: GLViewer, event?: MouseEvent) => {
-          if (!event || !atom) {
-            return;
-          }
-          setHoveredAtom({
-            x: event.clientX,
-            y: event.clientY,
-            label: `${atom.atom || atom.elem || 'Atom'} (${
-              atom.index ?? atom.serial ?? '?'
-            })`,
-            coords: {
-              x: atom.x.toFixed(2),
-              y: atom.y.toFixed(2),
-              z: atom.z.toFixed(2),
-            },
-          });
-        },
-        () => setHoveredAtom(null),
-      );
+        model.setHoverable(
+          {},
+          true,
+          (atom: ThreeDmolAtom, _viewer: GLViewer, event?: MouseEvent) => {
+            if (!event || !atom) {
+              return;
+            }
+            setHoveredAtom({
+              x: event.clientX,
+              y: event.clientY,
+              label: `${atom.atom || atom.elem || 'Atom'} (${
+                atom.index ?? atom.serial ?? '?'
+              })`,
+              coords: {
+                x: atom.x.toFixed(2),
+                y: atom.y.toFixed(2),
+                z: atom.z.toFixed(2),
+              },
+            });
+          },
+          () => setHoveredAtom(null),
+        );
 
-      drawCell(hasUnitCell && unitCellPreferenceRef.current);
-      drawAnnotations(annotations);
-      viewer.render();
+        drawCell(hasUnitCell && unitCellPreferenceRef.current);
+        drawAnnotations(annotations);
+        viewer.render();
+        renderedModelKeyRef.current = modelDataKey;
+      }
+      renderedTargetRef.current = target;
       renderedReadyRef.current = true;
       commandState.current.ready = !loading;
       const readyFrame = currentFrameRef.current;
@@ -764,14 +825,24 @@ export function GraphMoleculeViewer({
 
   useEffect(() => {
     if (!viewerReady) return;
-    drawCell(unitCellVisible && unitCellAvailable);
-    viewerRef.current?.render();
+    const visible = unitCellVisible && unitCellAvailable;
+    if (cellDrawRef.current !== JSON.stringify([visible, cellRef.current])) {
+      drawCell(visible);
+      viewerRef.current?.render();
+    }
   }, [unitCellAvailable, unitCellVisible, viewerReady]);
 
   useEffect(() => {
     if (!viewerReady || applyingCommandRef.current) return;
-    applyStyle(style);
-    viewerRef.current?.render();
+    const next = JSON.stringify([
+      style,
+      selectedSerials,
+      selectionStyleRef.current,
+    ]);
+    if (styledRef.current !== next) {
+      applyStyle(style);
+      viewerRef.current?.render();
+    }
     onSelectionChange?.(selection());
   }, [moleculeId, selectedSerials, style, viewerReady, xyzContent]);
 
