@@ -38,7 +38,12 @@ export interface UseWorkspaceExplorerControllerInput {
   detail: ThreadDetailDto;
   artifacts: ThreadArtifactDto[];
   status: AgentRuntimeStatusDto | null;
-  focusPathRequest?: { path: string; line?: number; requestId: number } | null;
+  focusPathRequest?: {
+    path: string;
+    line?: number;
+    requestId: number;
+    artifactId?: string;
+  } | null;
   workspaceAdapter?: ThreadWorkspaceAdapter | null;
 }
 
@@ -136,7 +141,12 @@ export function useWorkspaceExplorerController({
   );
   const [linkedFiles, setLinkedFiles] = useState<WorkspaceTreeNode[]>([]);
   const tree = useMemo(() => {
-    const root = adapterTree ?? fallbackTree;
+    const root = adapterTree
+      ? {
+          ...adapterTree,
+          children: [...adapterTree.children, ...fallbackTree.children],
+        }
+      : fallbackTree;
     return linkedFiles.length
       ? {
           ...root,
@@ -163,17 +173,26 @@ export function useWorkspaceExplorerController({
           detail.workspace.absPath,
         )
       : initialPersistedState.current.selectedPath;
-    return selectedPath
-      ? `workspace:${selectedPath}`
-      : (fallbackFirstSelectableNode?.id ?? null);
+    const virtualNode = [...flattenWorkspaceNodes(fallbackTree).values()].find(
+      (node) =>
+        focusPathRequest?.artifactId !== undefined
+          ? node.artifact?.id === focusPathRequest.artifactId
+          : node.path === selectedPath,
+    );
+    return focusPathRequest?.artifactId !== undefined
+      ? (virtualNode?.id ?? null)
+      : (virtualNode?.id ??
+          (selectedPath
+            ? `workspace:${selectedPath}`
+            : (fallbackFirstSelectableNode?.id ?? null)));
   });
   const [expandedPaths, setExpandedPaths] = useState<Set<string>>(
     () =>
       new Set([
         '',
-        'artifacts',
-        'thread-events',
-        'live',
+        'artifacts:',
+        'thread-events:',
+        'live:',
         ...initialPersistedState.current.expandedPaths,
         ...collectAncestorPaths(fallbackFirstSelectableNode?.path ?? ''),
       ]),
@@ -194,7 +213,7 @@ export function useWorkspaceExplorerController({
   const activeNode =
     selectedNodeId === null ? null : (nodeMap.get(selectedNodeId) ?? null);
   const liveNodes = useMemo(
-    () => tree.children.find((node) => node.path === 'live')?.children ?? [],
+    () => tree.children.find((node) => node.id === 'live')?.children ?? [],
     [tree],
   );
 
@@ -205,6 +224,8 @@ export function useWorkspaceExplorerController({
   const expandedPathsRef = useRef(expandedPaths);
   const loadingDirectoryPathsRef = useRef(loadingDirectoryPaths);
   const fallbackFirstSelectableNodeRef = useRef(fallbackFirstSelectableNode);
+  const fallbackTreeRef = useRef(fallbackTree);
+  const artifactFocusRef = useRef<string | null>(null);
   adapterModelRef.current = adapterModel;
   nodeMapRef.current = nodeMap;
   treeRef.current = tree;
@@ -212,6 +233,7 @@ export function useWorkspaceExplorerController({
   expandedPathsRef.current = expandedPaths;
   loadingDirectoryPathsRef.current = loadingDirectoryPaths;
   fallbackFirstSelectableNodeRef.current = fallbackFirstSelectableNode;
+  fallbackTreeRef.current = fallbackTree;
 
   const refreshGenerationRef = useRef(0);
   const focusGenerationRef = useRef(0);
@@ -282,9 +304,16 @@ export function useWorkspaceExplorerController({
         setAdapterModel(nextModel);
         const firstFile = findFirstWorkspaceFile(nextTree);
         setSelectedNodeId((current) => {
+          const virtualNodes = flattenWorkspaceNodes(fallbackTreeRef.current);
+          if (current && virtualNodes.has(current)) return current;
+          if (artifactFocusRef.current) return null;
           const fallbackPath =
             currentSelectedPath ??
             selectedPathForId(current, nodeMapRef.current);
+          const virtualNode = [...virtualNodes.values()].find(
+            (node) => node.path === fallbackPath,
+          );
+          if (virtualNode) return virtualNode.id;
           if (
             fallbackPath !== null &&
             hasWorkspaceExplorerPath(nextModel, fallbackPath)
@@ -397,6 +426,22 @@ export function useWorkspaceExplorerController({
 
   const focusWorkspacePath = useCallback(
     async (path: string) => {
+      artifactFocusRef.current = null;
+      const virtualNode = [
+        ...flattenWorkspaceNodes(fallbackTreeRef.current).values(),
+      ].find((node) => node.path === path && node.kind !== 'directory');
+      if (virtualNode) {
+        ++focusGenerationRef.current;
+        focusPendingRef.current = false;
+        setSelectedNodeId(virtualNode.id);
+        setFilterQuery('');
+        setWorkspaceError(null);
+        setExpandedPaths(
+          (current) =>
+            new Set([...current, ...collectAncestorPaths(virtualNode.path)]),
+        );
+        return;
+      }
       const targetPath = workspaceRelativeFocusPath(
         path,
         detail.workspace.absPath,
@@ -516,6 +561,23 @@ export function useWorkspaceExplorerController({
     [detail.workspace.absPath, workspaceAdapter, workspaceIdentity],
   );
 
+  const focusArtifact = useCallback((artifactId: string) => {
+    artifactFocusRef.current = artifactId;
+    ++focusGenerationRef.current;
+    focusPendingRef.current = false;
+    const node = [
+      ...flattenWorkspaceNodes(fallbackTreeRef.current).values(),
+    ].find((value) => value.artifact?.id === artifactId);
+    setSelectedNodeId(node?.id ?? null);
+    setLoadingTree(false);
+    setFilterQuery('');
+    setWorkspaceError(node ? null : `Artifact unavailable: ${artifactId}`);
+    if (node)
+      setExpandedPaths(
+        (current) => new Set([...current, ...collectAncestorPaths(node.path)]),
+      );
+  }, []);
+
   const toggleDirectory = useCallback(
     (path: string) => {
       if (!path) {
@@ -550,6 +612,7 @@ export function useWorkspaceExplorerController({
 
   useEffect(() => {
     setLinkedFiles([]);
+    artifactFocusRef.current = null;
     skipPersistenceWriteRef.current = true;
     const persisted = persistence.read();
     const fallbackNode = fallbackFirstSelectableNodeRef.current;
@@ -559,15 +622,26 @@ export function useWorkspaceExplorerController({
           detail.workspace.absPath,
         )
       : persisted.selectedPath;
-    const nextSelectedId = selectedPath
-      ? `workspace:${selectedPath}`
-      : (fallbackNode?.id ?? null);
+    const virtualNode = [
+      ...flattenWorkspaceNodes(fallbackTreeRef.current).values(),
+    ].find((node) =>
+      focusPathRequest?.artifactId !== undefined
+        ? node.artifact?.id === focusPathRequest.artifactId
+        : node.path === selectedPath,
+    );
+    const nextSelectedId =
+      focusPathRequest?.artifactId !== undefined
+        ? (virtualNode?.id ?? null)
+        : (virtualNode?.id ??
+          (selectedPath
+            ? `workspace:${selectedPath}`
+            : (fallbackNode?.id ?? null)));
     setExpandedPaths(
       new Set([
         '',
-        'artifacts',
-        'thread-events',
-        'live',
+        'artifacts:',
+        'thread-events:',
+        'live:',
         ...persisted.expandedPaths,
         ...collectAncestorPaths(fallbackNode?.path ?? ''),
       ]),
@@ -628,10 +702,15 @@ export function useWorkspaceExplorerController({
     setDirectoryErrors(new Map());
     setWorkspaceError(null);
     handledFocusRequestRef.current = null;
-    if (!focusPathRequest) {
+    if (!focusPathRequest || focusPathRequest.artifactId !== undefined) {
       const persistedPath = persistence.read().selectedPath;
-      if (persistedPath) void focusWorkspacePath(persistedPath);
-      else void refreshWorkspaceTree();
+      if (persistedPath && !focusPathRequest) {
+        const virtual = [
+          ...flattenWorkspaceNodes(fallbackTreeRef.current).values(),
+        ].some((node) => node.path === persistedPath);
+        void focusWorkspacePath(persistedPath);
+        if (virtual) void refreshWorkspaceTree();
+      } else void refreshWorkspaceTree();
     }
   }, [refreshWorkspaceTree]);
 
@@ -640,9 +719,11 @@ export function useWorkspaceExplorerController({
       const key = `${workspaceIdentity.threadId}:${focusPathRequest.requestId}`;
       if (handledFocusRequestRef.current === key) return;
       handledFocusRequestRef.current = key;
-      void focusWorkspacePath(focusPathRequest.path);
+      if (focusPathRequest.artifactId !== undefined)
+        focusArtifact(focusPathRequest.artifactId);
+      else void focusWorkspacePath(focusPathRequest.path);
     }
-  }, [focusPathRequest, focusWorkspacePath]);
+  }, [focusPathRequest, focusWorkspacePath, focusArtifact]);
 
   useEffect(() => {
     if (!workspaceAdapter?.subscribeWorkspaceChanged) {
@@ -692,6 +773,7 @@ export function useWorkspaceExplorerController({
     setFilterQuery,
     setLoadingTree,
     setSelectedNodeId: (id: string | null) => {
+      artifactFocusRef.current = null;
       ++focusGenerationRef.current;
       ++refreshGenerationRef.current;
       focusPendingRef.current = false;

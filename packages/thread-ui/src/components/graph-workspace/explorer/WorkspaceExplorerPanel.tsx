@@ -119,7 +119,7 @@ export function WorkspaceExplorerPanel({
   const visibleTree = useMemo(
     () => ({
       ...tree,
-      children: tree.children.filter((node) => node.path !== 'live'),
+      children: tree.children.filter((node) => node.id !== 'live'),
     }),
     [tree],
   );

@@ -31,7 +31,7 @@ export interface ThreadGraphWorkspacePanelProps {
   settingsContent?: ReactNode;
   activeView?: 'chat' | 'shell';
   features?: ThreadGraphWorkspaceFeatures;
-  focusPathRequest?: { path: string; line?: number; requestId: number } | null;
+  focusPathRequest?: { path: string; line?: number; requestId: number; artifactId?: string } | null;
 }
 
 export type WorkspaceTab =

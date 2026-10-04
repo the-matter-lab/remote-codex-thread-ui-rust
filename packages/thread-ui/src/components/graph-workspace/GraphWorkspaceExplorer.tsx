@@ -41,7 +41,7 @@ export function GraphWorkspaceExplorer({
   artifacts: ThreadArtifactDto[];
   plugins: PluginContextValue;
   status: AgentRuntimeStatusDto | null;
-  focusPathRequest?: { path: string; line?: number; requestId: number } | null;
+  focusPathRequest?: { path: string; line?: number; requestId: number; artifactId?: string } | null;
   workspaceAdapter?: ThreadWorkspaceAdapter | null;
 }) {
   const {

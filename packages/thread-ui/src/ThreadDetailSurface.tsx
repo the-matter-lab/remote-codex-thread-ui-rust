@@ -183,6 +183,8 @@ export interface ThreadDetailSurfaceProps {
   workspaceActions?: ReactNode;
   workspaceFeatures?: ThreadGraphWorkspaceFeatures;
   workspaceFocusPathRequest?: {
+    /** Inspect this exact projected artifact; takes precedence over the file path. */
+    artifactId?: string;
     path: string;
     line?: number;
     requestId: number;
