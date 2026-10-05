@@ -770,3 +770,46 @@ it('clears actual surfaces and labels when changing representations/annotations,
   ]);
   expect(runtime.viewer.removeAllLabels).toHaveBeenCalledTimes(1);
 });
+
+it('binds a LIVE append directly to its latest verified frame before exposing ready handles', async () => {
+  const frames = [
+    first,
+    first.replace('first', 'second'),
+    first.replace('first', 'third'),
+  ];
+  const sourceFor = (count: number) => {
+    const latest = {
+      ...target,
+      artifactId: 'revision-' + count,
+      sourceRevision: 'r' + count,
+    };
+    return {
+      content: frames.slice(0, count),
+      target: latest,
+      frameTargets: frames.slice(0, count).map((_, frameIndex) => ({
+        ...latest,
+        frameId: 'f' + frameIndex,
+        frameIndex,
+      })),
+    };
+  };
+  const ready = vi.fn(onReady);
+  await act(async () =>
+    root.render(<GraphMoleculeViewer source={sourceFor(2)} onReady={ready} />),
+  );
+  ready.mockClear();
+  vi.mocked(runtime.viewer.addModel).mockClear();
+  const before = [...camera];
+  await act(async () =>
+    root.render(<GraphMoleculeViewer source={sourceFor(3)} onReady={ready} />),
+  );
+  expect(ready.mock.calls.map(([value]) => value.trajectoryIndex)).toEqual([2]);
+  expect(handle.target).toMatchObject({
+    artifactId: 'revision-3',
+    frameId: 'f2',
+    frameIndex: 2,
+  });
+  expect(runtime.viewer.addModel).toHaveBeenCalledTimes(1);
+  expect(vi.mocked(runtime.viewer.addModel).mock.calls[0]![0]).toBe(frames[2]);
+  expect(camera).toEqual(before);
+});

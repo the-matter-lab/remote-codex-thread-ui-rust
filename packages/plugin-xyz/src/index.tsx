@@ -20,13 +20,20 @@ import {
 } from '@remote-codex/shared';
 
 type ViewerProps = React.ComponentProps<typeof GraphMoleculeViewer>;
+export const INLINE_STRUCTURE_CAPABILITY = 'elagente.structure.inline-source';
+export const INLINE_STRUCTURE_MAX_BYTES = 65536;
+export interface InlineStructureSource {
+  version: 1;
+  encoding: 'utf8';
+  content: string;
+}
 export interface StructureAsset {
   url: string;
   checksum: string;
   format: 'xyz' | 'extxyz' | 'cif' | 'pdb' | 'sdf' | 'mol';
   name: string;
   artifactId?: string;
-  metadata?: ArtifactMetadata;
+  metadata?: ArtifactMetadata & { inlineSource?: InlineStructureSource };
   target?: ScientificTarget;
   frameTargets?: ScientificTarget[];
   /** Optional canonical file when url points to a distinct render representation. */
@@ -44,16 +51,43 @@ export interface StructureAsset {
 async function verifiedBytes(
   asset: { url: string; checksum: string },
   signal: AbortSignal,
+  inline?: InlineStructureSource,
 ): Promise<ArrayBuffer> {
   const url = new URL(asset.url, window.location.href);
   if (url.origin !== window.location.origin)
     throw new Error('Structure assets must come from this app-server');
   if (!/^[a-f0-9]{64}$/.test(asset.checksum))
     throw new Error('Invalid structure checksum');
-  const response = await fetch(url, { signal, redirect: 'error' });
-  if (!response.ok)
-    throw new Error(`Structure download failed (${response.status})`);
-  const bytes = await response.arrayBuffer();
+  let bytes: ArrayBuffer;
+  if (inline !== undefined) {
+    if (
+      !inline ||
+      Object.keys(inline).some(
+        (key) => !['version', 'encoding', 'content'].includes(key),
+      ) ||
+      inline.version !== 1 ||
+      inline.encoding !== 'utf8' ||
+      typeof inline.content !== 'string' ||
+      !inline.content.length ||
+      inline.content.length > INLINE_STRUCTURE_MAX_BYTES
+    )
+      throw new Error('Invalid inline immutable structure source');
+    const encoded = new TextEncoder().encode(inline.content);
+    if (
+      encoded.byteLength > INLINE_STRUCTURE_MAX_BYTES ||
+      new TextDecoder('utf-8', { fatal: true }).decode(encoded) !==
+        inline.content
+    )
+      throw new Error(
+        'Inline immutable structure exceeds its UTF-8 byte limit',
+      );
+    bytes = encoded.buffer;
+  } else {
+    const response = await fetch(url, { signal, redirect: 'error' });
+    if (!response.ok)
+      throw new Error(`Structure download failed (${response.status})`);
+    bytes = await response.arrayBuffer();
+  }
   const digest = Array.from(
     new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)),
     (value) => value.toString(16).padStart(2, '0'),
@@ -136,6 +170,8 @@ export function StructureView({
 }) {
   const plugins = usePlugins();
   const host = extensionHost ?? plugins.extensions?.extensionHost;
+  const inlineEnabled =
+    host?.discovery.capabilities[INLINE_STRUCTURE_CAPABILITY] === true;
   const [loaded, setLoaded] = useState<{
     asset: StructureAsset;
     content: string;
@@ -152,9 +188,14 @@ export function StructureView({
     setError(null);
     void (async () => {
       const target = sourceTarget(asset);
-      const renderBytes = await verifiedBytes(asset, controller.signal);
+      const inline = inlineEnabled ? asset.metadata?.inlineSource : undefined;
+      if (inline !== undefined && asset.metadata?.checksum !== asset.checksum)
+        throw new Error(
+          'Inline structure checksum must match the published artifact and canonical metadata',
+        );
+      const renderBytes = await verifiedBytes(asset, controller.signal, inline);
       const bytes = asset.source
-        ? await verifiedBytes(asset.source, controller.signal)
+        ? await verifiedBytes(asset.source, controller.signal, inline)
         : renderBytes;
       const content = new TextDecoder('utf-8', { fatal: true }).decode(
         renderBytes,
@@ -197,7 +238,7 @@ export function StructureView({
       if (!controller.signal.aborted) setError(String(reason));
     });
     return () => controller.abort();
-  }, [assetKey]);
+  }, [assetKey, inlineEnabled]);
   const source = useMemo(
     () =>
       loaded

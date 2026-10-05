@@ -67,3 +67,24 @@ visibly. Reusing an operation with different input rejects. The 128-operation
 history retains failed operations too; exceeding it rejects without eviction
 or replay. Native completion follows the matching applied browser ACK.
 `viewer.program` remains unsupported; declarative commands never execute code.
+
+For bounded immutable sources, a host advertising
+`elagente.structure.inline-source: true` may retain
+`metadata.inlineSource: {version: 1, encoding: "utf8", content}` from the
+validated publication. The complete canonical source, including all trajectory
+frames, must fit 65,536 UTF-8 bytes and round-trip losslessly. Its SHA-256 must
+match both the published artifact checksum and canonical metadata checksum.
+The plugin verifies these bytes before exposing the new target or frame; it
+does not refetch that artifact. The coordinator derives this payload from its
+persisted immutable bytes. Source download and journal replay retain that same
+identity. This optimization applies to any supported format, without agent
+identity branching.
+
+Missing or disabled inline delivery keeps the HTTP verification path. Large
+sources and separate render/canonical representations with different checksums
+use that path. Advertised malformed, unknown-version, oversized, lossy or
+checksum-mismatched inline data fails visibly and keeps the previous viewer
+unavailable for submissions. It never falls back to speculative bytes. LIVE
+chooses the latest verified frame during rendering; the model and exact target
+are committed before the corresponding frame controls can paint. Personal
+historical frame and camera state remain on the retained viewer across appends.

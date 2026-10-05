@@ -7,7 +7,14 @@ import {
   ChevronRight,
   PanelRightOpen,
 } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 import type {
   ArtifactMetadata,
   ScientificTarget,
@@ -157,7 +164,7 @@ export function GraphMoleculeViewer({
   const [cameraInfo, setCameraInfo] = useState<GraphMoleculeCameraInfo | null>(
     null,
   );
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [requestedIndex, setCurrentIndex] = useState(0);
   const [hoveredAtom, setHoveredAtom] = useState<HoveredAtom | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedAtomLabels, setSelectedAtomLabels] = useState<
@@ -196,6 +203,12 @@ export function GraphMoleculeViewer({
   );
   const xyzArray = viewerData.frames;
   const xyzFormat = viewerData.format;
+  // LIVE's displayed frame belongs to this verified revision immediately.
+  // Synchronizing the personal index in an effect must not first draw the
+  // preceding frame with the new revision's controls/identity.
+  const currentIndex = live
+    ? Math.max(0, xyzArray.length - 1)
+    : Math.min(requestedIndex, Math.max(0, xyzArray.length - 1));
   const xyzContent = xyzArray[currentIndex] ?? null;
   const snapshot = typeof source === 'object' && source ? source : undefined;
   const target = frameTarget(snapshot, currentIndex, xyzArray.length);
@@ -586,7 +599,7 @@ export function GraphMoleculeViewer({
     };
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const viewer = viewerRef.current;
     if (!viewer || !xyzContent) {
       return;
