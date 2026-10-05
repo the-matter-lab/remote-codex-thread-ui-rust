@@ -309,6 +309,24 @@
   padding: 0.75rem;
 }
 
+/* Scroll the panel's natural-height rows without collapsing their hit areas. */
+.thread-ui-shell .thread-graph-molecule-controls > * {
+  flex-shrink: 0;
+}
+
+.thread-ui-shell .thread-graph-molecule-lower-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.thread-ui-shell .thread-graph-molecule-lower-toolbar > .thread-graph-molecule-button-group {
+  max-width: 100%;
+  flex-wrap: wrap;
+}
+
 .thread-ui-shell .thread-graph-molecule-control-row {
   display: flex;
   flex-wrap: wrap;

@@ -56,7 +56,7 @@ export default function GraphMoleculeViewerLowerButtonGroup({
 
   return (
     <>
-      <div className="flex w-full justify-between gap-2 overflow-x-auto">
+      <div className="thread-graph-molecule-lower-toolbar flex w-full shrink-0 flex-wrap justify-between gap-2">
         <GraphMoleculeButtonGroup>
           <GraphMoleculeIconButton
             label="Distance: unavailable; requires an agent contribution"
