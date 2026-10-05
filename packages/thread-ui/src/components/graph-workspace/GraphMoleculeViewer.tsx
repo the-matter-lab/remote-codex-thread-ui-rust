@@ -158,7 +158,6 @@ export function GraphMoleculeViewer({
     throw new Error('Screenshot is unavailable');
   });
   const zoomedRef = useRef(false);
-  const viewportScaleRef = useRef(1);
   const unitCellPreferenceRef = useRef(true);
 
   const [cameraInfo, setCameraInfo] = useState<GraphMoleculeCameraInfo | null>(
@@ -550,19 +549,6 @@ export function GraphMoleculeViewer({
       return;
     }
 
-    const resizeViewer = () => {
-      if (cancelled || !host.clientWidth || !host.clientHeight) return;
-      const scale = Math.min(1, host.clientWidth / host.clientHeight);
-      // 3Dmol owns canvas sizing and draws on resize. Only adjust horizontal
-      // framing here when the container's aspect ratio actually changes.
-      if (zoomedRef.current && scale !== viewportScaleRef.current) {
-        viewerRef.current?.zoom(scale / viewportScaleRef.current);
-      }
-      viewportScaleRef.current = scale;
-    };
-    const resizeObserver = new ResizeObserver(resizeViewer);
-    resizeObserver.observe(host);
-
     load3Dmol()
       .then(($3Dmol) => {
         if (cancelled || viewerRef.current) {
@@ -571,9 +557,11 @@ export function GraphMoleculeViewer({
 
         try {
           const viewer = $3Dmol.createViewer(host, {}) as RenderViewer;
+          // 3Dmol observes its host and resizes the canvas. Keep the personal
+          // camera unchanged when surrounding controls or reconnect banners
+          // resize that host; horizontal fitting belongs to the initial fit.
           viewerRef.current = viewer;
           setViewerReady(true);
-          window.setTimeout(resizeViewer, 100);
         } catch (error) {
           console.error('Failed to initialize 3Dmol viewer:', error);
           setViewerInitError(
@@ -590,7 +578,6 @@ export function GraphMoleculeViewer({
 
     return () => {
       cancelled = true;
-      resizeObserver.disconnect();
       viewerRef.current = null;
       modelRef.current = null;
       renderedReadyRef.current = false;
@@ -699,7 +686,6 @@ export function GraphMoleculeViewer({
           // 3Dmol fits vertically; a tall, narrow Explorer also needs a
           // horizontal fit. Keep this framing across trajectory frames.
           viewer.zoom((hasUnitCell ? 0.5 : 0.85) * scale);
-          viewportScaleRef.current = scale;
           zoomedRef.current = true;
         }
 

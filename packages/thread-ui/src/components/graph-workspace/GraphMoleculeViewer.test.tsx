@@ -23,8 +23,15 @@ const runtime = vi.hoisted(() => ({
     event?: object,
   ) => void,
 }));
+let resizeCallbacks: ResizeObserverCallback[] = [];
 vi.mock('./load3Dmol', () => ({
-  load3Dmol: async () => ({ createViewer: () => runtime.viewer }),
+  load3Dmol: async () => ({
+    createViewer: (host: HTMLElement) => {
+      // The real 3Dmol viewer watches its own host and resizes its canvas.
+      new ResizeObserver(() => runtime.viewer.resize()).observe(host);
+      return runtime.viewer;
+    },
+  }),
 }));
 const first = '2\nfirst\nO 0 0 0\nH 1 0 0\n';
 const png =
@@ -56,10 +63,14 @@ async function click(label: string) {
 }
 
 beforeEach(() => {
+  resizeCallbacks = [];
   Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
   vi.stubGlobal(
     'ResizeObserver',
     class {
+      constructor(callback: ResizeObserverCallback) {
+        resizeCallbacks.push(callback);
+      }
       observe() {}
       disconnect() {}
     },
@@ -200,6 +211,40 @@ it('keeps agent controls mounted but inert while a new source is verified', asyn
   );
   expect(controls.hasAttribute('inert')).toBe(false);
   expect(controls.style.visibility).toBe('');
+  expect(handle.isAvailable()).toBe(true);
+});
+
+it('preserves a personal camera when reconnect layout shrinks and restores the viewer', async () => {
+  let height = 368;
+  vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(310);
+  vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockImplementation(
+    () => height,
+  );
+  runtime.viewer.zoom = vi.fn((factor) => {
+    camera = [...camera];
+    camera[3] = 150 - (150 - camera[3]!) / factor;
+  });
+  await act(async () =>
+    root.render(
+      <GraphMoleculeViewer
+        source={{ content: [first], target, frameTargets: [target] }}
+        onReady={onReady}
+      />,
+    ),
+  );
+  camera = [0, 0, -0.50000000145, 116.99823356073185, 0, 0, 0, 1];
+  const personalView = [...camera];
+  const zooms = vi.mocked(runtime.viewer.zoom).mock.calls.length;
+  for (const nextHeight of [332, 368]) {
+    height = nextHeight;
+    await act(async () => {
+      for (const callback of resizeCallbacks)
+        callback([], {} as ResizeObserver);
+    });
+    expect(camera).toEqual(personalView);
+  }
+  expect(runtime.viewer.resize).toHaveBeenCalledTimes(2);
+  expect(vi.mocked(runtime.viewer.zoom).mock.calls).toHaveLength(zooms);
   expect(handle.isAvailable()).toBe(true);
 });
 
