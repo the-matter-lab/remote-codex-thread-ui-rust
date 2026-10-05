@@ -181,7 +181,10 @@ export function StructureView({
     target?: ScientificTarget;
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const assetKey = JSON.stringify(asset);
+  // Finalizing a stream changes its delivery status, not the immutable bytes
+  // or target. Keep an in-flight verification rather than aborting/refetching
+  // the same file. Every source, metadata and frame identity field stays keyed.
+  const assetKey = JSON.stringify({ ...asset, streaming: undefined });
   const latestAsset = useRef(assetKey);
   latestAsset.current = assetKey;
   useEffect(() => {
