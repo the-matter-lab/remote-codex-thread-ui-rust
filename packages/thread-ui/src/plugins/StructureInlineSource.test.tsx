@@ -14,6 +14,8 @@ import { EXTENSION_FIXTURES } from '@remote-codex/shared';
 const observed = vi.hoisted(() => ({ props: null as any, mounts: 0 }));
 vi.mock('@remote-codex/thread-ui/scientific-viewer', async (original) => ({
   ...(await original<Record<string, unknown>>()),
+  // Exercise the byte-preserving source parser even before rebuilding dist.
+  ...(await import('../components/graph-workspace/GraphMoleculeViewerData')),
   GraphMoleculeViewer: (props: any) => {
     observed.props = props;
     useEffect(() => {
@@ -222,5 +224,59 @@ it('requires the inline checksum to match the published artifact as well as cano
     ),
   );
   expect(observed.props).toBeNull();
+  expect(fetch).not.toHaveBeenCalled();
+});
+
+it('verifies valid UTF-8 BOM bytes against both exact published checksums', async () => {
+  const content = '\ufeff' + first;
+  const next = asset(content);
+  expect(Array.from(new TextEncoder().encode(content).slice(0, 3))).toEqual([
+    0xef, 0xbb, 0xbf,
+  ]);
+  expect(next.checksum).not.toBe(hash(first));
+  await render(next);
+  await vi.waitFor(() =>
+    expect(node.querySelector('[role=alert]')?.textContent).toBeUndefined(),
+  );
+  await vi.waitFor(() =>
+    expect(observed.props?.source.target.checksum).toBe(hash(content)),
+  );
+  expect(observed.props.source.metadata.checksum).toBe(hash(content));
+  expect(node.querySelector('[role=alert]')).toBeNull();
+  expect(fetch).not.toHaveBeenCalled();
+});
+
+it('preserves the BOM in canonical per-frame checksum validation', async () => {
+  const nextFrame = '1\nnext\nHe 1 0 0\n';
+  const content = '\ufeff' + first + nextFrame;
+  const next = asset(content),
+    target = {
+      artifactId: next.artifactId!,
+      objectId: 'helium',
+      sourceRevision: hash(content),
+      checksum: hash(content),
+      streamId: 'helium-stream',
+      frameId: 'f1',
+      frameIndex: 1,
+    };
+  next.target = target;
+  next.frameTargets = [
+    {
+      ...target,
+      frameId: 'f0',
+      frameIndex: 0,
+      checksum: hash('\ufeff' + first),
+    },
+    { ...target, frameId: 'f1', frameIndex: 1, checksum: hash(nextFrame) },
+  ];
+  await render(next);
+  await vi.waitFor(() =>
+    expect(node.querySelector('[role=alert]')?.textContent).toBeUndefined(),
+  );
+  await vi.waitFor(() =>
+    expect(observed.props?.source.target.checksum).toBe(hash(content)),
+  );
+  expect(observed.props.source.frameTargets).toEqual(next.frameTargets);
+  expect(node.querySelector('[role=alert]')).toBeNull();
   expect(fetch).not.toHaveBeenCalled();
 });

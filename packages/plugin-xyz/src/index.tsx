@@ -75,8 +75,9 @@ async function verifiedBytes(
     const encoded = new TextEncoder().encode(inline.content);
     if (
       encoded.byteLength > INLINE_STRUCTURE_MAX_BYTES ||
-      new TextDecoder('utf-8', { fatal: true }).decode(encoded) !==
-        inline.content
+      new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(
+        encoded,
+      ) !== inline.content
     )
       throw new Error(
         'Inline immutable structure exceeds its UTF-8 byte limit',
@@ -202,7 +203,11 @@ export function StructureView({
       );
       if (asset.frameTargets) {
         const frames = readGraphMoleculeViewerData({
-          content: [new TextDecoder('utf-8', { fatal: true }).decode(bytes)],
+          content: [
+            new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(
+              bytes,
+            ),
+          ],
           format: asset.source?.format ?? asset.format,
         }).frames;
         if (asset.frameTargets.length !== frames.length)
