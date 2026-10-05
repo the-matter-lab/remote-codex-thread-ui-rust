@@ -1206,8 +1206,16 @@ export function GraphMoleculeViewer({
             </div>
           ) : null}
 
-          <div role="group" aria-label="Viewer contributions">
-            {!loading && !viewerInitError && toolbar?.({ target, selectedIds })}
+          <div
+            role="group"
+            aria-label="Viewer contributions"
+            inert={loading}
+            style={{ visibility: loading ? 'hidden' : undefined }}
+          >
+            {/* Keep the contribution's layout while verifying new bytes. A
+                collapsing toolbar resizes and redraws the previous model
+                before the verified frame can render. Its controls stay inert. */}
+            {!viewerInitError && toolbar?.({ target, selectedIds })}
           </div>
           {rendererSlot?.({ target, selectedIds })}
           <Button

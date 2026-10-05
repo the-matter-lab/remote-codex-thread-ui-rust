@@ -405,9 +405,37 @@ export function StructureView({
       <p>Loading molecular structure…</p>
     );
   return (
-    <div className="xyz-plugin" data-testid="xyz-plugin">
+    <div
+      className="xyz-plugin"
+      data-testid="xyz-plugin"
+      style={{
+        position: 'relative',
+        display: presentation === 'workspace' ? 'flex' : undefined,
+        flexDirection: presentation === 'workspace' ? 'column' : undefined,
+        flex: presentation === 'workspace' ? 1 : undefined,
+        height: presentation === 'workspace' ? '100%' : undefined,
+        minHeight: 0,
+      }}
+    >
       {error && <p role="alert">{error}</p>}
-      {loading && !error && <p role="status">Verifying updated structure…</p>}
+      {loading && !error && (
+        <p
+          role="status"
+          style={{
+            position: 'absolute',
+            top: 8,
+            right: 8,
+            zIndex: 1,
+            pointerEvents: 'none',
+            background: 'var(--theme-surface, white)',
+            padding: '4px 8px',
+            borderRadius: 4,
+            fontSize: 12,
+          }}
+        >
+          Verifying updated structure…
+        </p>
+      )}
       <GraphMoleculeViewer
         source={source}
         moleculeId={loaded.target?.objectId ?? loaded.asset.name}

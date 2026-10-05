@@ -167,6 +167,42 @@ it('local selection remains personal; explicit selection and PNG callbacks carry
   ).toBe(true);
 });
 
+it('keeps agent controls mounted but inert while a new source is verified', async () => {
+  const props = {
+    source: { content: [first], target, frameTargets: [target] },
+    onReady,
+    toolbar: () => <input aria-label="Agent annotation" defaultValue="draft" />,
+  };
+  await act(async () => root.render(<GraphMoleculeViewer {...props} />));
+  const input = node.querySelector<HTMLInputElement>(
+    'input[aria-label="Agent annotation"]',
+  )!;
+  input.value = 'personal draft';
+  const controls = node.querySelector<HTMLElement>(
+    '[aria-label="Viewer contributions"]',
+  )!;
+  expect(controls.hasAttribute('inert')).toBe(false);
+  await act(async () =>
+    root.render(<GraphMoleculeViewer {...props} loading />),
+  );
+  expect(node.querySelector('input[aria-label="Agent annotation"]')).toBe(
+    input,
+  );
+  expect(input.value).toBe('personal draft');
+  expect(controls.hasAttribute('inert')).toBe(true);
+  expect(controls.style.visibility).toBe('hidden');
+  expect(handle.isAvailable()).toBe(false);
+  await act(async () =>
+    root.render(<GraphMoleculeViewer {...props} loading={false} />),
+  );
+  expect(node.querySelector('input[aria-label="Agent annotation"]')).toBe(
+    input,
+  );
+  expect(controls.hasAttribute('inert')).toBe(false);
+  expect(controls.style.visibility).toBe('');
+  expect(handle.isAvailable()).toBe(true);
+});
+
 it('stages separate molecules and preserves each target rather than relabeling them on submission', async () => {
   const submit = vi.fn();
   const render = async (next: ScientificTarget) => {
