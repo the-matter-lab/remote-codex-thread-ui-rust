@@ -4,7 +4,7 @@ import {
   readGraphMoleculeViewerData,
   sameScientificTarget,
   validateViewerCommands
-} from "./chunk-KHNRBZ77.js";
+} from "./chunk-NS7Q66D6.js";
 import "./chunk-TZBWAOOO.js";
 export {
   GraphMoleculeViewer,

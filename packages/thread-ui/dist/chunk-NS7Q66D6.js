@@ -2133,7 +2133,11 @@ function GraphMoleculeViewer({
     );
     setStagedSelections((current) => ({ ...current, [key]: entry }));
   }
+  function focusMeasurementKeyboard() {
+    viewerHostRef.current?.closest(".thread-graph-molecule-viewer")?.focus({ preventScroll: true });
+  }
   function changeMeasurements(items) {
+    focusMeasurementKeyboard();
     setMeasurementHistory((history) => [
       ...history.slice(-49),
       { key: measurementKey, before: currentMeasurements, after: items }
@@ -2146,6 +2150,7 @@ function GraphMoleculeViewer({
     const stack = redo ? measurementFuture : measurementHistory;
     const entry = stack.at(-1);
     if (!entry) return;
+    focusMeasurementKeyboard();
     setMeasurements((current) => ({
       ...current,
       [entry.key]: redo ? entry.after : entry.before

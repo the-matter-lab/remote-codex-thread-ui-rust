@@ -102,6 +102,14 @@ the repeatable script is `apps/playground/scripts/check-molecule-viewer.mjs`.
 
 ## Remaining design differences
 
+Release follow-up: independent audit found that deleting the focused last
+measurement or disabling Clear moved focus outside the viewer and broke immediate
+keyboard undo. Measurement changes now retain focus on the stable viewer. A
+regression test failed before the fix; the final focused scientific suite passed
+83 tests, typecheck/build passed, and a real 3Dmol browser check passed immediate
+remove/clear undo and redo on desktop/mobile, light/dark. Package versions are
+Thread UI 0.1.7 and XYZ plugin 0.1.2.
+
 - The native modal is inset from the viewport, rather than the chat pane. Opening
   grows from the figure over 300ms; closing uses a 240ms fade/scale on the returned
   figure instead of the prototype's reverse morph.

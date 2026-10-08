@@ -29,7 +29,7 @@ import {
 } from "./chunk-32RNZQEK.js";
 import {
   GraphMoleculeViewer
-} from "./chunk-KHNRBZ77.js";
+} from "./chunk-NS7Q66D6.js";
 import "./chunk-TZBWAOOO.js";
 
 // src/components/ThreadGraphWorkspacePanel.tsx

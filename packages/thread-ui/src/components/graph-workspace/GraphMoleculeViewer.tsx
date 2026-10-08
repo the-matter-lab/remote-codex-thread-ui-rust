@@ -1300,7 +1300,16 @@ export function GraphMoleculeViewer({
     setStagedSelections((current) => ({ ...current, [key]: entry }));
   }
 
+  function focusMeasurementKeyboard() {
+    viewerHostRef.current
+      ?.closest<HTMLElement>('.thread-graph-molecule-viewer')
+      ?.focus({ preventScroll: true });
+  }
+
   function changeMeasurements(items: MoleculeMeasurement[]) {
+    // Removing the focused row or disabling Clear otherwise sends focus to
+    // body, outside this viewer's undo/redo keyboard handler.
+    focusMeasurementKeyboard();
     setMeasurementHistory((history) => [
       ...history.slice(-49),
       { key: measurementKey, before: currentMeasurements, after: items },
@@ -1313,6 +1322,7 @@ export function GraphMoleculeViewer({
     const stack = redo ? measurementFuture : measurementHistory;
     const entry = stack.at(-1);
     if (!entry) return;
+    focusMeasurementKeyboard();
     setMeasurements((current) => ({
       ...current,
       [entry.key]: redo ? entry.after : entry.before,

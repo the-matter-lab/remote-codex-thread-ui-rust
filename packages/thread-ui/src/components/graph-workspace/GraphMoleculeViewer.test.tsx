@@ -273,6 +273,29 @@ it('measures canonical atoms locally without changing scientific selection or su
   ).toContain('1.000 Å');
 });
 
+it('keeps keyboard undo and redo available when measurement controls disappear or disable', async () => {
+  await act(async () => root.render(<GraphMoleculeViewer source={{content: [first], target}} />));
+  await click('Measure distance');
+  await act(async () => runtime.click({index: 0}, runtime.viewer));
+  await act(async () => runtime.click({index: 1}, runtime.viewer));
+  const count = () => node.querySelectorAll('[aria-label="Measurements"] li').length;
+  const shortcut = async (shiftKey = false) => act(async () => {
+    document.activeElement!.dispatchEvent(new KeyboardEvent('keydown', {key: 'z', ctrlKey: true, shiftKey, bubbles: true}));
+  });
+  for (const action of ['Remove measurement 1', 'Clear measurements']) {
+    button(action).focus();
+    await click(action);
+    expect(count()).toBe(0);
+    expect(document.activeElement).toBe(node.querySelector('.thread-graph-molecule-viewer'));
+    await shortcut();
+    expect(count()).toBe(1);
+    await shortcut(true);
+    expect(count()).toBe(0);
+    await shortcut();
+    expect(count()).toBe(1);
+  }
+});
+
 it('toggles hydrogens and personal labels without deleting agent annotations', async () => {
   await act(async () =>
     root.render(
