@@ -1,10 +1,10 @@
-import { T as ThreadShellControlState$1, P as PromptAttachmentUpload, a as ThreadTimelineAdapter, b as ThreadShellAdapter, c as ThreadGraphWorkspacePanelProps, d as PluginContextValue, e as ThreadDetailUiAdapter, f as ThreadGraphWorkspaceFeatures } from './workspace-panel-C5fZdyoh.js';
-export { g as PluginContext, S as SendPromptInput, h as ShellSocketConnection, i as ShellSocketHandlers, j as ThreadWorkspaceAdapter, W as WorkspaceTab, k as createDefaultPluginContextValue, m as mergePluginState } from './workspace-panel-C5fZdyoh.js';
+import { T as ThreadShellControlState$1, P as PromptAttachmentUpload, a as ThreadTimelineAdapter, b as ThreadShellAdapter, c as ThreadGraphWorkspacePanelProps, d as PluginContextValue, e as ThreadDetailUiAdapter, f as ThreadGraphWorkspaceFeatures } from './workspace-panel-Tn_ohcwH.js';
+export { E as ExtensionPluginApi, g as PluginContext, S as SendPromptInput, h as ShellSocketConnection, i as ShellSocketHandlers, j as ThreadWorkspaceAdapter, k as ThreadWorkspaceArchiveFormat, l as ThreadWorkspaceCapabilities, m as ThreadWorkspaceTrashEntry, n as ThreadWorkspaceTrashList, W as WorkspaceTab, o as createDefaultPluginContextValue, p as createExtensionPluginApi, q as extensionModuleAvailable, r as mergePluginState } from './workspace-panel-Tn_ohcwH.js';
 import * as react from 'react';
 import { Dispatch, SetStateAction, ReactNode, RefObject, Ref, ComponentType, ForwardRefExoticComponent, RefAttributes, ComponentProps } from 'react';
-import { ReasoningEffortDto, CollaborationModeDto, SandboxModeDto, ModelOptionDto, ThreadContextUsageDto, AgentProviderCapabilitiesDto, AgentBackendToolboxItemSchemaDto, AgentBackendHookCommandTemplateDto, AgentBackendManagementSchemaDto, PromptAttachmentKindDto, ThreadSkillsDto, ThreadMcpServersDto, ThreadHooksDto, ThreadForkTurnOptionDto, ThreadGoalDto, CreateThreadHookInput, UpdateThreadHookInput, ThreadGoalStatusDto, ProviderHostFileDto, AgentSubscriptionUsageDto, UpdateThreadSettingsInput, AgentBackendIdDto, ThreadDto, AgentRuntimeStatusDto, ThreadTurnDto, ThreadActionRequestDto, ThreadHistoryItemDto, RespondThreadActionRequestInput, ThreadAnsweredRequestNoteDto, ThreadActivityNoteDto, ThreadPendingSteerDto, ThreadHistoryItemDetailDto, ShellStatusDto, ThreadExportTurnOptionsDto, ThreadExportFormatDto, ExportThreadTranscriptInput, ThreadDetailDto, PluginDto, ImportPluginInput, UpdatePluginInput } from '@remote-codex/shared';
-import { F as FrontendPluginModule } from './plugin-types-ZVSGf8y8.js';
-export { A as ArtifactRenderContext, I as InlineCodeRenderContext, T as ThreadPanelContribution } from './plugin-types-ZVSGf8y8.js';
+import { ReasoningEffortDto, CollaborationModeDto, SandboxModeDto, ModelOptionDto, ThreadContextUsageDto, AgentProviderCapabilitiesDto, AgentBackendToolboxItemSchemaDto, AgentBackendHookCommandTemplateDto, AgentBackendManagementSchemaDto, PromptAttachmentKindDto, ThreadSkillsDto, ThreadMcpServersDto, ThreadHooksDto, ThreadForkTurnOptionDto, ThreadGoalDto, CreateThreadHookInput, UpdateThreadHookInput, ThreadGoalStatusDto, ProviderHostFileDto, AgentSubscriptionUsageDto, UpdateThreadSettingsInput, AgentBackendIdDto, ThreadDto, AgentRuntimeStatusDto, StructuredUsage, ThreadTurnDto, ThreadActionRequestDto, ThreadHistoryItemDto, RespondThreadActionRequestInput, ThreadAnsweredRequestNoteDto, ThreadActivityNoteDto, ThreadPendingSteerDto, ThreadHistoryItemDetailDto, ShellStatusDto, ThreadExportTurnOptionsDto, ThreadExportFormatDto, ExportThreadTranscriptInput, ThreadDetailDto, PluginDto, ImportPluginInput, UpdatePluginInput } from '@remote-codex/shared';
+import { F as FrontendPluginModule, E as ExtensionHostAdapter } from './plugin-types-Bjl4gyeh.js';
+export { A as ArtifactRenderContext, a as ExtensionRenderContext, I as InlineCodeRenderContext, T as ThreadPanelContribution, V as ViewerToolbarContext, b as ViewerToolbarContribution } from './plugin-types-Bjl4gyeh.js';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 
 interface SlashPanelState<T> {
@@ -47,6 +47,11 @@ interface ThreadComposerProps {
     draftPrompt?: string | undefined;
     draftAttachments?: PromptAttachmentUpload[] | undefined;
     onPickAttachment?: ThreadComposerAttachmentPicker | undefined;
+    /** Omitted flags retain the generic composer's existing attachment behavior. */
+    attachmentCapabilities?: {
+        files: boolean;
+        images: boolean;
+    };
     skillsState?: SlashPanelState<ThreadSkillsDto>;
     mcpState?: SlashPanelState<ThreadMcpServersDto>;
     hooksState?: SlashPanelState<ThreadHooksDto>;
@@ -110,7 +115,7 @@ interface ThreadComposerProps {
     onSteerPendingPrompt?: (pendingPromptId: string) => Promise<void> | void;
     onCancelPendingPrompt?: (pendingPromptId: string) => Promise<void> | void;
 }
-declare function ThreadComposer({ activeView, edgeToEdgeMobile, busy, settingsBusy, compactBusy, error, model, reasoningEffort, fastMode, collaborationMode, sandboxMode, hideSandboxModeControl, modelOptions, contextUsage, capabilities, toolboxItems, hookCommandTemplates, mcpConfigFormat, followTail, threadConnected, shellAvailable, disabled, disabledPlaceholder, shellControlState, draftPrompt, draftAttachments, onPickAttachment, skillsState, mcpState, hooksState, goalState, goalHistory, forkTurnOptionsState, onDraftChange, onSubmit, onInterrupt, onCompact, onOpenSkills, onOpenMcp, onOpenHooks, onOpenHarness, onCreateHook, onUpdateHook, onTrustHook, onUntrustHook, onOpenGoal, onPrepareGoalSubmit, onUpdateGoal, onOpenForkTurns, onForkLatest, onForkTurn, onReadProviderConfig, onWriteProviderConfig, onToggleFollow, canJumpToPreviousTurn, onJumpToPreviousTurn, canJumpToNextTurn, onJumpToNextTurn, subscriptionUsage, onUpdateSettings, onToggleView, onShellCopy, onShellControl, canInterrupt, pendingPrompts, onSteerPendingPrompt, onCancelPendingPrompt, }: ThreadComposerProps): react.JSX.Element;
+declare function ThreadComposer({ activeView, edgeToEdgeMobile, busy, settingsBusy, compactBusy, error, model, reasoningEffort, fastMode, collaborationMode, sandboxMode, hideSandboxModeControl, modelOptions, contextUsage, capabilities, toolboxItems, hookCommandTemplates, mcpConfigFormat, followTail, threadConnected, shellAvailable, disabled, disabledPlaceholder, shellControlState, draftPrompt, draftAttachments, onPickAttachment, attachmentCapabilities, skillsState, mcpState, hooksState, goalState, goalHistory, forkTurnOptionsState, onDraftChange, onSubmit, onInterrupt, onCompact, onOpenSkills, onOpenMcp, onOpenHooks, onOpenHarness, onCreateHook, onUpdateHook, onTrustHook, onUntrustHook, onOpenGoal, onPrepareGoalSubmit, onUpdateGoal, onOpenForkTurns, onForkLatest, onForkTurn, onReadProviderConfig, onWriteProviderConfig, onToggleFollow, canJumpToPreviousTurn, onJumpToPreviousTurn, canJumpToNextTurn, onJumpToNextTurn, subscriptionUsage, onUpdateSettings, onToggleView, onShellCopy, onShellControl, canInterrupt, pendingPrompts, onSteerPendingPrompt, onCancelPendingPrompt, }: ThreadComposerProps): react.JSX.Element;
 
 type SettingsSection = {
     id: string;
@@ -153,6 +158,8 @@ interface MatterWorkbenchOptions {
     }) => ReactNode;
     emptyWorkspace?: boolean;
     navigationReady?: boolean;
+    /** Desktop workspace starts visible; an explicit saved preference takes precedence. */
+    defaultExplorerOpen?: boolean;
     harnessSessionId?: string | null;
     harnessSessionUrl?: string | null;
     threads: WorkbenchThread[];
@@ -297,13 +304,20 @@ interface ThreadCardsProps {
 declare function ThreadCards({ threads, currentThreadId, currentWorkspaceId, workspaceLabels, onOpenThread, getThreadHref, renderThreadLink, onBeginRenameThread, onDeleteThread, scrollable, maxHeightClassName, showDeleteButton, showSessionCopyButton, collapsed, }: ThreadCardsProps): react.JSX.Element;
 declare function ThreadWorkspaceLayout({ workbench, threads, status, loading, error, viewportConstrained, layoutMode, effectiveTheme: effectiveThemeProp, themeMode: themeModeProp, onThemeModeChange, showMobileNewThreadShortcut, hideRoomsRail, navigationTitle, renderNavigationHeader, settingsDialogOpen, onSettingsDialogOpenChange, mobileHeaderAction, currentThreadId, currentThreadLabel, currentWorkspaceId, currentWorkspaceLabel, harnessLabel, sessionLabel, usageLabel, threadActionsButton, topbarActions, metaContent, settingsContent, globalSettingsContent, settingsSections, workspaceLabels, workspaceReturnHref, onWorkspaceReturn, getThreadHref, onOpenThread, getNewThreadHref, newThreadHref: explicitNewThreadHref, newThreadLabel, onNewThread, onNewThreadTitle, renderNewThreadDialogContent, renderThreadLink, onCloseAppNavigation, onRenameThread, onDeleteThread, workspaceContent, workspaceTitle, workspaceActions, workspaceRevealRequestKey, children, }: ThreadWorkspaceLayoutProps): react.JSX.Element;
 
+type TimelineUsageByScope = Record<string, {
+    usage?: StructuredUsage;
+}>;
 type TimelineTurn = Omit<ThreadTurnDto, "status"> & {
+    usageByScope?: TimelineUsageByScope;
     status: ThreadTurnDto["status"] | "sending";
 };
 
 interface ThreadTimelineProps {
+    roomUsage?: StructuredUsage | null;
     threadId?: string | undefined;
-    turns: ThreadTurnDto[];
+    turns: Array<ThreadTurnDto & {
+        usageByScope?: TimelineUsageByScope;
+    }>;
     totalTurnCount?: number;
     pendingRequests?: ThreadActionRequestDto[];
     activeTurnId?: string | null;
@@ -368,8 +382,10 @@ interface ThreadTimelineProps {
     }) => void;
     adapter?: ThreadTimelineAdapter | undefined;
     autoCollapseCompletedTurns?: boolean;
+    /** Show only reasoning summaries actually emitted by the provider. */
+    showReasoningSummaries?: boolean;
 }
-declare function ThreadTimelineComponent({ threadId, turns, totalTurnCount, pendingRequests, activeTurnId, threadRunning, pendingSteers, livePlan, liveItems, respondingRequestId, onRespondToRequest, liveOutput, scrollRequestKey, searchTarget, previousTurnScrollRequestKey, nextTurnScrollRequestKey, bottomSpacer, className, onTailVisibilityChange, onPreviousTurnAvailabilityChange, onNextTurnAvailabilityChange, loadingEarlier, onLoadEarlier, ephemeralUserNote, answeredRequestNotes, activityNotes, optimisticSteers, optimisticTurn, onLoadHistoryItemDetail, onLoadTurnDetail, onOpenThread, onSelectArtifact, onSelectHistoryItemDetail, adapter, autoCollapseCompletedTurns, }: ThreadTimelineProps): react.JSX.Element;
+declare function ThreadTimelineComponent({ roomUsage, threadId, turns, totalTurnCount, pendingRequests, activeTurnId, threadRunning, pendingSteers, livePlan, liveItems, respondingRequestId, onRespondToRequest, liveOutput, scrollRequestKey, searchTarget, previousTurnScrollRequestKey, nextTurnScrollRequestKey, bottomSpacer, className, onTailVisibilityChange, onPreviousTurnAvailabilityChange, onNextTurnAvailabilityChange, loadingEarlier, onLoadEarlier, ephemeralUserNote, answeredRequestNotes, activityNotes, optimisticSteers, optimisticTurn, onLoadHistoryItemDetail, onLoadTurnDetail, onOpenThread, onSelectArtifact, onSelectHistoryItemDetail, adapter, autoCollapseCompletedTurns, showReasoningSummaries, }: ThreadTimelineProps): react.JSX.Element;
 declare const ThreadTimeline: react.MemoExoticComponent<typeof ThreadTimelineComponent>;
 
 interface ThreadShellControlState {
@@ -537,6 +553,8 @@ interface ThreadDetailSurfaceProps {
     workspaceActions?: ReactNode;
     workspaceFeatures?: ThreadGraphWorkspaceFeatures;
     workspaceFocusPathRequest?: {
+        /** Inspect this exact projected artifact; takes precedence over the file path. */
+        artifactId?: string;
         path: string;
         line?: number;
         requestId: number;
@@ -591,9 +609,10 @@ interface PluginProviderAdapter {
     updatePlugin?: (pluginId: string, input: UpdatePluginInput) => Promise<PluginDto> | PluginDto;
     deletePlugin?: (pluginId: string) => Promise<PluginDto> | PluginDto;
 }
-declare function PluginProvider({ adapter, builtinPlugins, children, }: {
+declare function PluginProvider({ adapter, builtinPlugins, extensionHost, children, }: {
     adapter?: PluginProviderAdapter;
     builtinPlugins?: FrontendPluginModule[];
+    extensionHost?: ExtensionHostAdapter;
     children: ReactNode;
 }): react.JSX.Element;
 
@@ -658,4 +677,4 @@ declare function DialogHeader({ className, ...props }: ComponentProps<'div'>): r
 declare function DialogTitle({ className, ...props }: ComponentProps<typeof DialogPrimitive.Title>): react.JSX.Element;
 declare function DialogDescription({ className, ...props }: ComponentProps<typeof DialogPrimitive.Description>): react.JSX.Element;
 
-export { type AgentBackendId, AppShellMenuButton, AppShellNavContext, type AppShellNavContextValue, type AppShellNavigationItem, AppShellNavigationMenu, type AppShellNavigationMenuProps, AppShellSettingsDialog, type AppShellSettingsDialogProps, ConfirmDialog, type CreateThreadShareInput, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, ExportTranscriptDialog, FrontendPluginModule, LongTextDialog, MatterWorkbench, type MatterWorkbenchOptions, MemoizedThreadGraphWorkspacePanel, PluginContextValue, PluginProvider, PromptAttachmentUpload, PublicTranscript, type PublicTranscriptSnapshot, SettingsPanels, type SettingsSection, type ThemeMode, ThreadActionsDialog, type ThreadActionsDialogProps, ThreadCards, ThreadComposer, type ThreadComposerProps, ThreadDetailSurface, type ThreadDetailSurfaceProps, ThreadDetailUiAdapter, ThreadGraphWorkspaceFeatures, ThreadGraphWorkspacePanel, ThreadGraphWorkspacePanelProps, type ThreadShareSummary, ThreadShellAdapter, ThreadShellControlState$1 as ThreadShellControlState, ThreadShellPanel, type ThreadShellPanelHandle, ThreadTimeline, ThreadTimelineAdapter, type ThreadTimelineProps, ThreadWorkspaceLayout, type WorkbenchNotification, type WorkbenchThread, formatLongTimestamp, formatShortTimestamp, hasLikelyMarkdownSyntax, historyItemAccentClassName, historyItemLabel, threadStatusClassName, threadStatusLabel, transcriptSnapshot, turnStatusLabel, useAppShellNav, usePlugins };
+export { type AgentBackendId, AppShellMenuButton, AppShellNavContext, type AppShellNavContextValue, type AppShellNavigationItem, AppShellNavigationMenu, type AppShellNavigationMenuProps, AppShellSettingsDialog, type AppShellSettingsDialogProps, ConfirmDialog, type CreateThreadShareInput, Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, ExportTranscriptDialog, ExtensionHostAdapter, FrontendPluginModule, LongTextDialog, MatterWorkbench, type MatterWorkbenchOptions, MemoizedThreadGraphWorkspacePanel, PluginContextValue, PluginProvider, PromptAttachmentUpload, PublicTranscript, type PublicTranscriptSnapshot, SettingsPanels, type SettingsSection, type ThemeMode, ThreadActionsDialog, type ThreadActionsDialogProps, ThreadCards, ThreadComposer, type ThreadComposerProps, ThreadDetailSurface, type ThreadDetailSurfaceProps, ThreadDetailUiAdapter, ThreadGraphWorkspaceFeatures, ThreadGraphWorkspacePanel, ThreadGraphWorkspacePanelProps, type ThreadShareSummary, ThreadShellAdapter, ThreadShellControlState$1 as ThreadShellControlState, ThreadShellPanel, type ThreadShellPanelHandle, ThreadTimeline, ThreadTimelineAdapter, type ThreadTimelineProps, ThreadWorkspaceLayout, type WorkbenchNotification, type WorkbenchThread, formatLongTimestamp, formatShortTimestamp, hasLikelyMarkdownSyntax, historyItemAccentClassName, historyItemLabel, threadStatusClassName, threadStatusLabel, transcriptSnapshot, turnStatusLabel, useAppShellNav, usePlugins };

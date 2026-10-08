@@ -65,6 +65,20 @@ async function click(label: string) {
 beforeEach(() => {
   resizeCallbacks = [];
   Object.assign(globalThis, { IS_REACT_ACT_ENVIRONMENT: true });
+  Object.defineProperties(HTMLDialogElement.prototype, {
+    showModal: {
+      configurable: true,
+      value: function (this: HTMLDialogElement) {
+        this.open = true;
+      },
+    },
+    close: {
+      configurable: true,
+      value: function (this: HTMLDialogElement) {
+        this.open = false;
+      },
+    },
+  });
   vi.stubGlobal(
     'ResizeObserver',
     class {
@@ -106,6 +120,7 @@ beforeEach(() => {
     addSurface: vi.fn(),
     render: vi.fn(),
     resize: vi.fn(),
+    spin: vi.fn(),
     setBackgroundColor: vi.fn(),
     setCameraParameters: vi.fn(),
     getView: () => camera,
@@ -173,9 +188,375 @@ it('local selection remains personal; explicit selection and PNG callbacks carry
       camera,
     }),
   );
+  expect(button('Measure distance').disabled).toBe(false);
+});
+
+it('expands the same inspected canvas and keeps camera, selection and handle available on close', async () => {
+  vi.spyOn(HTMLDialogElement.prototype, 'showModal').mockImplementation(
+    function (this: HTMLDialogElement) {
+      this.open = true;
+    },
+  );
+  vi.spyOn(HTMLDialogElement.prototype, 'close').mockImplementation(function (
+    this: HTMLDialogElement,
+  ) {
+    this.open = false;
+  });
+  await act(async () =>
+    root.render(
+      <GraphMoleculeViewer
+        presentation="timeline"
+        title="water.xyz"
+        source={{ content: [first], target }}
+        onReady={onReady}
+      />,
+    ),
+  );
+  const stage = node.querySelector('[data-testid="molecule-viewer"]');
+  await act(async () => runtime.click({ index: 0 }, runtime.viewer));
+  const inspected = handle;
+  camera = [2, 3, 4, 5, 0, 0, 0, 1];
+  await click('Open full view');
+  expect(node.querySelector('dialog')?.open).toBe(true);
+  expect(node.querySelector('[data-testid="molecule-viewer"]')).toBe(stage);
+  expect(handle).toBe(inspected);
+  expect(inspected.captureView().camera).toEqual(camera);
+  expect(inspected.captureView().selectedIds).toEqual(['0']);
+  await click('Close full view');
+  expect(node.querySelector('dialog')?.open).toBe(false);
+  expect(inspected.isAvailable()).toBe(true);
+  expect(inspected.captureView().selectedIds).toEqual(['0']);
+  expect(runtime.viewer.addModel).toHaveBeenCalledTimes(1);
+  expect(button('Open full view')).toBe(document.activeElement);
+});
+
+it('measures canonical atoms locally without changing scientific selection or submitting inputs', async () => {
+  const submit = vi.fn();
+  await act(async () =>
+    root.render(
+      <GraphMoleculeViewer
+        source={{
+          content: [first],
+          target,
+          metadata: {
+            version: 1,
+            objectId: target.objectId,
+            sourceRevision: target.sourceRevision,
+            checksum: target.checksum,
+            format: 'xyz',
+            atoms: [
+              { id: 'oxygen', element: 'O' },
+              { id: 'hydrogen', element: 'H' },
+            ],
+          },
+        }}
+        onReady={onReady}
+        onSelectionSubmit={submit}
+      />,
+    ),
+  );
+  await click('Measure distance');
+  await act(async () => runtime.click({ index: 0 }, runtime.viewer));
+  await act(async () => runtime.click({ index: 1 }, runtime.viewer));
   expect(
-    button('Distance: unavailable; requires an agent contribution').disabled,
-  ).toBe(true);
+    node.querySelector('[aria-label="Measurements"]')?.textContent,
+  ).toContain('1.000 Å');
+  expect(handle.captureView().selectedIds).toEqual([]);
+  expect(submit).not.toHaveBeenCalled();
+  await click('Clear measurements');
+  expect(
+    node.querySelector('[aria-label="Measurements"]')?.textContent,
+  ).not.toContain('1.000 Å');
+  await click('Undo measurement change');
+  expect(
+    node.querySelector('[aria-label="Measurements"]')?.textContent,
+  ).toContain('1.000 Å');
+});
+
+it('toggles hydrogens and personal labels without deleting agent annotations', async () => {
+  await act(async () =>
+    root.render(
+      <GraphMoleculeViewer
+        source={{ content: [first], target }}
+        onReady={onReady}
+      />,
+    ),
+  );
+  await click('Atom labels');
+  expect(runtime.viewer.addLabel).toHaveBeenCalledWith(
+    expect.stringContaining('O'),
+    expect.anything(),
+    undefined,
+    true,
+  );
+  await click('Hydrogens');
+  expect(model.setStyle).toHaveBeenCalledWith({ elem: 'H' }, {});
+  expect(handle.captureView().target).toEqual(target);
+});
+
+it('measures the middle-atom angle, cancels repeat picks, and supports undo/redo without scientific selection', async () => {
+  model.selectedAtoms = () => [
+    { index: 0, elem: 'H', x: 1, y: 0, z: 0 },
+    { index: 1, elem: 'O', x: 0, y: 0, z: 0 },
+    { index: 2, elem: 'H', x: 0, y: 1, z: 0 },
+  ];
+  await act(async () =>
+    root.render(
+      <GraphMoleculeViewer
+        source={{ content: [first], target }}
+        onReady={onReady}
+      />,
+    ),
+  );
+  await click('Measure angle');
+  for (const index of [0, 0, 0, 1, 2])
+    await act(async () => runtime.click({ index }, runtime.viewer));
+  expect(
+    node.querySelector('[aria-label="Measurements"]')?.textContent,
+  ).toContain('90.0°');
+  expect(handle.captureView().selectedIds).toEqual([]);
+  await click('Remove measurement 1');
+  expect(
+    node.querySelector('[aria-label="Measurements"]')?.textContent,
+  ).not.toContain('90.0°');
+  await click('Undo measurement change');
+  expect(
+    node.querySelector('[aria-label="Measurements"]')?.textContent,
+  ).toContain('90.0°');
+  await click('Redo measurement change');
+  expect(
+    node.querySelector('[aria-label="Measurements"]')?.textContent,
+  ).not.toContain('90.0°');
+});
+
+it('isolates measurements and partial picks by immutable revision and trajectory frame', async () => {
+  const render = async (revision: string) =>
+    act(async () =>
+      root.render(
+        <GraphMoleculeViewer
+          source={{
+            content: [first, first.replace('first', 'second')],
+            target: { ...target, sourceRevision: revision },
+          }}
+        />,
+      ),
+    );
+  await render('r1');
+  await click('Measure distance');
+  await act(async () => runtime.click({ index: 0 }, runtime.viewer));
+  await act(async () => runtime.click({ index: 1 }, runtime.viewer));
+  expect(
+    node.querySelector('[aria-label="Measurements"]')?.textContent,
+  ).toContain('1.000 Å');
+  await click('First frame');
+  expect(
+    node.querySelector('[aria-label="Measurements"]')?.textContent,
+  ).not.toContain('1.000 Å');
+  await act(async () => runtime.click({ index: 0 }, runtime.viewer));
+  await click('Last frame');
+  expect(
+    node.querySelector('[aria-label="Measurements"]')?.textContent,
+  ).toContain('1.000 Å');
+  expect(
+    node.querySelector('.molecule-measure-hint')?.textContent,
+  ).not.toContain('pick 1 more');
+  await render('r2');
+  expect(
+    node.querySelector('[aria-label="Measurements"]')?.textContent,
+  ).not.toContain('1.000 Å');
+});
+
+it('scopes shortcuts to inspection, preserves editable input, and unwinds Escape one layer at a time', async () => {
+  await act(async () =>
+    root.render(
+      <GraphMoleculeViewer
+        presentation="timeline"
+        source={{ content: [first], target }}
+        rendererSlot={() => (
+          <div contentEditable suppressContentEditableWarning>
+            Draft
+          </div>
+        )}
+      />,
+    ),
+  );
+  await click('Open full view');
+  const surface = node.querySelector('.thread-graph-molecule-viewer')!;
+  const key = async (value: string, target: Element = surface) =>
+    act(async () =>
+      target.dispatchEvent(
+        new KeyboardEvent('keydown', {
+          key: value,
+          bubbles: true,
+          cancelable: true,
+        }),
+      ),
+    );
+  await key('d', node.querySelector('[contenteditable]')!);
+  expect(button('Measure distance').getAttribute('aria-pressed')).toBe('false');
+  await key('d');
+  expect(button('Measure distance').getAttribute('aria-pressed')).toBe('true');
+  await act(async () => runtime.click({ index: 0 }, runtime.viewer));
+  await key('?');
+  await key('Escape');
+  expect(
+    node.querySelector('[aria-label="Viewer help"][role="dialog"]'),
+  ).toBeNull();
+  await key('Escape');
+  expect(button('Measure distance').getAttribute('aria-pressed')).toBe('true');
+  await key('Escape');
+  expect(button('Measure distance').getAttribute('aria-pressed')).toBe('false');
+  expect(node.querySelector('dialog')?.open).toBe(true);
+  await key('Escape');
+  expect(node.querySelector('dialog')?.open).toBe(false);
+});
+
+it("restores a file's local measurements after inspecting another object", async () => {
+  const render = async (objectId: string) =>
+    act(async () =>
+      root.render(
+        <GraphMoleculeViewer
+          source={{ content: [first], target: { ...target, objectId } }}
+        />,
+      ),
+    );
+  await render('water');
+  await click('Measure distance');
+  await act(async () => runtime.click({ index: 0 }, runtime.viewer));
+  await act(async () => runtime.click({ index: 1 }, runtime.viewer));
+  await render('other-water');
+  await click('Measure distance');
+  expect(
+    node.querySelector('[aria-label="Measurements"]')?.textContent,
+  ).not.toContain('1.000 Å');
+  await render('water');
+  await click('Measure distance');
+  expect(
+    node.querySelector('[aria-label="Measurements"]')?.textContent,
+  ).toContain('1.000 Å');
+});
+
+it('repaints the inherited theme without rebuilding or refitting, preserving agent annotations', async () => {
+  const { VIEWER_COMMAND_BATCH_ACTION } =
+    await import('./GraphMoleculeViewerCommands');
+  const discovery = structuredClone(EXTENSION_FIXTURES.grafico.discovery);
+  discovery.capabilities[VIEWER_COMMAND_BATCH_ACTION.id] = true;
+  discovery.actions.push(VIEWER_COMMAND_BATCH_ACTION);
+  await act(async () =>
+    root.render(
+      <div data-theme="light">
+        <GraphMoleculeViewer
+          source={{ content: [first], target }}
+          onReady={onReady}
+          extensionHost={{ discovery }}
+        />
+      </div>,
+    ),
+  );
+  await act(async () => {
+    expect(
+      await handle.execute({
+        version: 1,
+        requestId: 'label',
+        operationId: 'label',
+        actionId: VIEWER_COMMAND_BATCH_ACTION.id,
+        target,
+        payload: {
+          version: 1,
+          commands: [
+            {
+              type: 'annotations',
+              annotations: [{ id: 'a', atomId: '0', text: 'Agent note' }],
+            },
+          ],
+        },
+      }),
+    ).toMatchObject({ status: 'applied' });
+  });
+  await click('Atom labels');
+  const before = [...camera];
+  vi.mocked(runtime.viewer.addModel).mockClear();
+  vi.mocked(runtime.viewer.zoomTo).mockClear();
+  await act(async () =>
+    node.firstElementChild!.setAttribute('data-theme', 'dark'),
+  );
+  expect(runtime.viewer.addLabel).toHaveBeenCalledWith(
+    'Agent note',
+    expect.objectContaining({ backgroundColor: '#1a2026' }),
+    undefined,
+    true,
+  );
+  expect(runtime.viewer.addModel).not.toHaveBeenCalled();
+  expect(runtime.viewer.zoomTo).not.toHaveBeenCalled();
+  expect(camera).toEqual(before);
+});
+
+it('disables automatic spin for reduced motion', async () => {
+  vi.stubGlobal('matchMedia', () => ({
+    matches: true,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+  }));
+  await act(async () =>
+    root.render(<GraphMoleculeViewer source={{ content: [first], target }} />),
+  );
+  expect(button('Spin').disabled).toBe(true);
+  await act(async () =>
+    node
+      .querySelector('.thread-graph-molecule-viewer')!
+      .dispatchEvent(new KeyboardEvent('keydown', { key: 's', bubbles: true })),
+  );
+  expect(runtime.viewer.spin).not.toHaveBeenCalledWith('y', expect.anything());
+});
+
+it('keeps unit-cell geometry visible in both themes and preserves its personal visibility toggle', async () => {
+  await act(async () =>
+    root.render(
+      <div data-theme="light">
+        <GraphMoleculeViewer
+          source={{
+            content: [first],
+            target,
+            metadata: {
+              version: 1,
+              objectId: target.objectId,
+              sourceRevision: target.sourceRevision,
+              checksum: target.checksum,
+              format: 'xyz',
+              cell: {
+                vectors: [
+                  [2, 0, 0],
+                  [0, 2, 0],
+                  [0, 0, 2],
+                ],
+                periodic: [true, true, true],
+                unit: 'angstrom',
+              },
+            },
+          }}
+          onReady={onReady}
+        />
+      </div>,
+    ),
+  );
+  expect(
+    vi.mocked(runtime.viewer.addLine).mock.calls.length -
+      vi.mocked(runtime.viewer.removeShape).mock.calls.length,
+  ).toBe(12);
+  expect(runtime.viewer.addLine).toHaveBeenLastCalledWith(
+    expect.objectContaining({ color: '#5b6269' }),
+  );
+  vi.mocked(runtime.viewer.addLine).mockClear();
+  await act(async () =>
+    node.firstElementChild!.setAttribute('data-theme', 'dark'),
+  );
+  expect(runtime.viewer.addLine).toHaveBeenCalledTimes(12);
+  expect(runtime.viewer.addLine).toHaveBeenLastCalledWith(
+    expect.objectContaining({ color: '#a7b0b7' }),
+  );
+  await click('Hide unit cell');
+  expect(button('Show unit cell')).toBeTruthy();
+  expect(handle.captureView().target).toEqual(target);
 });
 
 it('keeps agent controls mounted but inert while a new source is verified', async () => {

@@ -6,6 +6,15 @@ import {
   ChevronLeft,
   ChevronRight,
   PanelRightOpen,
+  Ruler,
+  Waypoints,
+  RotateCcw,
+  HelpCircle,
+  Download,
+  Pin,
+  X,
+  Undo2,
+  Redo2,
 } from 'lucide-react';
 import {
   useEffect,
@@ -32,6 +41,14 @@ import {
 import GraphMoleculeViewerLowerButtonGroup from './GraphMoleculeViewerLowerButtonGroup';
 import GraphMoleculeViewerUpperButtonGroup from './GraphMoleculeViewerUpperButtonGroup';
 import type { GraphMoleculeCameraInfo } from './GraphMoleculeViewerControls';
+import { GraphMoleculeFigureFrame } from './GraphMoleculeFigureFrame';
+import { createMoleculeRenderViewer } from './GraphMoleculeViewerLifetime';
+import { downloadTextFile } from './GraphMoleculeViewerControls';
+import {
+  measureAtoms,
+  moleculeFormula,
+  type MoleculeMeasurement,
+} from './GraphMoleculeMeasurements';
 import type {
   RenderModel,
   RenderViewer,
@@ -195,6 +212,47 @@ export function GraphMoleculeViewer({
   const [unitCellAvailable, setUnitCellAvailable] = useState(false);
   const [unitCellVisible, setUnitCellVisible] = useState(false);
   const [viewerInitError, setViewerInitError] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState(false);
+  const [hydrogens, setHydrogens] = useState(true);
+  const [atomLabels, setAtomLabels] = useState(false);
+  const [help, setHelp] = useState(false);
+  const [measureTool, setMeasureTool] = useState<'distance' | 'angle' | null>(
+    null,
+  );
+  const measureToolRef = useRef(measureTool);
+  measureToolRef.current = measureTool;
+  const [measurePicks, setMeasurePicks] = useState<string[]>([]);
+  const picksRef = useRef(measurePicks);
+  picksRef.current = measurePicks;
+  const measurePickKeyRef = useRef('');
+  const [measurements, setMeasurements] = useState<
+    Record<string, MoleculeMeasurement[]>
+  >({});
+  const [measurementHistory, setMeasurementHistory] = useState<
+    {
+      key: string;
+      before: MoleculeMeasurement[];
+      after: MoleculeMeasurement[];
+    }[]
+  >([]);
+  const [measurementFuture, setMeasurementFuture] = useState<
+    typeof measurementHistory
+  >([]);
+  const [measurementNotice, setMeasurementNotice] = useState(false);
+  const [measurementsPinned, setMeasurementsPinned] = useState(false);
+  const [focusedMeasurement, setFocusedMeasurement] = useState<number | null>(
+    null,
+  );
+  const [spin, setSpin] = useState(0);
+  const [dark, setDark] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const pickMeasurementRef = useRef<(id: string) => void>(() => {});
+  const nextMeasurementId = useRef(0);
+  const measurementShapes = useRef<object[]>([]);
+  const [formula, setFormula] = useState<ReturnType<typeof moleculeFormula>>(
+    [],
+  );
+  const [atomCount, setAtomCount] = useState(0);
 
   const viewerData = useMemo(
     () => readGraphMoleculeViewerData(source),
@@ -217,6 +275,7 @@ export function GraphMoleculeViewer({
   const renderedModelKeyRef = useRef<string | null>(null);
   const surfaceActiveRef = useRef(false);
   const labelsActiveRef = useRef(false);
+  const decoratedRef = useRef('');
   const backgroundRef = useRef<string | null>(null);
   const styledRef = useRef('');
   const cellDrawRef = useRef('');
@@ -248,6 +307,13 @@ export function GraphMoleculeViewer({
     ],
   );
   const objectRef = useRef(activeObject);
+  const measurementKey = JSON.stringify([
+    activeObject,
+    target?.sourceRevision ?? snapshot?.target?.sourceRevision,
+    currentIndex,
+    modelDataKey,
+  ]);
+  const currentMeasurements = measurements[measurementKey] ?? [];
   const selectedIds = selectedSerials
     .map((index) => atomIdsRef.current[index]!)
     .filter(Boolean);
@@ -271,7 +337,7 @@ export function GraphMoleculeViewer({
     const viewer = viewerRef.current,
       model = modelRef.current;
     if (!viewer || !model) return;
-    const key = JSON.stringify([visible, cellRef.current]);
+    const key = JSON.stringify([visible, cellRef.current, dark]);
     if (cellDrawRef.current === key) return;
     cellDrawRef.current = key;
     cellShapesRef.current.forEach((shape) => viewer.removeShape(shape));
@@ -305,16 +371,25 @@ export function GraphMoleculeViewer({
               viewer.addLine({
                 start: point(bits),
                 end: point(bits | (1 << axis)),
-                color: 'black',
+                color: dark ? '#a7b0b7' : '#5b6269',
               }),
             );
-    } else if (visible) viewer.addUnitCell(model, {});
+    } else if (visible)
+      viewer.addUnitCell(model, {
+        box: { color: dark ? '#a7b0b7' : '#5b6269' },
+      });
   }
   function applyStyle(next: ViewerStyle, indices = selectedSerials) {
     const viewer = viewerRef.current,
       model = modelRef.current;
     if (!viewer || !model) return;
-    const key = JSON.stringify([next, indices, selectionStyleRef.current]);
+    const key = JSON.stringify([
+      next,
+      indices,
+      selectionStyleRef.current,
+      hydrogens,
+      dark,
+    ]);
     if (styledRef.current === key) return;
     styledRef.current = key;
     // 3Dmol clears draw immediately, even for empty collections.
@@ -322,21 +397,54 @@ export function GraphMoleculeViewer({
       viewer.removeAllSurfaces();
       surfaceActiveRef.current = false;
     }
+    const palette = dark
+      ? {
+          C: '#8796a4',
+          H: '#c5ced5',
+          O: '#e89590',
+          N: '#8faee0',
+          P: '#d4af79',
+          S: '#d8c77d',
+          F: '#8ec9af',
+          Cl: '#8ec9af',
+          Br: '#bb9487',
+          Pd: '#98b5ca',
+        }
+      : {
+          C: '#667682',
+          H: '#cbd3d9',
+          O: '#c96f68',
+          N: '#678ec4',
+          P: '#b59055',
+          S: '#c4ae57',
+          F: '#63a688',
+          Cl: '#63a688',
+          Br: '#9c7669',
+          Pd: '#7297b1',
+        };
+    const colorscheme = { prop: 'elem', map: palette };
     model.setStyle(
       {},
       next === 'spacefill'
-        ? { sphere: { scale: 1 } }
+        ? { sphere: { scale: 1, colorscheme } }
         : next === 'stick'
-          ? { stick: { radius: 0.2 } }
+          ? { stick: { radius: 0.16, colorscheme } }
           : next === 'cartoon'
             ? { cartoon: { color: 'spectrum' } }
             : next === 'surface'
               ? {}
-              : { stick: { radius: 0.2 }, sphere: { scale: 0.3 } },
+              : {
+                  stick: { radius: 0.14, colorscheme },
+                  sphere: { scale: 0.22, colorscheme },
+                },
     );
     const surface =
       next === 'surface'
-        ? viewer.addSurface('VDW', { opacity: 0.8 }, {})
+        ? viewer.addSurface(
+            'VDW',
+            { opacity: 0.8, colorscheme },
+            hydrogens ? {} : { not: { elem: 'H' } },
+          )
         : undefined;
     surfaceActiveRef.current = next === 'surface';
     if (indices.length)
@@ -352,14 +460,32 @@ export function GraphMoleculeViewer({
           },
         },
       );
+    if (!hydrogens) model.setStyle({ elem: 'H' }, {});
     return surface;
   }
   function drawAnnotations(next: ViewerAnnotation[]) {
     const viewer = viewerRef.current,
       model = modelRef.current;
     if (!viewer || !model) return;
+    const picks =
+      measurePickKeyRef.current === measurementKey ? measurePicks : [];
+    const key = JSON.stringify([
+      next,
+      atomLabels,
+      hydrogens,
+      dark,
+      currentMeasurements,
+      picks,
+      focusedMeasurement,
+    ]);
+    if (decoratedRef.current === key) return false;
+    decoratedRef.current = key;
     if (labelsActiveRef.current) viewer.removeAllLabels();
-    labelsActiveRef.current = next.length > 0;
+    labelsActiveRef.current =
+      next.length > 0 ||
+      atomLabels ||
+      currentMeasurements.length > 0 ||
+      picks.length > 0;
     const atoms = model.selectedAtoms({});
     next.forEach((annotation) => {
       const atom = atoms[atomIdsRef.current.indexOf(annotation.atomId)];
@@ -368,8 +494,8 @@ export function GraphMoleculeViewer({
           annotation.text,
           {
             position: atom,
-            backgroundColor: 'white',
-            fontColor: annotation.color ?? 'black',
+            backgroundColor: dark ? '#1a2026' : 'white',
+            fontColor: annotation.color ?? (dark ? '#f4f7f6' : '#121416'),
             fontSize: 12,
           },
           undefined,
@@ -377,6 +503,84 @@ export function GraphMoleculeViewer({
           true,
         );
     });
+    if (atomLabels)
+      atoms.forEach((atom, index) => {
+        if (!hydrogens && atom.elem === 'H') return;
+        viewer.addLabel(
+          `${atom.elem ?? 'Atom'} (${atomIdsRef.current[index]})`,
+          {
+            position: atom,
+            fontSize: 11,
+            backgroundColor: dark ? '#1a2026' : 'white',
+            fontColor: dark ? '#f4f7f6' : '#121416',
+            backgroundOpacity: 0.85,
+          },
+          undefined,
+          true,
+        );
+      });
+    measurementShapes.current.forEach((shape) => viewer.removeShape(shape));
+    measurementShapes.current = [];
+    currentMeasurements.forEach((measurement) => {
+      const points = measurement.atomIds.map(
+        (id) => atoms[atomIdsRef.current.indexOf(id)],
+      );
+      if (points.some((point) => !point)) return;
+      const value = measureAtoms(points as typeof atoms);
+      if (!value) return;
+      for (let i = 1; i < points.length; i++)
+        measurementShapes.current.push(
+          viewer.addLine({
+            start: points[i - 1],
+            end: points[i],
+            color:
+              focusedMeasurement === measurement.id
+                ? '#00cc76'
+                : dark
+                  ? '#a7b0b7'
+                  : '#5b6269',
+            linewidth: focusedMeasurement === measurement.id ? 3 : 1,
+            dashed: true,
+          }),
+        );
+      const position =
+        points.length === 3
+          ? points[1]
+          : {
+              x: (points[0]!.x + points[1]!.x) / 2,
+              y: (points[0]!.y + points[1]!.y) / 2,
+              z: (points[0]!.z + points[1]!.z) / 2,
+            };
+      viewer.addLabel(
+        value,
+        {
+          position,
+          fontSize: 12,
+          backgroundColor: dark ? '#1a2026' : 'white',
+          fontColor: dark ? '#1bdb8a' : '#005c38',
+          inFront: true,
+        },
+        undefined,
+        true,
+      );
+    });
+    picks.forEach((id, index) => {
+      const atom = atoms[atomIdsRef.current.indexOf(id)];
+      if (atom)
+        viewer.addLabel(
+          `${index + 1}: ${id}`,
+          {
+            position: atom,
+            fontSize: 12,
+            backgroundColor: '#00a764',
+            fontColor: 'white',
+            inFront: true,
+          },
+          undefined,
+          true,
+        );
+    });
+    return true;
   }
   const commandState = useRef({
     target,
@@ -483,6 +687,8 @@ export function GraphMoleculeViewer({
       setCurrentIndex(0);
       setLive(true);
       setAnnotations([]);
+      setMeasurePicks([]);
+      setMeasureTool(null);
       setSelectedSerials([]);
       setStyle(snapshot?.metadata?.render?.style ?? 'ball-stick');
     }
@@ -529,6 +735,7 @@ export function GraphMoleculeViewer({
     }
 
     let cancelled = false;
+    let release: (() => void) | undefined;
 
     try {
       const canvas = document.createElement('canvas');
@@ -542,6 +749,9 @@ export function GraphMoleculeViewer({
         );
         return;
       }
+      (webGl as WebGLRenderingContext)
+        .getExtension?.('WEBGL_lose_context')
+        ?.loseContext();
     } catch {
       setViewerInitError(
         'WebGL is unavailable in this browser environment. Unable to render 3D viewer.',
@@ -556,7 +766,9 @@ export function GraphMoleculeViewer({
         }
 
         try {
-          const viewer = $3Dmol.createViewer(host, {}) as RenderViewer;
+          const managed = createMoleculeRenderViewer($3Dmol, host);
+          const viewer = managed.viewer;
+          release = managed.release;
           // 3Dmol observes its host and resizes the canvas. Keep the personal
           // camera unchanged when surrounding controls or reconnect banners
           // resize that host; horizontal fitting belongs to the initial fit.
@@ -578,6 +790,7 @@ export function GraphMoleculeViewer({
 
     return () => {
       cancelled = true;
+      release?.();
       viewerRef.current = null;
       modelRef.current = null;
       renderedReadyRef.current = false;
@@ -602,6 +815,8 @@ export function GraphMoleculeViewer({
         viewer.removeAllModels();
         viewer.removeAllShapes();
         styledRef.current = '';
+        decoratedRef.current = '';
+        measurementShapes.current = [];
         cellDrawRef.current = '';
         if (labelsActiveRef.current) {
           viewer.removeAllLabels();
@@ -624,6 +839,9 @@ export function GraphMoleculeViewer({
         );
         const oldIds = atomIdsRef.current;
         atomIdsRef.current = applyStructureMetadata(model, snapshot?.metadata);
+        const atoms = model.selectedAtoms({});
+        setFormula(moleculeFormula(atoms));
+        setAtomCount(atoms.length);
         const previous = selectedSerialsRef.current;
         const remapped = previous
           .map((index) => atomIdsRef.current.indexOf(oldIds[index]!))
@@ -635,9 +853,14 @@ export function GraphMoleculeViewer({
             ? previous
             : remapped,
         );
-        const background = snapshot?.metadata?.render?.background ?? '#f8fafc';
+        const background =
+          snapshot?.metadata?.render?.background ??
+          (dark ? '#0e1215' : '#ffffff');
         if (backgroundRef.current !== background) {
-          viewer.setBackgroundColor(background, 0.8);
+          viewer.setBackgroundColor(
+            background,
+            snapshot?.metadata?.render?.background ? 1 : 0,
+          );
           backgroundRef.current = background;
         }
         cellRef.current =
@@ -695,6 +918,12 @@ export function GraphMoleculeViewer({
           (atom: ThreeDmolAtom, _viewer: GLViewer, event?: MouseEvent) => {
             const serial = atom.index;
             if (serial === undefined) {
+              return;
+            }
+            if (loadingRef.current || !renderedReadyRef.current) return;
+            if (measureToolRef.current) {
+              const id = atomIdsRef.current[serial];
+              if (id) pickMeasurementRef.current(id);
               return;
             }
             selectionStyleRef.current = { color: 'yellow' };
@@ -825,11 +1054,13 @@ export function GraphMoleculeViewer({
   useEffect(() => {
     if (!viewerReady) return;
     const visible = unitCellVisible && unitCellAvailable;
-    if (cellDrawRef.current !== JSON.stringify([visible, cellRef.current])) {
+    if (
+      cellDrawRef.current !== JSON.stringify([visible, cellRef.current, dark])
+    ) {
       drawCell(visible);
       viewerRef.current?.render();
     }
-  }, [unitCellAvailable, unitCellVisible, viewerReady]);
+  }, [unitCellAvailable, unitCellVisible, viewerReady, dark]);
 
   useEffect(() => {
     if (!viewerReady || applyingCommandRef.current) return;
@@ -837,13 +1068,109 @@ export function GraphMoleculeViewer({
       style,
       selectedSerials,
       selectionStyleRef.current,
+      hydrogens,
+      dark,
     ]);
     if (styledRef.current !== next) {
       applyStyle(style);
       viewerRef.current?.render();
     }
     onSelectionChange?.(selection());
-  }, [moleculeId, selectedSerials, style, viewerReady, xyzContent]);
+  }, [
+    moleculeId,
+    selectedSerials,
+    style,
+    viewerReady,
+    xyzContent,
+    hydrogens,
+    dark,
+  ]);
+
+  useEffect(() => {
+    if (!viewerReady || loading || applyingCommandRef.current) return;
+    const changed = drawAnnotations(annotations);
+    const background =
+      snapshot?.metadata?.render?.background ?? (dark ? '#0e1215' : '#ffffff');
+    const backgroundChanged = backgroundRef.current !== background;
+    if (backgroundChanged)
+      viewerRef.current?.setBackgroundColor(
+        background,
+        snapshot?.metadata?.render?.background ? 1 : 0,
+      );
+    backgroundRef.current = background;
+    if (changed || backgroundChanged) viewerRef.current?.render();
+  }, [
+    annotations,
+    atomLabels,
+    hydrogens,
+    dark,
+    measurements,
+    measurementKey,
+    measurePicks,
+    focusedMeasurement,
+    viewerReady,
+    loading,
+  ]);
+
+  useLayoutEffect(() => {
+    picksRef.current = [];
+    setMeasurePicks((current) => (current.length ? [] : current));
+    setFocusedMeasurement(null);
+  }, [measurementKey]);
+
+  useEffect(() => {
+    const host = viewerHostRef.current;
+    if (!host) return;
+    const sync = () => {
+      setDark(Boolean(host.closest('[data-theme="dark"], .dark')));
+    };
+    sync();
+    const observer = new MutationObserver(sync);
+    for (
+      let element: HTMLElement | null = host;
+      element;
+      element = element.parentElement
+    )
+      observer.observe(element, {
+        attributes: true,
+        attributeFilter: ['data-theme', 'class'],
+      });
+    const motion = window.matchMedia?.('(prefers-reduced-motion: reduce)');
+    const syncMotion = () => setReducedMotion(Boolean(motion?.matches));
+    syncMotion();
+    motion?.addEventListener?.('change', syncMotion);
+    return () => {
+      observer.disconnect();
+      motion?.removeEventListener?.('change', syncMotion);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (
+      reducedMotion ||
+      loading ||
+      (presentation === 'timeline' && !expanded)
+    ) {
+      setSpin(0);
+      viewerRef.current?.spin?.(false);
+      return;
+    }
+    viewerRef.current?.spin?.(spin ? 'y' : false, spin === 1 ? 0.35 : 0.9);
+    return () => {
+      viewerRef.current?.spin?.(false);
+    };
+  }, [spin, reducedMotion, loading, expanded, presentation, viewerReady]);
+
+  useLayoutEffect(() => {
+    // Top-layer promotion resizes the same canvas; it must never re-fit camera.
+    viewerRef.current?.resize();
+  }, [expanded]);
+
+  useEffect(() => {
+    if (!measurementNotice) return;
+    const timer = window.setTimeout(() => setMeasurementNotice(false), 8000);
+    return () => window.clearTimeout(timer);
+  }, [measurementNotice, measurementHistory]);
 
   useEffect(() => {
     if (!xyzContent) {
@@ -973,306 +1300,771 @@ export function GraphMoleculeViewer({
     setStagedSelections((current) => ({ ...current, [key]: entry }));
   }
 
+  function changeMeasurements(items: MoleculeMeasurement[]) {
+    setMeasurementHistory((history) => [
+      ...history.slice(-49),
+      { key: measurementKey, before: currentMeasurements, after: items },
+    ]);
+    setMeasurementFuture([]);
+    setMeasurements((current) => ({ ...current, [measurementKey]: items }));
+    setMeasurementNotice(true);
+  }
+  function undoMeasurement(redo = false) {
+    const stack = redo ? measurementFuture : measurementHistory;
+    const entry = stack.at(-1);
+    if (!entry) return;
+    setMeasurements((current) => ({
+      ...current,
+      [entry.key]: redo ? entry.after : entry.before,
+    }));
+    if (redo) {
+      setMeasurementFuture(stack.slice(0, -1));
+      setMeasurementHistory((history) => [...history, entry]);
+    } else {
+      setMeasurementHistory(stack.slice(0, -1));
+      setMeasurementFuture((future) => [...future, entry]);
+    }
+    setMeasurementNotice(false);
+  }
+  function toggleMeasureTool(tool: 'distance' | 'angle' | null) {
+    setMeasureTool(tool === measureTool ? null : tool);
+    picksRef.current = [];
+    setMeasurePicks([]);
+  }
+  pickMeasurementRef.current = (id) => {
+    measurePickKeyRef.current = measurementKey;
+    const picks = picksRef.current;
+    const next = picks.includes(id)
+      ? picks.filter((value) => value !== id)
+      : [...picks, id];
+    if (next.length === (measureToolRef.current === 'angle' ? 3 : 2)) {
+      const atoms = next.map(
+        (value) =>
+          modelRef.current!.selectedAtoms({})[
+            atomIdsRef.current.indexOf(value)
+          ]!,
+      );
+      if (measureAtoms(atoms) && currentMeasurements.length < 128)
+        changeMeasurements([
+          ...currentMeasurements,
+          { id: ++nextMeasurementId.current, atomIds: next },
+        ]);
+      else
+        setStatus(
+          'Unable to measure these points, or the 128-measurement limit was reached.',
+        );
+      picksRef.current = [];
+      setMeasurePicks([]);
+    } else {
+      picksRef.current = next;
+      setMeasurePicks(next);
+    }
+  };
+  function resetView() {
+    const viewer = viewerRef.current,
+      host = viewerHostRef.current;
+    if (!viewer || loading) return;
+    viewer.zoomTo();
+    viewer.zoom(
+      (unitCellAvailable ? 0.5 : 0.85) *
+        (host?.clientHeight
+          ? Math.min(1, host.clientWidth / host.clientHeight)
+          : 1),
+    );
+    viewer.setCameraParameters({});
+    viewer.render();
+  }
+  function downloadSource() {
+    if (onDownloadSource) onDownloadSource();
+    else
+      downloadTextFile(
+        viewerData.exportContent,
+        `${title || 'structure'}.${xyzFormat}`,
+      );
+  }
+  function closeLayer() {
+    const menu = viewerHostRef.current
+      ?.closest('.thread-graph-molecule-viewer')
+      ?.querySelector<HTMLDetailsElement>('.molecule-view-menu[open]');
+    if (menu) {
+      menu.open = false;
+      menu.querySelector('summary')?.focus();
+    } else if (help) setHelp(false);
+    else if (measurePicks.length) {
+      picksRef.current = [];
+      setMeasurePicks([]);
+    } else if (measureTool) setMeasureTool(null);
+    else setExpanded(false);
+  }
+  function changeExpanded(open: boolean) {
+    setExpanded(open);
+    const handle = readyHandleRef.current;
+    if (handle?.isAvailable()) onActive?.(handle);
+    if (!open) {
+      setSpin(0);
+      setHelp(false);
+      setMeasureTool(null);
+      picksRef.current = [];
+      setMeasurePicks([]);
+      setHoveredAtom(null);
+    }
+  }
+
   return (
-    <div
-      className={`thread-graph-molecule-viewer is-${presentation} flex h-full min-h-0 flex-col bg-white ${className}`}
-      onPointerDownCapture={() => {
-        const handle = readyHandleRef.current;
-        if (handle?.isAvailable()) onActive?.(handle);
-      }}
-      onFocusCapture={() => {
-        const handle = readyHandleRef.current;
-        if (handle?.isAvailable()) onActive?.(handle);
-      }}
+    <GraphMoleculeFigureFrame
+      expanded={expanded}
+      onExpandedChange={changeExpanded}
+      onEscape={closeLayer}
+      title={title || 'Molecular structure'}
+      presentation={presentation}
     >
-      <div className="thread-graph-molecule-header flex shrink-0 items-center justify-between gap-3 border-b border-slate-200 px-3 py-2 sm:px-4 sm:py-3">
-        <div className="min-w-0">
-          <h2 className="truncate text-sm font-semibold text-slate-900">
-            {onOpenFile ? (
-              <button
-                type="button"
-                onClick={onOpenFile}
-                className="thread-graph-molecule-file-link"
-                title="Open in workspace"
-              >
-                <span className="truncate">{title}</span>
-                <PanelRightOpen className="size-4 shrink-0" />
-              </button>
-            ) : (
-              title
-            )}
-          </h2>
-          <p className="mt-1 hidden text-[11px] text-slate-400 sm:block">
-            Structure and trajectory
-          </p>
-        </div>
-        <span className="shrink-0 text-[11px] text-slate-400">
-          {presentation === 'timeline' ? '3D structure' : 'workspace preview'}
-        </span>
-      </div>
-
-      <div className="thread-graph-molecule-body min-h-0 flex-1">
-        <div
-          ref={viewerHostRef}
-          data-testid="molecule-viewer"
-          className="thread-graph-molecule-stage relative min-h-0 flex-1 overflow-hidden"
-        >
-          {viewerInitError ? (
-            <div
-              data-testid="molecule-viewer-error"
-              className="thread-graph-molecule-error absolute inset-0 flex items-center justify-center bg-red-50 p-4 text-sm text-red-700"
-            >
-              {viewerInitError}
-            </div>
-          ) : null}
-          {!viewerInitError && !xyzContent ? (
-            <div className="thread-graph-molecule-empty absolute inset-0 flex items-center justify-center p-4 text-sm text-slate-400">
-              No molecule data available.
-            </div>
-          ) : null}
-          {hoveredAtom ? (
-            <div
-              className="thread-graph-molecule-tooltip pointer-events-none fixed z-[1000] rounded-md border border-gray-300 bg-white/95 px-2 py-1.5 text-[10px] text-gray-800 shadow-md"
-              style={{ left: hoveredAtom.x - 20, top: hoveredAtom.y - 50 }}
-            >
-              <div className="mb-0.5 font-semibold text-gray-900">
-                {hoveredAtom.label}
-              </div>
-              <div className="space-x-2 text-gray-600">
-                <span>x: {hoveredAtom.coords.x}</span>
-                <span>y: {hoveredAtom.coords.y}</span>
-                <span>z: {hoveredAtom.coords.z}</span>
-              </div>
-            </div>
-          ) : null}
-        </div>
-
-        <div className="thread-graph-molecule-controls shrink-0">
-          <div className="thread-graph-molecule-control-row">
-            <div className="min-w-0">
-              <label>
-                Representation{' '}
-                <select
-                  aria-label="Representation"
-                  value={style}
-                  onChange={(event) =>
-                    setStyle(event.target.value as ViewerStyle)
-                  }
-                >
-                  {supportedStyles.map((entry) => (
-                    <option key={entry} value={entry}>
-                      {entry}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <p className="thread-graph-molecule-control-subtitle">
-                XYZ / PDB / CIF preview
-              </p>
-            </div>
-            <GraphMoleculeViewerUpperButtonGroup
-              currentIndex={currentIndex}
-              exportContent={viewerData.exportContent}
-              moleculeId={moleculeId}
-              onScreenshot={() =>
-                void runOperation(handleScreenshot, 'PNG copied to clipboard.')
-              }
-              onDownloadSource={onDownloadSource}
-              onFeedback={setStatus}
-              viewerRef={viewerRef}
-              viewerHostRef={viewerHostRef}
-              hasUnitCell={unitCellAvailable}
-              xyzContent={xyzContent}
-              xyzFormat={xyzFormat}
-            />
-          </div>
-
-          {xyzArray.length > 1 ? (
-            <div
-              className="thread-graph-molecule-trajectory"
-              role="group"
-              aria-label="Trajectory controls"
-            >
-              <div className="thread-graph-molecule-playback-row">
-                <Button
+      <div
+        className={`thread-graph-molecule-viewer is-${presentation} ${expanded ? 'is-fullview' : ''} flex h-full min-h-0 flex-col ${className}`}
+        tabIndex={0}
+        onKeyDown={(event) => {
+          const element = event.target as HTMLElement;
+          if (
+            element.closest(
+              'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"]',
+            )
+          )
+            return;
+          if (event.key === 'Escape') {
+            event.preventDefault();
+            event.stopPropagation();
+            closeLayer();
+            return;
+          }
+          if (
+            loading ||
+            viewerInitError ||
+            (presentation === 'timeline' && !expanded)
+          )
+            return;
+          const key = event.key.toLowerCase();
+          if ((event.metaKey || event.ctrlKey) && key === 'z') {
+            event.preventDefault();
+            undoMeasurement(event.shiftKey);
+            return;
+          }
+          if (event.metaKey || event.ctrlKey || event.altKey) return;
+          const actions: Record<string, () => void> = {
+            '1': () => setStyle('ball-stick'),
+            '2': () => setStyle('stick'),
+            '3': () => setStyle('spacefill'),
+            l: () => setAtomLabels(!atomLabels),
+            h: () => setHydrogens(!hydrogens),
+            d: () => toggleMeasureTool('distance'),
+            a: () => toggleMeasureTool('angle'),
+            m: () => toggleMeasureTool(measureTool ? null : 'distance'),
+            s: () => setSpin(reducedMotion ? 0 : (spin + 1) % 3),
+            r: resetView,
+            '?': () => setHelp(!help),
+          };
+          if (actions[key]) {
+            event.preventDefault();
+            actions[key]!();
+          }
+        }}
+        onPointerDownCapture={() => {
+          const handle = readyHandleRef.current;
+          if (handle?.isAvailable()) onActive?.(handle);
+        }}
+        onFocusCapture={() => {
+          const handle = readyHandleRef.current;
+          if (handle?.isAvailable()) onActive?.(handle);
+        }}
+      >
+        <div className="thread-graph-molecule-header flex shrink-0 items-center justify-between gap-3 border-b border-slate-200 px-3 py-2 sm:px-4 sm:py-3">
+          <div className="min-w-0">
+            <h2 className="truncate text-sm font-semibold text-slate-900">
+              {onOpenFile ? (
+                <button
                   type="button"
-                  variant="ghost"
-                  className="thread-graph-molecule-play-button"
-                  aria-label={
-                    isPlaying ? 'Pause trajectory' : 'Play trajectory'
-                  }
-                  onClick={() => {
-                    setLive(false);
-                    if (!isPlaying && currentIndex === xyzArray.length - 1)
-                      setCurrentIndex(0);
-                    setIsPlaying((current) => !current);
-                  }}
+                  onClick={onOpenFile}
+                  className="thread-graph-molecule-file-link"
+                  title="Open in workspace"
                 >
-                  {isPlaying ? (
-                    <Pause className="size-4" />
-                  ) : (
-                    <Play className="size-4" />
-                  )}
-                  {isPlaying ? 'Pause' : 'Play'}
-                </Button>
-                <span className="thread-graph-molecule-frame-count">
-                  Frame <strong>{currentIndex + 1}</strong> / {xyzArray.length}
-                </span>
-                <div className="thread-graph-molecule-frame-buttons">
-                  {[
-                    {
-                      label: 'First frame',
-                      index: 0,
-                      Icon: SkipBack,
-                      disabled: currentIndex === 0,
-                    },
-                    {
-                      label: 'Previous frame',
-                      index: currentIndex - 1,
-                      Icon: ChevronLeft,
-                      disabled: currentIndex === 0,
-                    },
-                    {
-                      label: 'Next frame',
-                      index: currentIndex + 1,
-                      Icon: ChevronRight,
-                      disabled: currentIndex === xyzArray.length - 1,
-                    },
-                    {
-                      label: 'Last frame',
-                      index: xyzArray.length - 1,
-                      Icon: SkipForward,
-                      disabled: currentIndex === xyzArray.length - 1,
-                    },
-                  ].map(({ label, index, Icon, disabled }) => (
-                    <Button
-                      key={label}
-                      type="button"
-                      variant="ghost"
-                      className="thread-graph-molecule-button"
-                      aria-label={label}
-                      title={label}
-                      disabled={disabled}
-                      onClick={() => {
-                        setLive(false);
-                        setIsPlaying(false);
-                        setCurrentIndex(index);
-                      }}
-                    >
-                      <Icon className="size-4" />
-                    </Button>
-                  ))}
+                  <span className="truncate">{title}</span>
+                  <PanelRightOpen className="size-4 shrink-0" />
+                </button>
+              ) : (
+                title
+              )}
+            </h2>
+            <p className="mt-1 hidden text-[11px] text-slate-400 sm:block">
+              Structure and trajectory
+            </p>
+          </div>
+          <div
+            className="molecule-toolbar"
+            aria-label="View controls"
+            inert={loading || Boolean(viewerInitError)}
+          >
+            <div className="molecule-styles" role="group" aria-label="Style">
+              {(
+                [
+                  ['ball-stick', 'Ball & stick'],
+                  ['stick', 'Sticks'],
+                  ['spacefill', 'Space-fill'],
+                ] as const
+              ).map(([value, label], index) => (
+                <button
+                  key={value}
+                  type="button"
+                  aria-pressed={style === value}
+                  title={`${label} (${index + 1})`}
+                  onClick={() => setStyle(value)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            <details className="molecule-view-menu">
+              <summary>View</summary>
+              <div>
+                <button
+                  type="button"
+                  aria-label="Atom labels"
+                  aria-pressed={atomLabels}
+                  onClick={() => setAtomLabels(!atomLabels)}
+                >
+                  Atom labels <kbd>L</kbd>
+                </button>
+                <button
+                  type="button"
+                  aria-label="Hydrogens"
+                  aria-pressed={hydrogens}
+                  onClick={() => setHydrogens(!hydrogens)}
+                >
+                  Hydrogens <kbd>H</kbd>
+                </button>
+                <button
+                  type="button"
+                  aria-label="Spin"
+                  aria-pressed={spin > 0}
+                  disabled={reducedMotion}
+                  onClick={() => setSpin((spin + 1) % 3)}
+                >
+                  Spin: {spin === 1 ? 'slow' : spin === 2 ? 'fast' : 'off'}{' '}
+                  <kbd>S</kbd>
+                </button>
+              </div>
+            </details>
+            <button
+              type="button"
+              aria-label="Measure distance"
+              title="Distance (D)"
+              aria-pressed={measureTool === 'distance'}
+              disabled={!viewerReady || !xyzContent || loading}
+              onClick={() => toggleMeasureTool('distance')}
+            >
+              <Ruler size={16} />
+            </button>
+            <button
+              type="button"
+              aria-label="Measure angle"
+              title="Angle (A)"
+              aria-pressed={measureTool === 'angle'}
+              disabled={!viewerReady || !xyzContent || loading}
+              onClick={() => toggleMeasureTool('angle')}
+            >
+              <Waypoints size={16} />
+            </button>
+            <button
+              type="button"
+              aria-label="Reset view"
+              title="Reset view (R)"
+              onClick={resetView}
+            >
+              <RotateCcw size={16} />
+            </button>
+            <button
+              type="button"
+              aria-label="Download source"
+              title="Download immutable source"
+              disabled={!viewerData.exportContent || loading}
+              onClick={downloadSource}
+            >
+              <Download size={16} />
+            </button>
+          </div>
+        </div>
+
+        <div className="thread-graph-molecule-body min-h-0 flex-1">
+          <div
+            ref={viewerHostRef}
+            data-testid="molecule-viewer"
+            className="thread-graph-molecule-stage relative min-h-0 flex-1 overflow-hidden"
+            aria-label="Molecular structure; drag to rotate, pinch to zoom"
+            data-measuring={Boolean(measureTool)}
+            onDoubleClick={() =>
+              presentation === 'timeline' && !expanded
+                ? setExpanded(true)
+                : resetView()
+            }
+            onPointerDown={() => {
+              viewerRef.current?.spin?.(false);
+            }}
+            onPointerUp={() => {
+              if (spin && !reducedMotion)
+                viewerRef.current?.spin?.('y', spin === 1 ? 0.35 : 0.9);
+            }}
+            onPointerCancel={() => setSpin(0)}
+          >
+            {viewerInitError ? (
+              <div
+                data-testid="molecule-viewer-error"
+                className="thread-graph-molecule-error absolute inset-0 flex items-center justify-center bg-red-50 p-4 text-sm text-red-700"
+              >
+                {viewerInitError}
+              </div>
+            ) : null}
+            {!viewerInitError && !xyzContent ? (
+              <div className="thread-graph-molecule-empty absolute inset-0 flex items-center justify-center p-4 text-sm text-slate-400">
+                No molecule data available.
+              </div>
+            ) : null}
+            {hoveredAtom ? (
+              <div
+                className="thread-graph-molecule-tooltip pointer-events-none fixed z-[1000] rounded-md border border-gray-300 bg-white/95 px-2 py-1.5 text-[10px] text-gray-800 shadow-md"
+                style={{ left: hoveredAtom.x - 20, top: hoveredAtom.y - 50 }}
+              >
+                <div className="mb-0.5 font-semibold text-gray-900">
+                  {hoveredAtom.label}
+                </div>
+                <div className="space-x-2 text-gray-600">
+                  <span>x: {hoveredAtom.coords.x}</span>
+                  <span>y: {hoveredAtom.coords.y}</span>
+                  <span>z: {hoveredAtom.coords.z}</span>
                 </div>
               </div>
-              <input
-                type="range"
-                className="thread-graph-molecule-scrubber"
-                min={1}
-                max={xyzArray.length}
-                step={1}
-                value={currentIndex + 1}
-                aria-label="Trajectory frame"
-                aria-valuetext={`Frame ${currentIndex + 1} of ${xyzArray.length}`}
-                style={{
-                  backgroundSize: `${(currentIndex / (xyzArray.length - 1)) * 100}% 6px`,
-                }}
-                onChange={(event) => {
-                  setLive(false);
-                  setIsPlaying(false);
-                  setCurrentIndex(Number(event.target.value) - 1);
-                }}
-              />
-              <div
-                className="thread-graph-molecule-frame-scale"
-                aria-hidden="true"
+            ) : null}
+            {(measureTool ||
+              (measurementsPinned && currentMeasurements.length > 0)) && (
+              <section
+                className="molecule-measurements"
+                aria-label="Measurements"
+                onDoubleClick={(event) => event.stopPropagation()}
+                onPointerDown={(event) => event.stopPropagation()}
               >
-                <span>1</span>
-                <span>{xyzArray.length} frames</span>
+                <header>
+                  <button
+                    type="button"
+                    aria-label="Pin measurements"
+                    aria-pressed={measurementsPinned}
+                    onClick={() => setMeasurementsPinned(!measurementsPinned)}
+                  >
+                    <Pin size={14} />
+                  </button>
+                  <strong>Measurements</strong>
+                  <span>{currentMeasurements.length}</span>
+                  <button
+                    type="button"
+                    aria-label="Clear measurements"
+                    disabled={!currentMeasurements.length}
+                    onClick={() => changeMeasurements([])}
+                  >
+                    Clear
+                  </button>
+                </header>
+                <ol>
+                  {currentMeasurements.map((measurement, index) => {
+                    const atoms = measurement.atomIds
+                      .map(
+                        (id) =>
+                          modelRef.current?.selectedAtoms({})[
+                            atomIdsRef.current.indexOf(id)
+                          ],
+                      )
+                      .filter((atom): atom is NonNullable<typeof atom> =>
+                        Boolean(atom),
+                      );
+                    return (
+                      <li
+                        key={measurement.id}
+                        onMouseEnter={() =>
+                          setFocusedMeasurement(measurement.id)
+                        }
+                        onMouseLeave={() => setFocusedMeasurement(null)}
+                        onFocus={() => setFocusedMeasurement(measurement.id)}
+                        onBlur={() => setFocusedMeasurement(null)}
+                      >
+                        <span>{index + 1}</span>
+                        <span title={measurement.atomIds.join(' → ')}>
+                          {measurement.atomIds.join('–')}
+                        </span>
+                        <output>{measureAtoms(atoms)}</output>
+                        <button
+                          type="button"
+                          aria-label={`Remove measurement ${index + 1}`}
+                          onClick={() =>
+                            changeMeasurements(
+                              currentMeasurements.filter(
+                                (entry) => entry.id !== measurement.id,
+                              ),
+                            )
+                          }
+                        >
+                          <X size={12} />
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ol>
+                {!currentMeasurements.length && <p>Click atoms to measure</p>}
+              </section>
+            )}
+            {help && (
+              <div
+                className="molecule-help"
+                role="dialog"
+                aria-label="Viewer help"
+              >
+                <button
+                  type="button"
+                  aria-label="Close help"
+                  onClick={() => setHelp(false)}
+                >
+                  <X size={14} />
+                </button>
+                <p>
+                  Drag to rotate · scroll or pinch to zoom · double-click to
+                  reset.
+                </p>
+                <p>
+                  Click an atom to select; Shift/Ctrl/⌘ adds atoms. Measurements
+                  use separate picks.
+                </p>
+                <p>
+                  1/2/3 style · L labels · H hydrogens · D distance · A angle ·
+                  M measure · S spin · R reset · ? help
+                </p>
+                <p>
+                  Ctrl/⌘ Z undo · Shift Ctrl/⌘ Z redo. Escape closes popovers,
+                  clears picks, exits the tool, then closes full view.
+                </p>
               </div>
-            </div>
-          ) : null}
+            )}
+          </div>
 
-          <div
-            role="group"
-            aria-label="Viewer contributions"
-            inert={loading}
-            style={{ visibility: loading ? 'hidden' : undefined }}
-          >
-            {/* Keep the contribution's layout while verifying new bytes. A
+          <div className="molecule-caption">
+            <div>
+              <strong>{title}</strong>
+              <span>
+                {formula.map(({ element, count }) => (
+                  <span key={element}>
+                    {element}
+                    {count > 1 && <sub>{count}</sub>}
+                  </span>
+                ))}
+                {atomCount ? ` · ${atomCount} atoms` : ''}
+                {xyzArray.length > 1
+                  ? ` · Frame ${currentIndex + 1} / ${xyzArray.length}`
+                  : ''}
+              </span>
+            </div>
+            <button
+              type="button"
+              className="molecule-card-download"
+              aria-label="Download figure source"
+              disabled={loading || !viewerData.exportContent}
+              onClick={downloadSource}
+            >
+              <Download size={16} />
+            </button>
+            <button
+              type="button"
+              className="molecule-help-button"
+              aria-label="Viewer help"
+              aria-expanded={help}
+              onClick={() => setHelp(!help)}
+            >
+              <HelpCircle size={16} />
+            </button>
+          </div>
+          {measureTool && (
+            <p className="molecule-measure-hint" role="status">
+              {measureTool === 'angle'
+                ? 'Angle: pick three atoms; the middle atom is the vertex.'
+                : 'Distance: pick two atoms.'}{' '}
+              {measurePicks.length
+                ? `${measurePicks.join(' → ')} → pick ${(measureTool === 'angle' ? 3 : 2) - measurePicks.length} more. Click a picked atom to cancel it.`
+                : ''}
+            </p>
+          )}
+          {(measurementNotice || measurementFuture.length > 0) && (
+            <div className="molecule-undo" role="status">
+              <span>Measurement change</span>
+              <button
+                type="button"
+                aria-label="Undo measurement change"
+                disabled={!measurementHistory.length}
+                onClick={() => undoMeasurement()}
+              >
+                <Undo2 size={15} />
+              </button>
+              <button
+                type="button"
+                aria-label="Redo measurement change"
+                disabled={!measurementFuture.length}
+                onClick={() => undoMeasurement(true)}
+              >
+                <Redo2 size={15} />
+              </button>
+            </div>
+          )}
+
+          <div className="thread-graph-molecule-controls shrink-0">
+            <details className="molecule-scientific-tools">
+              <summary>
+                Structure tools & selection
+                {selectedSerials.length
+                  ? ` · ${selectedSerials.length} selected`
+                  : ''}
+              </summary>
+              <div>
+                <div className="thread-graph-molecule-control-row">
+                  <div className="min-w-0">
+                    <label>
+                      Representation{' '}
+                      <select
+                        aria-label="Representation"
+                        value={style}
+                        onChange={(event) =>
+                          setStyle(event.target.value as ViewerStyle)
+                        }
+                      >
+                        {supportedStyles.map((entry) => (
+                          <option key={entry} value={entry}>
+                            {entry}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <p className="thread-graph-molecule-control-subtitle">
+                      XYZ / PDB / CIF preview
+                    </p>
+                  </div>
+                  <GraphMoleculeViewerUpperButtonGroup
+                    currentIndex={currentIndex}
+                    exportContent={viewerData.exportContent}
+                    moleculeId={moleculeId}
+                    onScreenshot={() =>
+                      void runOperation(
+                        handleScreenshot,
+                        'PNG copied to clipboard.',
+                      )
+                    }
+                    onDownloadSource={onDownloadSource}
+                    onFeedback={setStatus}
+                    viewerRef={viewerRef}
+                    viewerHostRef={viewerHostRef}
+                    hasUnitCell={unitCellAvailable}
+                    xyzContent={xyzContent}
+                    xyzFormat={xyzFormat}
+                  />
+                </div>
+              </div>
+            </details>
+            {xyzArray.length > 1 ? (
+              <div
+                className="thread-graph-molecule-trajectory"
+                role="group"
+                aria-label="Trajectory controls"
+              >
+                <div className="thread-graph-molecule-playback-row">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="thread-graph-molecule-play-button"
+                    aria-label={
+                      isPlaying ? 'Pause trajectory' : 'Play trajectory'
+                    }
+                    onClick={() => {
+                      setLive(false);
+                      if (!isPlaying && currentIndex === xyzArray.length - 1)
+                        setCurrentIndex(0);
+                      setIsPlaying((current) => !current);
+                    }}
+                  >
+                    {isPlaying ? (
+                      <Pause className="size-4" />
+                    ) : (
+                      <Play className="size-4" />
+                    )}
+                    {isPlaying ? 'Pause' : 'Play'}
+                  </Button>
+                  <span className="thread-graph-molecule-frame-count">
+                    Frame <strong>{currentIndex + 1}</strong> /{' '}
+                    {xyzArray.length}
+                  </span>
+                  <div className="thread-graph-molecule-frame-buttons">
+                    {[
+                      {
+                        label: 'First frame',
+                        index: 0,
+                        Icon: SkipBack,
+                        disabled: currentIndex === 0,
+                      },
+                      {
+                        label: 'Previous frame',
+                        index: currentIndex - 1,
+                        Icon: ChevronLeft,
+                        disabled: currentIndex === 0,
+                      },
+                      {
+                        label: 'Next frame',
+                        index: currentIndex + 1,
+                        Icon: ChevronRight,
+                        disabled: currentIndex === xyzArray.length - 1,
+                      },
+                      {
+                        label: 'Last frame',
+                        index: xyzArray.length - 1,
+                        Icon: SkipForward,
+                        disabled: currentIndex === xyzArray.length - 1,
+                      },
+                    ].map(({ label, index, Icon, disabled }) => (
+                      <Button
+                        key={label}
+                        type="button"
+                        variant="ghost"
+                        className="thread-graph-molecule-button"
+                        aria-label={label}
+                        title={label}
+                        disabled={disabled}
+                        onClick={() => {
+                          setLive(false);
+                          setIsPlaying(false);
+                          setCurrentIndex(index);
+                        }}
+                      >
+                        <Icon className="size-4" />
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+                <input
+                  type="range"
+                  className="thread-graph-molecule-scrubber"
+                  min={1}
+                  max={xyzArray.length}
+                  step={1}
+                  value={currentIndex + 1}
+                  aria-label="Trajectory frame"
+                  aria-valuetext={`Frame ${currentIndex + 1} of ${xyzArray.length}`}
+                  style={{
+                    backgroundSize: `${(currentIndex / (xyzArray.length - 1)) * 100}% 6px`,
+                  }}
+                  onChange={(event) => {
+                    setLive(false);
+                    setIsPlaying(false);
+                    setCurrentIndex(Number(event.target.value) - 1);
+                  }}
+                />
+                <div
+                  className="thread-graph-molecule-frame-scale"
+                  aria-hidden="true"
+                >
+                  <span>1</span>
+                  <span>{xyzArray.length} frames</span>
+                </div>
+              </div>
+            ) : null}
+
+            <details className="molecule-scientific-actions">
+              <summary>
+                Scientific actions
+                {selectedSerials.length
+                  ? ` · ${selectedSerials.length} selected`
+                  : ''}
+              </summary>
+              <div>
+                <div
+                  role="group"
+                  aria-label="Viewer contributions"
+                  inert={loading}
+                  style={{ visibility: loading ? 'hidden' : undefined }}
+                >
+                  {/* Keep the contribution's layout while verifying new bytes. A
                 collapsing toolbar resizes and redraws the previous model
                 before the verified frame can render. Its controls stay inert. */}
-            {!viewerInitError && toolbar?.({ target, selectedIds })}
+                  {!viewerInitError && toolbar?.({ target, selectedIds })}
+                </div>
+                {rendererSlot?.({ target, selectedIds })}
+                <Button
+                  type="button"
+                  onClick={() => {
+                    setLive(true);
+                    setIsPlaying(false);
+                  }}
+                  aria-pressed={live}
+                >
+                  LIVE{live ? ' following' : ''}
+                </Button>
+                {onScreenshot && (
+                  <Button
+                    type="button"
+                    disabled={
+                      loading ||
+                      busy ||
+                      !viewerReady ||
+                      !target ||
+                      !renderedReadyRef.current ||
+                      Boolean(viewerInitError)
+                    }
+                    onClick={() =>
+                      void runOperation(
+                        () => onScreenshot(capture()),
+                        'PNG submitted.',
+                      )
+                    }
+                  >
+                    Send screenshot
+                  </Button>
+                )}
+                {status && <p role="status">{status}</p>}
+                <GraphMoleculeViewerLowerButtonGroup
+                  cameraInfo={cameraInfo}
+                  onClearSelection={() => setSelectedSerials([])}
+                  onClearStaged={() => setStagedSelections({})}
+                  canSubmit={
+                    Boolean(onSelectionSubmit && target) &&
+                    !loading &&
+                    !busy &&
+                    !viewerInitError &&
+                    renderedReadyRef.current
+                  }
+                  onSendSelection={() =>
+                    void runOperation(async () => {
+                      const entries = [selection()];
+                      assertSubmissionTargets(entries);
+                      await onSelectionSubmit?.({ selections: entries });
+                    }, 'Selection submitted.')
+                  }
+                  onSendStaged={() =>
+                    void runOperation(async () => {
+                      const entries = Object.values(stagedSelections);
+                      assertSubmissionTargets(entries);
+                      await onSelectionSubmit?.({ selections: entries });
+                      setStagedSelections({});
+                    }, 'Staged selections submitted.')
+                  }
+                  onStageSelection={handleStageSelection}
+                  onToggleUnitCell={handleToggleUnitCell}
+                  selectedAtomLabels={selectedAtomLabels}
+                  selectedSerials={selectedSerials}
+                  stagedAtoms={stagedAtoms}
+                  stagedMolecules={stagedMolecules}
+                  unitCellAvailable={unitCellAvailable}
+                  unitCellVisible={unitCellVisible}
+                />
+              </div>
+            </details>
           </div>
-          {rendererSlot?.({ target, selectedIds })}
-          <Button
-            type="button"
-            onClick={() => {
-              setLive(true);
-              setIsPlaying(false);
-            }}
-            aria-pressed={live}
-          >
-            LIVE{live ? ' following' : ''}
-          </Button>
-          {onScreenshot && (
-            <Button
-              type="button"
-              disabled={
-                loading ||
-                busy ||
-                !viewerReady ||
-                !target ||
-                !renderedReadyRef.current ||
-                Boolean(viewerInitError)
-              }
-              onClick={() =>
-                void runOperation(
-                  () => onScreenshot(capture()),
-                  'PNG submitted.',
-                )
-              }
-            >
-              Send screenshot
-            </Button>
-          )}
-          {status && <p role="status">{status}</p>}
-          <GraphMoleculeViewerLowerButtonGroup
-            cameraInfo={cameraInfo}
-            onClearSelection={() => setSelectedSerials([])}
-            onClearStaged={() => setStagedSelections({})}
-            canSubmit={
-              Boolean(onSelectionSubmit && target) &&
-              !loading &&
-              !busy &&
-              !viewerInitError &&
-              renderedReadyRef.current
-            }
-            onSendSelection={() =>
-              void runOperation(async () => {
-                const entries = [selection()];
-                assertSubmissionTargets(entries);
-                await onSelectionSubmit?.({ selections: entries });
-              }, 'Selection submitted.')
-            }
-            onSendStaged={() =>
-              void runOperation(async () => {
-                const entries = Object.values(stagedSelections);
-                assertSubmissionTargets(entries);
-                await onSelectionSubmit?.({ selections: entries });
-                setStagedSelections({});
-              }, 'Staged selections submitted.')
-            }
-            onStageSelection={handleStageSelection}
-            onToggleUnitCell={handleToggleUnitCell}
-            selectedAtomLabels={selectedAtomLabels}
-            selectedSerials={selectedSerials}
-            stagedAtoms={stagedAtoms}
-            stagedMolecules={stagedMolecules}
-            unitCellAvailable={unitCellAvailable}
-            unitCellVisible={unitCellVisible}
-          />
         </div>
       </div>
-    </div>
+    </GraphMoleculeFigureFrame>
   );
 }

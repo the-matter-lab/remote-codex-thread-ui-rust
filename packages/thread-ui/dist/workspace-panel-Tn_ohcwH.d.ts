@@ -2,7 +2,7 @@ import * as react from 'react';
 import { ReactNode } from 'react';
 import * as _remote_codex_shared from '@remote-codex/shared';
 import { PromptAttachmentManifestEntryDto, ThreadHistoryItemDetailDto, ThreadTurnDto, ShellEventEnvelope, ThreadDto, UpdateThreadSettingsInput, ThreadShellStateDto, ShellSessionDto, UpdateShellInput, PluginDto, ImportPluginInput, ThreadArtifactDto, ThreadDetailDto, AgentRuntimeStatusDto } from '@remote-codex/shared';
-import { A as ArtifactRenderContext, I as InlineCodeRenderContext, T as ThreadPanelContribution, F as FrontendPluginModule } from './plugin-types-ZVSGf8y8.js';
+import { F as FrontendPluginModule, E as ExtensionHostAdapter, b as ViewerToolbarContribution, T as ThreadPanelContribution, a as ExtensionRenderContext, A as ArtifactRenderContext, I as InlineCodeRenderContext } from './plugin-types-Bjl4gyeh.js';
 
 interface PromptAttachmentUpload extends PromptAttachmentManifestEntryDto {
     file: File;
@@ -82,8 +82,94 @@ type ThreadWorkspaceUploadResult = {
     archiveName: string;
     extractedCount: number;
     paths: string[];
+    /** First committed file (paths can also contain directory entries). */
+    firstFile?: string | null;
 };
+type ThreadWorkspaceArchiveFormat = 'tar' | 'zip';
+interface ThreadWorkspaceTrashEntry {
+    trashId: string;
+    path: string;
+    revision: string;
+    size: number;
+    trashedAt: string;
+}
+interface ThreadWorkspaceTrashList {
+    version: 1;
+    revision: string;
+    entries: ThreadWorkspaceTrashEntry[];
+}
+interface ThreadWorkspaceCapabilities {
+    download: {
+        file: boolean;
+        directory: false | 'tar';
+    };
+    archiveImport: false | 'tar';
+    create?: boolean;
+    mkdir?: boolean;
+    delete?: 'file' | false;
+    move?: 'file-new-destination' | false;
+    maxFileBytes?: number;
+    maxArchiveBytes?: number;
+    maxArchiveEntries?: number;
+    archives?: {
+        version: 1;
+        formats: ThreadWorkspaceArchiveFormat[];
+    };
+    trash?: {
+        version: 1;
+        files: boolean;
+        restore: boolean;
+        empty: boolean;
+    };
+}
 interface ThreadWorkspaceAdapter {
+    capabilities?: ThreadWorkspaceCapabilities;
+    getCapabilities?: (threadId: string) => Promise<ThreadWorkspaceCapabilities>;
+    importArchive?: (input: {
+        threadId: string;
+        workspaceId?: string | null;
+        path: string;
+        file: File;
+        format?: ThreadWorkspaceArchiveFormat;
+    }) => Promise<Extract<ThreadWorkspaceUploadResult, {
+        kind: 'archive';
+    }>>;
+    /** Host freezes the source revision and binds it to the supplied operationId. */
+    trashFile?: (input: {
+        threadId: string;
+        workspaceId?: string | null;
+        path: string;
+        operationId?: string;
+    }) => Promise<ThreadWorkspaceTrashEntry>;
+    listTrash?: (input: {
+        threadId: string;
+        workspaceId?: string | null;
+    }) => Promise<ThreadWorkspaceTrashList>;
+    restoreTrash?: (input: {
+        threadId: string;
+        workspaceId?: string | null;
+        trashId: string;
+        expectedRevision: string;
+        expectedDestinationRevision: null;
+        operationId?: string;
+    }) => Promise<void> | void;
+    emptyTrash?: (input: {
+        threadId: string;
+        workspaceId?: string | null;
+        expectedRevision: string;
+        operationId?: string;
+    }) => Promise<void> | void;
+    deleteFile?: (input: {
+        threadId: string;
+        workspaceId?: string | null;
+        path: string;
+    }) => Promise<void> | void;
+    moveFile?: (input: {
+        threadId: string;
+        workspaceId?: string | null;
+        path: string;
+        destination: string;
+    }) => Promise<void> | void;
     /** Owner-only, read-only host files explicitly opened from a thread link. */
     statLinkedFile?: (input: {
         threadId: string;
@@ -129,6 +215,7 @@ interface ThreadWorkspaceAdapter {
         workspaceId?: string | null;
         path: string;
         kind: 'file' | 'directory';
+        format?: ThreadWorkspaceArchiveFormat;
     }) => Promise<void> | void;
     listGarbage?: (input: {
         threadId: string;
@@ -182,7 +269,19 @@ interface ThreadDetailUiAdapter {
     shell?: ThreadShellAdapter | null;
 }
 
+/** Only reviewed, imported modules participate. Wire contribution IDs are data. */
+declare function extensionModuleAvailable(module: FrontendPluginModule, host?: ExtensionHostAdapter): boolean;
+declare function createExtensionPluginApi(modules: FrontendPluginModule[], adapter?: ExtensionHostAdapter): {
+    extensionHost: ExtensionHostAdapter | undefined;
+    hasCapability: (id: string) => boolean;
+    getViewerToolbar: () => ViewerToolbarContribution[];
+    getExtensionPanels: () => ThreadPanelContribution[];
+    renderExtension: (context: ExtensionRenderContext) => string | number | bigint | boolean | react.ReactElement<unknown, string | react.JSXElementConstructor<any>> | Iterable<react.ReactNode> | Promise<string | number | bigint | boolean | react.ReactPortal | react.ReactElement<unknown, string | react.JSXElementConstructor<any>> | Iterable<react.ReactNode> | null | undefined> | null;
+};
+type ExtensionPluginApi = ReturnType<typeof createExtensionPluginApi>;
+
 interface PluginContextValue {
+    extensions?: ExtensionPluginApi;
     plugins: PluginDto[];
     loading: boolean;
     error: string | null;
@@ -196,7 +295,7 @@ interface PluginContextValue {
     getThreadPanels: () => ThreadPanelContribution[];
 }
 declare function mergePluginState(modules: FrontendPluginModule[], serverPlugins: PluginDto[]): PluginDto[];
-declare function createDefaultPluginContextValue(modules?: FrontendPluginModule[]): PluginContextValue;
+declare function createDefaultPluginContextValue(modules?: FrontendPluginModule[], extensionHost?: ExtensionHostAdapter): PluginContextValue;
 declare const PluginContext: react.Context<PluginContextValue>;
 
 interface ThreadGraphWorkspacePanelProps {
@@ -212,6 +311,7 @@ interface ThreadGraphWorkspacePanelProps {
         path: string;
         line?: number;
         requestId: number;
+        artifactId?: string;
     } | null;
 }
 type WorkspaceTab = 'workspace' | 'tools' | 'guide' | 'graph' | 'extensions';
@@ -226,4 +326,4 @@ interface ThreadGraphWorkspaceFeatures {
 declare function ThreadGraphWorkspacePanel({ detail, status, plugins, workspaceAdapter, metaContent, settingsContent, activeView, features: featureConfig, focusPathRequest, }: ThreadGraphWorkspacePanelProps): react.JSX.Element | null;
 declare const MemoizedThreadGraphWorkspacePanel: react.MemoExoticComponent<typeof ThreadGraphWorkspacePanel>;
 
-export { MemoizedThreadGraphWorkspacePanel as M, type PromptAttachmentUpload as P, type SendPromptInput as S, type ThreadShellControlState as T, type WorkspaceTab as W, type ThreadTimelineAdapter as a, type ThreadShellAdapter as b, type ThreadGraphWorkspacePanelProps as c, type PluginContextValue as d, type ThreadDetailUiAdapter as e, type ThreadGraphWorkspaceFeatures as f, PluginContext as g, type ShellSocketConnection as h, type ShellSocketHandlers as i, type ThreadWorkspaceAdapter as j, createDefaultPluginContextValue as k, ThreadGraphWorkspacePanel as l, mergePluginState as m };
+export { type ExtensionPluginApi as E, MemoizedThreadGraphWorkspacePanel as M, type PromptAttachmentUpload as P, type SendPromptInput as S, type ThreadShellControlState as T, type WorkspaceTab as W, type ThreadTimelineAdapter as a, type ThreadShellAdapter as b, type ThreadGraphWorkspacePanelProps as c, type PluginContextValue as d, type ThreadDetailUiAdapter as e, type ThreadGraphWorkspaceFeatures as f, PluginContext as g, type ShellSocketConnection as h, type ShellSocketHandlers as i, type ThreadWorkspaceAdapter as j, type ThreadWorkspaceArchiveFormat as k, type ThreadWorkspaceCapabilities as l, type ThreadWorkspaceTrashEntry as m, type ThreadWorkspaceTrashList as n, createDefaultPluginContextValue as o, createExtensionPluginApi as p, extensionModuleAvailable as q, mergePluginState as r, ThreadGraphWorkspacePanel as s };

@@ -113,7 +113,15 @@ function workspaceDisplayPath(path, root) {
 }
 
 // src/components/graph-workspace/workspaceTree.ts
-var MOLECULAR_EXTENSIONS = /* @__PURE__ */ new Set(["xyz", "extxyz", "cif", "pdb", "sdf", "mol"]);
+import { validateArtifactMetadata } from "@remote-codex/shared";
+var MOLECULAR_EXTENSIONS = /* @__PURE__ */ new Set([
+  "xyz",
+  "extxyz",
+  "cif",
+  "pdb",
+  "sdf",
+  "mol"
+]);
 var IMAGE_EXTENSIONS = /* @__PURE__ */ new Set([
   "png",
   "jpg",
@@ -233,7 +241,7 @@ function languageForPath(path) {
 }
 function ensureDirectory(root, segments) {
   let current = root;
-  let path = "";
+  let path = root.path;
   for (const segment of segments) {
     path = path ? `${path}/${segment}` : segment;
     let child = current.children.find(
@@ -260,7 +268,7 @@ function addPathNode(root, path, node) {
   parent.children.push({
     ...node,
     name: node.name || fileName,
-    path
+    path: root.path ? `${root.path}/${path}` : path
   });
 }
 function compareWorkspaceNodes(left, right) {
@@ -279,6 +287,15 @@ function sortWorkspaceTree(node) {
   }
   return node;
 }
+function artifactNodeIdentity(artifact) {
+  try {
+    const metadata = validateArtifactMetadata(artifact.metadata);
+    if (metadata.stream && !artifact.extensionError)
+      return JSON.stringify(["stream", artifact.type, metadata.objectId, metadata.stream.id]);
+  } catch {
+  }
+  return JSON.stringify(["artifact", artifact.id]);
+}
 function collectWorkspaceItems(detail, artifacts, status, activeView) {
   const root = {
     id: "root",
@@ -290,35 +307,41 @@ function collectWorkspaceItems(detail, artifacts, status, activeView) {
   const artifactRoot = {
     id: "artifacts",
     name: "artifacts",
-    path: "artifacts",
+    path: "artifacts:",
     kind: "directory",
     children: []
   };
   for (const artifact of artifacts) {
     const title = artifact.title || artifact.id;
     const safeName = sanitizePathSegment(title) || artifact.id;
-    artifactRoot.children.push({
-      id: `artifact:${artifact.id}`,
+    const identity = artifactNodeIdentity(artifact);
+    const existing = artifactRoot.children.findIndex(
+      (node2) => node2.id === `artifact:${identity}`
+    );
+    const node = {
+      id: `artifact:${identity}`,
       name: `${safeName}.artifact`,
-      path: `artifacts/${safeName}.artifact`,
+      path: `artifacts:/${encodeURIComponent(identity)}.artifact`,
       kind: "artifact",
       artifact,
       preview: artifact.summaryText ?? artifact.type,
       detail: JSON.stringify(artifact.payload, null, 2),
       children: []
-    });
+    };
+    if (existing < 0) artifactRoot.children.push(node);
+    else artifactRoot.children[existing] = node;
   }
   const eventRoot = {
     id: "thread-events",
     name: "thread-events",
-    path: "thread-events",
+    path: "thread-events:",
     kind: "directory",
     children: []
   };
   const liveRoot = {
     id: "live",
     name: "live",
-    path: "live",
+    path: "live:",
     kind: "directory",
     children: []
   };
@@ -326,15 +349,15 @@ function collectWorkspaceItems(detail, artifacts, status, activeView) {
   const addEventNode = (turnId, item, live = false) => {
     sequence += 1;
     const label = item.kind.replace(/([A-Z])/g, "-$1").toLowerCase();
-    const eventPath = `${live ? "live" : `thread-events/${turnId}`}/${String(
+    const eventPath = `${live ? "live:" : `thread-events:/${turnId}`}/${String(
       sequence
     ).padStart(3, "0")}-${label}.json`;
     const preview = "text" in item && typeof item.text === "string" ? item.text.slice(0, 160) : item.kind;
     const artifact = item.kind === "artifact" && item.artifact ? item.artifact : null;
     const node = artifact && live ? {
-      id: `live-artifact:${artifact.id}`,
+      id: `live-artifact:${artifactNodeIdentity(artifact)}`,
       name: artifact.title || artifact.id,
-      path: eventPath,
+      path: `live:/${encodeURIComponent(artifactNodeIdentity(artifact))}.artifact`,
       kind: "live-artifact",
       artifact,
       item,
@@ -352,10 +375,14 @@ function collectWorkspaceItems(detail, artifacts, status, activeView) {
       children: []
     };
     if (live) {
-      liveRoot.children.push(node);
+      const existing = liveRoot.children.findIndex(
+        (value) => value.id === node.id
+      );
+      if (existing < 0) liveRoot.children.push(node);
+      else liveRoot.children[existing] = node;
       return;
     }
-    addPathNode(eventRoot, eventPath.replace(/^thread-events\//, ""), node);
+    addPathNode(eventRoot, eventPath.replace(/^thread-events:\//, ""), node);
   };
   for (const turn of detail.turns) {
     for (const item of turn.items) {

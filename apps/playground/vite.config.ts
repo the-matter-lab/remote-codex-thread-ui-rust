@@ -1,12 +1,46 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+
+const moleculeRuntime = fileURLToPath(
+  new URL(
+    '../../packages/thread-ui/node_modules/3dmol/build/3Dmol-min.js',
+    import.meta.url,
+  ),
+);
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [
+    react(),
+    tailwindcss(),
+    {
+      name: 'playground-local-molecule-runtime',
+      configureServer(server) {
+        server.middlewares.use('/vendor/3Dmol-min.js', (_request, response) => {
+          response.setHeader('Content-Type', 'text/javascript');
+          response.end(readFileSync(moleculeRuntime));
+        });
+      },
+      generateBundle() {
+        this.emitFile({
+          type: 'asset',
+          fileName: 'vendor/3Dmol-min.js',
+          source: readFileSync(moleculeRuntime),
+        });
+      },
+    },
+  ],
   build: {
     chunkSizeWarningLimit: 600,
     rollupOptions: {
+      input: {
+        main: fileURLToPath(new URL('./index.html', import.meta.url)),
+        moleculeViewer: fileURLToPath(
+          new URL('./molecule-viewer.html', import.meta.url),
+        ),
+      },
       onwarn(warning, defaultHandler) {
         if (
           warning.code === 'EVAL' &&

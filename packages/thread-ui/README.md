@@ -18,3 +18,7 @@ until thread-specific styles are moved into a package stylesheet.
 Required style coverage includes the thread workspace layout, timeline,
 composer, sidebar cards, empty/error/status surfaces, shell panel, and XYZ
 viewer styles imported by the package plugin renderer.
+
+The production molecule figure and full-view interaction contract, local demo,
+validation commands and deliberate differences from the Matter prototype are
+documented in [Molecule viewer](docs/molecule-viewer.md).

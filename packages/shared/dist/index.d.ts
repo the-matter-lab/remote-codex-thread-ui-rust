@@ -1,3 +1,86 @@
+/** Additive extension data contract. Transport/feature support must be advertised separately. */
+declare const EXTENSION_VERSION: 1;
+declare const EXTENSION_TYPES: Readonly<Record<string, string>>;
+type JsonValue = null | boolean | number | string | JsonValue[] | {[key: string]: JsonValue};
+interface ExtensionEnvelope<T = JsonValue> {version: 1; type: string; data: T; [field: string]: unknown}
+/** A deliberately bounded declarative schema; no refs, code, URLs or dynamic imports. */
+type ValueSchema =
+  | {type: 'string'; enum?: string[]; maxLength?: number}
+  | {type: 'number' | 'integer'; minimum?: number; maximum?: number}
+  | {type: 'boolean' | 'null'}
+  | {type: 'array'; items: ValueSchema; maxItems: number}
+  | {type: 'object'; properties: Record<string, ValueSchema>; required?: string[]; additionalProperties: false};
+interface OptionDefinition {
+  id: string; label: string; description?: string; schema: ValueSchema; default?: JsonValue;
+  scope: 'thread' | 'turn'; apply: 'nextTurn' | 'restart'; mutable: boolean;
+}
+interface ActionDefinition {
+  id: string; label: string; inputSchema: ValueSchema; resultSchema: ValueSchema;
+  execution: 'browser' | 'native'; completion: 'applied';
+}
+interface ContributionDefinition {
+  id: string; type: string; version: 1; minContractVersion: 1;
+  rendererIds: string[]; panelIds: string[]; actionIds: string[]; optionIds: string[];
+}
+interface ExtensionDiscovery {
+  contractVersion: 1; capabilities: Record<string, boolean>;
+  contributions: ContributionDefinition[]; options: OptionDefinition[]; actions: ActionDefinition[];
+  viewerState: 'personal-transient'; submission: 'explicit';
+}
+interface ScientificTarget {
+  artifactId: string; objectId: string; sourceRevision: string; checksum: string;
+  streamId?: string; frameId?: string; frameIndex?: number;
+}
+interface ArtifactMetadata {
+  version: 1; objectId: string; sourceRevision: string; checksum: string; format: string;
+  stream?: {id: string; frameId: string; frameIndex: number};
+  atoms?: {id: string; element: string}[];
+  bonds?: {atomIds: [string, string]; order: number}[];
+  cell?: {vectors: [[number, number, number], [number, number, number], [number, number, number]]; periodic: [boolean, boolean, boolean]; unit: 'angstrom' | 'bohr'};
+  render?: {coordinateUnit: 'angstrom' | 'bohr'; bonding: 'provided' | 'infer' | 'none'; style?: 'ball-stick' | 'stick' | 'spacefill'; background?: string};
+  [field: string]: unknown;
+}
+interface ViewerRequest {
+  version: 1; requestId: string; operationId: string; actionId: string;
+  target: ScientificTarget; payload: JsonValue;
+}
+interface ViewerInput extends ViewerRequest {
+  kind: 'selection' | 'screenshot' | 'action'; submission: 'explicit';
+}
+interface ViewerAcknowledgement {
+  version: 1; requestId: string; operationId: string; actionId: string;
+  target: ScientificTarget; status: 'accepted' | 'applied' | 'rejected';
+  result?: JsonValue; error?: {code: string; message: string};
+}
+interface StructuredProgress {
+  version: 1; callId: string; status: 'queued' | 'running' | 'waitingForInput' | 'completed' | 'failed' | 'interrupted';
+  label: string; arguments?: JsonValue; startedAt?: string; completedAt?: string;
+  resultSummary?: string; logSummary?: string; artifactIds?: string[];
+  completed?: number; total?: number; unit?: string; parentCallId?: string;
+}
+interface StructuredUsage {
+  version: 1; scope: 'turn' | 'room' | 'tool'; availability: 'available' | 'unavailable';
+  scopeId: string; observedAt: string;
+  tokens?: {input?: number; output?: number; reasoning?: number; cacheRead?: number; cacheWrite?: number; total?: number};
+  cost?: {amount: number; currency: string};
+}
+declare class ExtensionValidationError extends Error {code: string; path: string}
+declare function validateValueSchema(value: unknown): asserts value is ValueSchema;
+declare function validatePayload(schema: ValueSchema, value: unknown): asserts value is JsonValue;
+declare function validateDiscovery(value: unknown): ExtensionDiscovery;
+declare function hasCapability(discovery: ExtensionDiscovery | undefined, id: string): boolean;
+declare function validateOptionValues(discovery: ExtensionDiscovery, values: unknown, scope?: 'thread' | 'turn'): Record<string, JsonValue>;
+declare function validateArtifactMetadata(value: unknown): ArtifactMetadata;
+declare function validateScientificTarget(value: unknown): ScientificTarget;
+declare function validateViewerRequest(value: unknown, discovery: ExtensionDiscovery): ViewerRequest;
+declare function validateViewerInput(value: unknown, discovery: ExtensionDiscovery): ViewerInput;
+declare function validateViewerAcknowledgement(value: unknown, request: ViewerRequest, discovery: ExtensionDiscovery): ViewerAcknowledgement;
+declare function validateProgress(value: unknown): StructuredProgress;
+declare function validateUsage(value: unknown): StructuredUsage;
+declare function validateExtension(value: unknown, discovery?: ExtensionDiscovery, originatingRequest?: ViewerRequest): ExtensionEnvelope<unknown>;
+/** Unknown types retain data but never select executable UI. */
+declare function extensionFallback(value: unknown): {kind: 'metadata-text-download'; type: string; text: string; metadata: unknown};
+
 declare const agentBackendIds: readonly ["codex", "claude", "opencode", "elagente"];
 type AgentBackendIdDto = (typeof agentBackendIds)[number];
 declare const defaultAgentBackendId: AgentBackendIdDto;
@@ -13,6 +96,9 @@ interface AgentBackendMetadata {
 declare const agentBackendMetadata: Record<AgentBackendIdDto, AgentBackendMetadata>;
 declare function isAgentBackendId(value: unknown): value is AgentBackendIdDto;
 declare function normalizeAgentBackendId(value: unknown): AgentBackendIdDto | null;
+
+interface ExtensionFixture {agentId: string; discovery: ExtensionDiscovery; artifacts: Array<{id: string; checksum: string; size: number; fixtureBytes: string; metadata: ArtifactMetadata; [key: string]: unknown}>; input: ViewerInput; acknowledgements: ViewerAcknowledgement[]; progress: StructuredProgress; usage: StructuredUsage; unavailableUsage: StructuredUsage; unknownItem: {extension: ExtensionEnvelope; [key: string]: unknown}}
+declare const EXTENSION_FIXTURES: Readonly<Record<'grafico' | 'cuantico', ExtensionFixture>>;
 
 type ApiErrorCode = 'bad_request' | 'not_found' | 'conflict' | 'provider_goal_error' | 'forbidden' | 'goal_feature_disabled' | 'internal_error' | 'service_unavailable';
 interface ApiErrorShape {
@@ -307,6 +393,9 @@ interface ThreadHistoryItemDto {
         text: string;
     }> | null;
     artifact?: ThreadArtifactDto | null;
+    extension?: ExtensionEnvelope<unknown>;
+    progress?: StructuredProgress;
+    usage?: StructuredUsage;
 }
 interface ThreadHistoryItemDetailDto {
     id: string;
@@ -315,6 +404,8 @@ interface ThreadHistoryItemDetailDto {
     text: string;
 }
 interface ThreadArtifactDto {
+    metadata?: ArtifactMetadata;
+    extension?: ExtensionEnvelope<unknown>;
     id: string;
     pluginId: string;
     type: string;
@@ -370,6 +461,7 @@ interface PluginCapabilitiesDto {
     };
 }
 interface PluginManifestDto {
+    contribution?: ContributionDefinition;
     id: string;
     name: string;
     version: string;
@@ -921,4 +1013,4 @@ type SupervisorSocketClientEnvelope = {
 /** Text can arrive as a shorter summary; operation lifecycle must still advance. */
 declare function mergeThreadHistoryItem(current: ThreadHistoryItemDto | undefined, incoming: ThreadHistoryItemDto): ThreadHistoryItemDto;
 
-export { type AgentBackendConfigFileSchemaDto, type AgentBackendDto, type AgentBackendHookCommandTemplateDto, type AgentBackendIdDto, type AgentBackendInstallationDto, type AgentBackendManagementSchemaDto, type AgentBackendMetadata, type AgentBackendToolboxActionDto, type AgentBackendToolboxItemSchemaDto, type AgentHookDto, type AgentHookErrorDto, type AgentHookEventNameDto, type AgentHookHandlerTypeDto, type AgentHookSourceDto, type AgentHookTrustStatusDto, type AgentMcpAuthStatusDto, type AgentMcpServerDto, type AgentMcpToolDto, type AgentProviderCapabilitiesDto, type AgentRuntimeStatusDto, type AgentSkillDto, type AgentSkillErrorDto, type AgentSkillInterfaceDto, type AgentSkillScopeDto, type AgentSubscriptionUsageDto, type AgentSubscriptionUsageWindowDto, type ApiErrorCode, type ApiErrorShape, type ApplyProviderHostConfigArchiveResultDto, type ApprovalMode, type CollaborationModeDto, type CreateProviderHostConfigArchiveInput, type CreateThreadHookInput, type CreateThreadInput, type CreateWorkspaceFromGitInput, type CreateWorkspaceFromPathInput, type CreateWorkspaceInput, type ExportThreadTranscriptInput, type ForkThreadInput, type HealthDto, type ImportPluginInput, type ImportThreadInput, type InterruptTurnInput, type ModelOptionDto, type PluginArtifactTypeDto, type PluginCapabilitiesDto, type PluginDto, type PluginManifestDto, type PluginMcpServerDto, type PluginModelHintDto, type PluginThreadPanelDto, type PromptAttachmentKindDto, type PromptAttachmentManifestEntryDto, type ProviderHostConfigArchiveDto, type ProviderHostConfigArchiveFileDto, type ProviderHostFileDto, type ProviderHostFileNameDto, type ReasoningEffortDto, type ReasoningEffortOptionDto, type RenameProviderHostConfigArchiveInput, type RespondThreadActionRequestInput, type ResumeThreadInput, type RuntimeConfigDto, type SandboxModeDto, type SendThreadPromptInput, type ShellAttachInput, type ShellCreateInput, type ShellDetachInput, type ShellEventEnvelope, type ShellEventPayloadMap, type ShellInputInput, type ShellResizeInput, type ShellSessionDto, type ShellStatusDto, type SupervisorConnectedEnvelope, type SupervisorPongEnvelope, type SupervisorSocketClientEnvelope, type SupervisorSocketServerEnvelope, type ThreadActionQuestionDto, type ThreadActionQuestionOptionDto, type ThreadActionRequestAnswerDto, type ThreadActionRequestDto, type ThreadActivityNoteDto, type ThreadAnsweredRequestNoteDto, type ThreadArtifactDto, type ThreadContextUsageDto, type ThreadDetailDto, type ThreadDto, type ThreadEventEnvelope, type ThreadEventPayloadMap, type ThreadExportFormatDto, type ThreadExportPdfModeDto, type ThreadExportPdfProfileDto, type ThreadExportTurnOptionDto, type ThreadExportTurnOptionsDto, type ThreadForkResultDto, type ThreadForkTurnOptionDto, type ThreadGoalDto, type ThreadGoalStatusDto, type ThreadHistoryItemDetailDto, type ThreadHistoryItemDto, type ThreadHookTargetInput, type ThreadHooksDto, type ThreadLiveItemsDto, type ThreadLivePlanDto, type ThreadMcpServersDto, type ThreadPendingSteerDto, type ThreadShellStateDto, type ThreadSkillsDto, type ThreadSourceDto, type ThreadStatusDto, type ThreadTurnDto, type ThreadTurnPriceEstimateDto, type ThreadTurnPricingTierDto, type ThreadTurnTokenBreakdownDto, type ThreadTurnTokenUsageDto, type TrustThreadHookInput, type UntrustThreadHookInput, type UpdatePluginInput, type UpdateProviderHostFileInput, type UpdateShellInput, type UpdateThreadGoalInput, type UpdateThreadHookInput, type UpdateThreadInput, type UpdateThreadSettingsInput, type UpdateWorkspaceFavoriteInput, type UpdateWorkspaceInput, type UpdateWorkspaceSettingsInput, type VersionDto, type WorkspaceDto, type WorkspaceSettingsDto, type WorkspaceTreeDto, type WorkspaceTreeNodeDto, agentBackendIds, agentBackendMetadata, defaultAgentBackendId, isAgentBackendId, mergeThreadHistoryItem, normalizeAgentBackendId, truncateAutoThreadTitle };
+export { type ActionDefinition, type AgentBackendConfigFileSchemaDto, type AgentBackendDto, type AgentBackendHookCommandTemplateDto, type AgentBackendIdDto, type AgentBackendInstallationDto, type AgentBackendManagementSchemaDto, type AgentBackendMetadata, type AgentBackendToolboxActionDto, type AgentBackendToolboxItemSchemaDto, type AgentHookDto, type AgentHookErrorDto, type AgentHookEventNameDto, type AgentHookHandlerTypeDto, type AgentHookSourceDto, type AgentHookTrustStatusDto, type AgentMcpAuthStatusDto, type AgentMcpServerDto, type AgentMcpToolDto, type AgentProviderCapabilitiesDto, type AgentRuntimeStatusDto, type AgentSkillDto, type AgentSkillErrorDto, type AgentSkillInterfaceDto, type AgentSkillScopeDto, type AgentSubscriptionUsageDto, type AgentSubscriptionUsageWindowDto, type ApiErrorCode, type ApiErrorShape, type ApplyProviderHostConfigArchiveResultDto, type ApprovalMode, type ArtifactMetadata, type CollaborationModeDto, type ContributionDefinition, type CreateProviderHostConfigArchiveInput, type CreateThreadHookInput, type CreateThreadInput, type CreateWorkspaceFromGitInput, type CreateWorkspaceFromPathInput, type CreateWorkspaceInput, EXTENSION_FIXTURES, EXTENSION_TYPES, EXTENSION_VERSION, type ExportThreadTranscriptInput, type ExtensionDiscovery, type ExtensionEnvelope, ExtensionValidationError, type ForkThreadInput, type HealthDto, type ImportPluginInput, type ImportThreadInput, type InterruptTurnInput, type JsonValue, type ModelOptionDto, type OptionDefinition, type PluginArtifactTypeDto, type PluginCapabilitiesDto, type PluginDto, type PluginManifestDto, type PluginMcpServerDto, type PluginModelHintDto, type PluginThreadPanelDto, type PromptAttachmentKindDto, type PromptAttachmentManifestEntryDto, type ProviderHostConfigArchiveDto, type ProviderHostConfigArchiveFileDto, type ProviderHostFileDto, type ProviderHostFileNameDto, type ReasoningEffortDto, type ReasoningEffortOptionDto, type RenameProviderHostConfigArchiveInput, type RespondThreadActionRequestInput, type ResumeThreadInput, type RuntimeConfigDto, type SandboxModeDto, type ScientificTarget, type SendThreadPromptInput, type ShellAttachInput, type ShellCreateInput, type ShellDetachInput, type ShellEventEnvelope, type ShellEventPayloadMap, type ShellInputInput, type ShellResizeInput, type ShellSessionDto, type ShellStatusDto, type StructuredProgress, type StructuredUsage, type SupervisorConnectedEnvelope, type SupervisorPongEnvelope, type SupervisorSocketClientEnvelope, type SupervisorSocketServerEnvelope, type ThreadActionQuestionDto, type ThreadActionQuestionOptionDto, type ThreadActionRequestAnswerDto, type ThreadActionRequestDto, type ThreadActivityNoteDto, type ThreadAnsweredRequestNoteDto, type ThreadArtifactDto, type ThreadContextUsageDto, type ThreadDetailDto, type ThreadDto, type ThreadEventEnvelope, type ThreadEventPayloadMap, type ThreadExportFormatDto, type ThreadExportPdfModeDto, type ThreadExportPdfProfileDto, type ThreadExportTurnOptionDto, type ThreadExportTurnOptionsDto, type ThreadForkResultDto, type ThreadForkTurnOptionDto, type ThreadGoalDto, type ThreadGoalStatusDto, type ThreadHistoryItemDetailDto, type ThreadHistoryItemDto, type ThreadHookTargetInput, type ThreadHooksDto, type ThreadLiveItemsDto, type ThreadLivePlanDto, type ThreadMcpServersDto, type ThreadPendingSteerDto, type ThreadShellStateDto, type ThreadSkillsDto, type ThreadSourceDto, type ThreadStatusDto, type ThreadTurnDto, type ThreadTurnPriceEstimateDto, type ThreadTurnPricingTierDto, type ThreadTurnTokenBreakdownDto, type ThreadTurnTokenUsageDto, type TrustThreadHookInput, type UntrustThreadHookInput, type UpdatePluginInput, type UpdateProviderHostFileInput, type UpdateShellInput, type UpdateThreadGoalInput, type UpdateThreadHookInput, type UpdateThreadInput, type UpdateThreadSettingsInput, type UpdateWorkspaceFavoriteInput, type UpdateWorkspaceInput, type UpdateWorkspaceSettingsInput, type ValueSchema, type VersionDto, type ViewerAcknowledgement, type ViewerInput, type ViewerRequest, type WorkspaceDto, type WorkspaceSettingsDto, type WorkspaceTreeDto, type WorkspaceTreeNodeDto, agentBackendIds, agentBackendMetadata, defaultAgentBackendId, extensionFallback, hasCapability, isAgentBackendId, mergeThreadHistoryItem, normalizeAgentBackendId, truncateAutoThreadTitle, validateArtifactMetadata, validateDiscovery, validateExtension, validateOptionValues, validatePayload, validateProgress, validateScientificTarget, validateUsage, validateValueSchema, validateViewerAcknowledgement, validateViewerInput, validateViewerRequest };

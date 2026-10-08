@@ -1,4 +1,4 @@
-import { F as FrontendPluginModule } from './plugin-types-ZVSGf8y8.js';
+import { F as FrontendPluginModule } from './plugin-types-Bjl4gyeh.js';
 import 'react';
 import '@remote-codex/shared';
 

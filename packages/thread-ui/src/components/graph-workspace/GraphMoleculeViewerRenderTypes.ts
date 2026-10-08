@@ -24,6 +24,9 @@ export type RenderViewer = Omit<
   ): RenderModel;
   getView(): number[];
   setView(view: number[]): void;
+  spin?(axis: string | false, speed?: number): void;
+  stopAnimate?(): unknown;
+  clear?(): unknown;
   addLine(spec: Record<string, unknown>): object;
   removeShape(shape: object): void;
   removeAllSurfaces(): void;

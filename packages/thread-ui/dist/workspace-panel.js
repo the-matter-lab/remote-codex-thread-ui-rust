@@ -26,14 +26,14 @@ import {
   workspaceDisplayPath,
   workspaceRelativeFocusPath,
   workspaceTreeNodeToGraphNode
-} from "./chunk-EPQHWJV4.js";
+} from "./chunk-32RNZQEK.js";
 import {
   GraphMoleculeViewer
-} from "./chunk-TSVRAXDL.js";
+} from "./chunk-KHNRBZ77.js";
 import "./chunk-TZBWAOOO.js";
 
 // src/components/ThreadGraphWorkspacePanel.tsx
-import { memo as memo2, useEffect as useEffect7, useMemo as useMemo7, useState as useState9 } from "react";
+import { memo as memo2, useEffect as useEffect8, useMemo as useMemo7, useState as useState9 } from "react";
 import {
   GitBranch,
   Paperclip,
@@ -43,7 +43,8 @@ import {
 } from "lucide-react";
 
 // src/components/graph-workspace/GraphWorkspaceExplorer.tsx
-import { useEffect as useEffect5, useLayoutEffect as useLayoutEffect2, useRef as useRef6, useState as useState8 } from "react";
+import * as Dialog2 from "@radix-ui/react-dialog";
+import { useEffect as useEffect6, useLayoutEffect as useLayoutEffect2, useRef as useRef7, useState as useState8 } from "react";
 
 // src/components/graph-workspace/explorer/useWorkspaceExplorerController.ts
 import { useCallback, useEffect, useMemo as useMemo2, useRef, useState } from "react";
@@ -250,6 +251,43 @@ function useWorkspaceExplorerPersistence(identity) {
   );
 }
 
+// src/components/graph-workspace/explorer/workspaceOperationCapabilities.ts
+function validateWorkspaceOperationCapabilities(capabilities) {
+  const { archives, trash } = capabilities;
+  if (archives !== void 0 && (archives.version !== 1 || !Array.isArray(archives.formats) || archives.formats.length > 2 || archives.formats.some((format) => format !== "tar" && format !== "zip") || new Set(archives.formats).size !== archives.formats.length)) {
+    throw new Error(
+      "Archive capability is unsupported. Refresh the workspace to retry discovery."
+    );
+  }
+  if (trash !== void 0 && (trash.version !== 1 || ["files", "restore", "empty"].some(
+    (key) => typeof trash[key] !== "boolean"
+  ))) {
+    throw new Error(
+      "Trash capability is unsupported. Refresh the workspace to retry discovery."
+    );
+  }
+  return capabilities;
+}
+function workspaceArchiveFormats(capabilities, operation) {
+  if (!capabilities) return [];
+  try {
+    validateWorkspaceOperationCapabilities(capabilities);
+  } catch {
+    return [];
+  }
+  if (capabilities.archives) return capabilities.archives.formats;
+  return (operation === "import" ? capabilities.archiveImport : capabilities.download.directory) === "tar" ? ["tar"] : [];
+}
+function workspaceTrashCapabilities(capabilities) {
+  if (!capabilities) return null;
+  try {
+    validateWorkspaceOperationCapabilities(capabilities);
+  } catch {
+    return null;
+  }
+  return capabilities.trash ?? null;
+}
+
 // src/components/graph-workspace/explorer/useWorkspaceExplorerController.ts
 function selectedPathForId(selectedId, nodeMap) {
   if (!selectedId) {
@@ -276,6 +314,55 @@ function useWorkspaceExplorerController({
     }),
     [detail.thread.id, detail.thread.workspaceId, detail.workspace.id]
   );
+  const capabilityAdapter = workspaceAdapter;
+  const [capabilityState, setCapabilityState] = useState(null);
+  const discoveredCapabilities = capabilityState?.adapter === capabilityAdapter && capabilityState?.threadId === workspaceIdentity.threadId ? capabilityState.capabilities : capabilityAdapter?.getCapabilities ? null : capabilityAdapter?.capabilities ?? null;
+  const capabilities = useMemo2(() => {
+    if (!discoveredCapabilities) return null;
+    try {
+      return validateWorkspaceOperationCapabilities(discoveredCapabilities);
+    } catch {
+      return null;
+    }
+  }, [discoveredCapabilities]);
+  const [capabilityEpoch, setCapabilityEpoch] = useState(0);
+  const [capabilityError, setCapabilityError] = useState(null);
+  useEffect(() => {
+    let cancelled = false;
+    setCapabilityState(null);
+    setCapabilityError(null);
+    if (!capabilityAdapter?.getCapabilities && capabilityAdapter?.capabilities) {
+      try {
+        validateWorkspaceOperationCapabilities(capabilityAdapter.capabilities);
+      } catch (error) {
+        setCapabilityError(error instanceof Error ? error.message : "Unsupported workspace capabilities.");
+      }
+    }
+    if (capabilityAdapter?.getCapabilities) {
+      void (async () => {
+        try {
+          const result = await capabilityAdapter.getCapabilities(
+            workspaceIdentity.threadId
+          );
+          validateWorkspaceOperationCapabilities(result);
+          if (!cancelled)
+            setCapabilityState({
+              adapter: capabilityAdapter,
+              threadId: workspaceIdentity.threadId,
+              capabilities: result
+            });
+        } catch (error) {
+          if (!cancelled)
+            setCapabilityError(
+              error instanceof Error ? error.message : "Failed to discover file operations. Refresh the workspace to retry."
+            );
+        }
+      })();
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [capabilityAdapter, workspaceIdentity.threadId, capabilityEpoch]);
   const persistence = useWorkspaceExplorerPersistence(workspaceIdentity);
   const fallbackTree = useMemo2(
     () => collectWorkspaceItems(detail, artifacts, status, activeView),
@@ -290,28 +377,43 @@ function useWorkspaceExplorerController({
   );
   const [linkedFiles, setLinkedFiles] = useState([]);
   const tree = useMemo2(() => {
-    const root = adapterTree ?? fallbackTree;
-    return linkedFiles.length ? { ...root, children: [...root.children, {
-      id: "linked-files",
-      path: "linked-files:",
-      name: "Linked files",
-      kind: "directory",
-      children: linkedFiles,
-      childrenLoaded: true,
-      hasChildren: true
-    }] } : root;
+    const root = adapterTree ? {
+      ...adapterTree,
+      children: [...adapterTree.children, ...fallbackTree.children]
+    } : fallbackTree;
+    return linkedFiles.length ? {
+      ...root,
+      children: [
+        ...root.children,
+        {
+          id: "linked-files",
+          path: "linked-files:",
+          name: "Linked files",
+          kind: "directory",
+          children: linkedFiles,
+          childrenLoaded: true,
+          hasChildren: true
+        }
+      ]
+    } : root;
   }, [adapterTree, fallbackTree, linkedFiles]);
   const nodeMap = useMemo2(() => flattenWorkspaceNodes(tree), [tree]);
   const [selectedNodeId, setSelectedNodeId] = useState(() => {
-    const selectedPath = focusPathRequest ? workspaceRelativeFocusPath(focusPathRequest.path, detail.workspace.absPath) : initialPersistedState.current.selectedPath;
-    return selectedPath ? `workspace:${selectedPath}` : fallbackFirstSelectableNode?.id ?? null;
+    const selectedPath = focusPathRequest ? workspaceRelativeFocusPath(
+      focusPathRequest.path,
+      detail.workspace.absPath
+    ) : initialPersistedState.current.selectedPath;
+    const virtualNode = [...flattenWorkspaceNodes(fallbackTree).values()].find(
+      (node) => focusPathRequest?.artifactId !== void 0 ? node.artifact?.id === focusPathRequest.artifactId : node.path === selectedPath
+    );
+    return focusPathRequest?.artifactId !== void 0 ? virtualNode?.id ?? null : virtualNode?.id ?? (selectedPath ? `workspace:${selectedPath}` : fallbackFirstSelectableNode?.id ?? null);
   });
   const [expandedPaths, setExpandedPaths] = useState(
     () => /* @__PURE__ */ new Set([
       "",
-      "artifacts",
-      "thread-events",
-      "live",
+      "artifacts:",
+      "thread-events:",
+      "live:",
       ...initialPersistedState.current.expandedPaths,
       ...collectAncestorPaths(fallbackFirstSelectableNode?.path ?? "")
     ])
@@ -328,7 +430,7 @@ function useWorkspaceExplorerController({
   const [workspaceError, setWorkspaceError] = useState(null);
   const activeNode = selectedNodeId === null ? null : nodeMap.get(selectedNodeId) ?? null;
   const liveNodes = useMemo2(
-    () => tree.children.find((node) => node.path === "live")?.children ?? [],
+    () => tree.children.find((node) => node.id === "live")?.children ?? [],
     [tree]
   );
   const adapterModelRef = useRef(adapterModel);
@@ -338,6 +440,8 @@ function useWorkspaceExplorerController({
   const expandedPathsRef = useRef(expandedPaths);
   const loadingDirectoryPathsRef = useRef(loadingDirectoryPaths);
   const fallbackFirstSelectableNodeRef = useRef(fallbackFirstSelectableNode);
+  const fallbackTreeRef = useRef(fallbackTree);
+  const artifactFocusRef = useRef(null);
   adapterModelRef.current = adapterModel;
   nodeMapRef.current = nodeMap;
   treeRef.current = tree;
@@ -345,6 +449,7 @@ function useWorkspaceExplorerController({
   expandedPathsRef.current = expandedPaths;
   loadingDirectoryPathsRef.current = loadingDirectoryPaths;
   fallbackFirstSelectableNodeRef.current = fallbackFirstSelectableNode;
+  fallbackTreeRef.current = fallbackTree;
   const refreshGenerationRef = useRef(0);
   const focusGenerationRef = useRef(0);
   const focusPendingRef = useRef(false);
@@ -401,7 +506,14 @@ function useWorkspaceExplorerController({
         setAdapterModel(nextModel);
         const firstFile = findFirstWorkspaceFile(nextTree);
         setSelectedNodeId((current) => {
+          const virtualNodes = flattenWorkspaceNodes(fallbackTreeRef.current);
+          if (current && virtualNodes.has(current)) return current;
+          if (artifactFocusRef.current) return null;
           const fallbackPath = currentSelectedPath ?? selectedPathForId(current, nodeMapRef.current);
+          const virtualNode = [...virtualNodes.values()].find(
+            (node) => node.path === fallbackPath
+          );
+          if (virtualNode) return virtualNode.id;
           if (fallbackPath !== null && hasWorkspaceExplorerPath(nextModel, fallbackPath)) {
             return `workspace:${fallbackPath}`;
           }
@@ -490,6 +602,21 @@ function useWorkspaceExplorerController({
   );
   const focusWorkspacePath = useCallback(
     async (path) => {
+      artifactFocusRef.current = null;
+      const virtualNode = [
+        ...flattenWorkspaceNodes(fallbackTreeRef.current).values()
+      ].find((node) => node.path === path && node.kind !== "directory");
+      if (virtualNode) {
+        ++focusGenerationRef.current;
+        focusPendingRef.current = false;
+        setSelectedNodeId(virtualNode.id);
+        setFilterQuery("");
+        setWorkspaceError(null);
+        setExpandedPaths(
+          (current) => /* @__PURE__ */ new Set([...current, ...collectAncestorPaths(virtualNode.path)])
+        );
+        return;
+      }
       const targetPath = workspaceRelativeFocusPath(
         path,
         detail.workspace.absPath
@@ -535,11 +662,23 @@ function useWorkspaceExplorerController({
           return;
         }
         if (external) {
-          if (!workspaceAdapter.statLinkedFile) throw new Error("Only the device owner can preview files outside this workspace.");
-          const node = await workspaceAdapter.statLinkedFile({ ...workspaceIdentity, path: targetPath });
+          if (!workspaceAdapter.statLinkedFile)
+            throw new Error(
+              "Only the device owner can preview files outside this workspace."
+            );
+          const node = await workspaceAdapter.statLinkedFile({
+            ...workspaceIdentity,
+            path: targetPath
+          });
           if (!isCurrent()) return;
-          const linked = workspaceTreeNodeToGraphNode({ ...node, path: targetPath });
-          setLinkedFiles((current) => [...current.filter((item) => item.path !== targetPath), linked]);
+          const linked = workspaceTreeNodeToGraphNode({
+            ...node,
+            path: targetPath
+          });
+          setLinkedFiles((current) => [
+            ...current.filter((item) => item.path !== targetPath),
+            linked
+          ]);
           adapterModelRef.current = nextModel;
           setAdapterModel(nextModel);
           return;
@@ -582,6 +721,22 @@ function useWorkspaceExplorerController({
     },
     [detail.workspace.absPath, workspaceAdapter, workspaceIdentity]
   );
+  const focusArtifact = useCallback((artifactId) => {
+    artifactFocusRef.current = artifactId;
+    ++focusGenerationRef.current;
+    focusPendingRef.current = false;
+    const node = [
+      ...flattenWorkspaceNodes(fallbackTreeRef.current).values()
+    ].find((value) => value.artifact?.id === artifactId);
+    setSelectedNodeId(node?.id ?? null);
+    setLoadingTree(false);
+    setFilterQuery("");
+    setWorkspaceError(node ? null : `Artifact unavailable: ${artifactId}`);
+    if (node)
+      setExpandedPaths(
+        (current) => /* @__PURE__ */ new Set([...current, ...collectAncestorPaths(node.path)])
+      );
+  }, []);
   const toggleDirectory = useCallback(
     (path) => {
       if (!path) {
@@ -610,17 +765,26 @@ function useWorkspaceExplorerController({
   }, []);
   useEffect(() => {
     setLinkedFiles([]);
+    artifactFocusRef.current = null;
     skipPersistenceWriteRef.current = true;
     const persisted = persistence.read();
     const fallbackNode = fallbackFirstSelectableNodeRef.current;
-    const selectedPath = focusPathRequest ? workspaceRelativeFocusPath(focusPathRequest.path, detail.workspace.absPath) : persisted.selectedPath;
-    const nextSelectedId = selectedPath ? `workspace:${selectedPath}` : fallbackNode?.id ?? null;
+    const selectedPath = focusPathRequest ? workspaceRelativeFocusPath(
+      focusPathRequest.path,
+      detail.workspace.absPath
+    ) : persisted.selectedPath;
+    const virtualNode = [
+      ...flattenWorkspaceNodes(fallbackTreeRef.current).values()
+    ].find(
+      (node) => focusPathRequest?.artifactId !== void 0 ? node.artifact?.id === focusPathRequest.artifactId : node.path === selectedPath
+    );
+    const nextSelectedId = focusPathRequest?.artifactId !== void 0 ? virtualNode?.id ?? null : virtualNode?.id ?? (selectedPath ? `workspace:${selectedPath}` : fallbackNode?.id ?? null);
     setExpandedPaths(
       /* @__PURE__ */ new Set([
         "",
-        "artifacts",
-        "thread-events",
-        "live",
+        "artifacts:",
+        "thread-events:",
+        "live:",
         ...persisted.expandedPaths,
         ...collectAncestorPaths(fallbackNode?.path ?? "")
       ])
@@ -668,10 +832,15 @@ function useWorkspaceExplorerController({
     setDirectoryErrors(/* @__PURE__ */ new Map());
     setWorkspaceError(null);
     handledFocusRequestRef.current = null;
-    if (!focusPathRequest) {
+    if (!focusPathRequest || focusPathRequest.artifactId !== void 0) {
       const persistedPath = persistence.read().selectedPath;
-      if (persistedPath) void focusWorkspacePath(persistedPath);
-      else void refreshWorkspaceTree();
+      if (persistedPath && !focusPathRequest) {
+        const virtual = [
+          ...flattenWorkspaceNodes(fallbackTreeRef.current).values()
+        ].some((node) => node.path === persistedPath);
+        void focusWorkspacePath(persistedPath);
+        if (virtual) void refreshWorkspaceTree();
+      } else void refreshWorkspaceTree();
     }
   }, [refreshWorkspaceTree]);
   useEffect(() => {
@@ -679,9 +848,11 @@ function useWorkspaceExplorerController({
       const key = `${workspaceIdentity.threadId}:${focusPathRequest.requestId}`;
       if (handledFocusRequestRef.current === key) return;
       handledFocusRequestRef.current = key;
-      void focusWorkspacePath(focusPathRequest.path);
+      if (focusPathRequest.artifactId !== void 0)
+        focusArtifact(focusPathRequest.artifactId);
+      else void focusWorkspacePath(focusPathRequest.path);
     }
-  }, [focusPathRequest, focusWorkspacePath]);
+  }, [focusPathRequest, focusWorkspacePath, focusArtifact]);
   useEffect(() => {
     if (!workspaceAdapter?.subscribeWorkspaceChanged) {
       return;
@@ -707,6 +878,9 @@ function useWorkspaceExplorerController({
     };
   }, [refreshWorkspaceTree, workspaceAdapter, workspaceIdentity]);
   return {
+    capabilities,
+    capabilityError,
+    refreshCapabilities: () => setCapabilityEpoch((current) => current + 1),
     activeNode,
     adapterModel,
     collapseAll,
@@ -726,6 +900,7 @@ function useWorkspaceExplorerController({
     setFilterQuery,
     setLoadingTree,
     setSelectedNodeId: (id) => {
+      artifactFocusRef.current = null;
       ++focusGenerationRef.current;
       ++refreshGenerationRef.current;
       focusPendingRef.current = false;
@@ -742,118 +917,376 @@ function useWorkspaceExplorerController({
 }
 
 // src/components/graph-workspace/explorer/useWorkspaceExplorerActions.ts
-import { useRef as useRef2, useState as useState2 } from "react";
+import { useEffect as useEffect2, useRef as useRef2, useState as useState2 } from "react";
 function useWorkspaceExplorerActions({
   activeNode,
   adapter,
+  capabilities,
   identity,
   onError,
   onLoadingChange,
   refreshTree,
+  focusFile,
   workspaceRootPath
 }) {
   const fileInputRef = useRef2(null);
+  const archiveInputRef = useRef2(null);
+  const [notice, setNotice] = useState2(null);
+  const [pending, setPending] = useState2(false);
   const [showGarbageDialog, setShowGarbageDialog] = useState2(false);
   const [garbageFiles, setGarbageFiles] = useState2([]);
-  async function uploadFile(file) {
-    if (!adapter?.uploadFile || !file) {
-      return;
-    }
-    onLoadingChange(true);
+  const [trashList, setTrashList] = useState2(
+    null
+  );
+  const [showTrash, setShowTrash] = useState2(false);
+  const [confirmTrashEmpty, setConfirmTrashEmpty] = useState2(false);
+  const trashOperations = useRef2(/* @__PURE__ */ new Map());
+  const trashInFlight = useRef2(false);
+  const generation = useRef2(0);
+  useEffect2(() => {
+    ++generation.current;
+    setPending(false);
+    setNotice(null);
+    setShowGarbageDialog(false);
+    setGarbageFiles([]);
+    setTrashList(null);
+    setShowTrash(false);
+    setConfirmTrashEmpty(false);
+    trashOperations.current.clear();
+    trashInFlight.current = false;
+    return () => {
+      ++generation.current;
+    };
+  }, [adapter, identity.threadId, identity.workspaceId]);
+  const importFormats = workspaceArchiveFormats(capabilities, "import");
+  const downloadFormats = workspaceArchiveFormats(capabilities, "download");
+  const trashCapabilities = workspaceTrashCapabilities(capabilities);
+  async function run(operation, success) {
+    const request = generation.current;
+    setPending(true);
+    setNotice(null);
     onError(null);
     try {
-      const result = await adapter.uploadFile({
-        ...identity,
-        path: file.name,
-        file
-      });
-      const preferredPath = result.kind === "archive" ? result.paths[0] ?? null : result.file.path;
-      await refreshTree(preferredPath);
+      await operation();
+      if (request === generation.current && success) setNotice(success);
     } catch (error) {
-      onError(error instanceof Error ? error.message : "Failed to upload file");
+      if (request === generation.current) {
+        const message = error instanceof Error ? error.message : "File operation failed. Please try again.";
+        onError(message);
+      }
     } finally {
-      onLoadingChange(false);
+      if (request === generation.current) setPending(false);
     }
+  }
+  function canDownload(node, format) {
+    if (!adapter?.downloadNode || !["file", "directory"].includes(node.kind))
+      return false;
+    if (node.kind === "directory") {
+      if (!node.id.startsWith("workspace:")) return false;
+      return format ? downloadFormats.includes(format) : downloadFormats.length > 0;
+    }
+    return capabilities ? capabilities.download.file : !adapter.getCapabilities && !adapter.capabilities;
+  }
+  async function uploadFile(file) {
+    if (!adapter?.uploadFile) return;
+    await run(async () => {
+      if (capabilities?.maxFileBytes && file.size > capabilities.maxFileBytes) {
+        throw new Error(
+          `File exceeds the ${capabilities.maxFileBytes.toLocaleString()} byte upload limit.`
+        );
+      }
+      const request = generation.current;
+      onLoadingChange(true);
+      try {
+        const result = await adapter.uploadFile({
+          ...identity,
+          path: file.name,
+          file
+        });
+        if (request !== generation.current) return;
+        await refreshTree(
+          result.kind === "archive" ? result.paths[0] ?? null : result.file.path
+        );
+      } finally {
+        if (request === generation.current) onLoadingChange(false);
+      }
+    }, `Uploaded ${file.name}.`);
   }
   async function handleUpload(event) {
     const file = event.target.files?.[0];
     event.target.value = "";
-    if (file) {
-      await uploadFile(file);
-    }
+    if (file) await uploadFile(file);
   }
-  function pickUploadFile() {
-    if (!adapter?.uploadFile) {
-      return;
-    }
-    const defaultPick = () => fileInputRef.current?.click();
-    if (adapter.pickUploadFile) {
-      void adapter.pickUploadFile({
+  async function handleArchiveImport(event) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    await run(async () => {
+      if (!importFormats.length || !adapter?.importArchive)
+        throw new Error(
+          "Archive extraction is unavailable for this connection."
+        );
+      const format = /\.zip$/i.test(file.name) ? "zip" : /\.tar$/i.test(file.name) ? "tar" : null;
+      if (!format || !importFormats.includes(format))
+        throw new Error(
+          `Import requires ${importFormats.includes("zip") ? "an uncompressed .tar or .zip archive" : "an uncompressed .tar archive"}. This archive format is unsupported. Use Upload file to store an archive without extracting it.`
+        );
+      if (capabilities?.maxArchiveBytes !== void 0 && capabilities?.maxArchiveEntries !== void 0 && file.size > capabilities.maxArchiveBytes + capabilities.maxArchiveEntries * 1024 + 1024)
+        throw new Error(
+          `Archive exceeds the ${capabilities.maxArchiveBytes.toLocaleString()} byte import limit plus bounded archive headers.`
+        );
+      const request = generation.current;
+      const result = await adapter.importArchive({
         ...identity,
-        defaultPick,
-        upload: uploadFile
+        path: "",
+        file,
+        ...format === "zip" ? { format } : {}
       });
-      return;
-    }
-    defaultPick();
+      if (request !== generation.current) return;
+      const firstFile = result.firstFile === void 0 ? result.paths[0] : result.firstFile;
+      await refreshTree(firstFile ?? null);
+      if (request !== generation.current) return;
+      if (firstFile) await focusFile(firstFile);
+      if (request === generation.current)
+        setNotice(
+          `Imported ${file.name}. Committed ${result.paths.length} paths: ${result.paths.join(", ") || "(empty archive)"}.`
+        );
+    }, "");
   }
-  function downloadNode(node) {
-    void adapter?.downloadNode?.({
-      ...identity,
-      path: node.path,
-      kind: node.kind === "directory" ? "directory" : "file"
-    });
-  }
-  function copyPath(node) {
-    if (!node.path || typeof navigator === "undefined" || !navigator.clipboard) {
-      return;
-    }
-    const path = workspaceDisplayPath(node.path, workspaceRootPath) ?? node.path;
-    if (path === null) return;
-    void navigator.clipboard.writeText(path).catch((error) => {
-      onError(
-        error instanceof Error ? error.message : "Failed to copy file path"
+  async function pickUploadFile() {
+    if (!adapter?.uploadFile) return;
+    if (adapter.pickUploadFile) {
+      await run(
+        () => adapter.pickUploadFile({
+          ...identity,
+          defaultPick: () => fileInputRef.current?.click(),
+          upload: uploadFile
+        }),
+        ""
       );
-    });
+    } else fileInputRef.current?.click();
+  }
+  async function downloadNode(node, requestedFormat) {
+    const format = requestedFormat ?? (downloadFormats.includes("tar") ? "tar" : downloadFormats[0]);
+    await run(
+      async () => {
+        if (!canDownload(node, node.kind === "directory" ? format : void 0))
+          throw new Error(
+            node.kind === "directory" ? "Folder downloads are unavailable for this connection." : "File downloads are unavailable for this connection."
+          );
+        await adapter.downloadNode({
+          ...identity,
+          path: node.path,
+          kind: node.kind === "directory" ? "directory" : "file",
+          ...node.kind === "directory" && format === "zip" ? { format } : {}
+        });
+      },
+      `Downloaded ${node.name}${node.kind === "directory" ? ` as a ${format?.toUpperCase()} archive` : ""}.`
+    );
+  }
+  async function copyPath(node) {
+    await run(async () => {
+      if (!node.path || !navigator.clipboard)
+        throw new Error("Clipboard access is unavailable.");
+      await navigator.clipboard.writeText(
+        workspaceDisplayPath(node.path, workspaceRootPath) ?? node.path
+      );
+    }, "File path copied.");
+  }
+  const mutableFile = activeNode?.kind === "file" && relativeWorkspacePath(activeNode.path, workspaceRootPath) !== null;
+  const canDelete = Boolean(
+    mutableFile && capabilities?.delete === "file" && adapter?.deleteFile
+  );
+  const canMove = Boolean(
+    mutableFile && capabilities?.move === "file-new-destination" && adapter?.moveFile
+  );
+  const canTrash = Boolean(
+    mutableFile && trashCapabilities?.files && adapter?.trashFile
+  );
+  const canListTrash = Boolean(trashCapabilities && adapter?.listTrash);
+  const canRestoreTrash = Boolean(
+    trashCapabilities?.restore && adapter?.restoreTrash
+  );
+  const canEmptyTrash = Boolean(
+    trashCapabilities?.empty && adapter?.emptyTrash
+  );
+  async function runTrash(key, operation, success) {
+    if (trashInFlight.current) return;
+    const request = generation.current;
+    trashInFlight.current = true;
+    let operationId = trashOperations.current.get(key);
+    if (!operationId) {
+      operationId = crypto.randomUUID();
+      trashOperations.current.set(key, operationId);
+    }
+    await run(async () => {
+      try {
+        await operation(operationId, request);
+        if (request === generation.current) trashOperations.current.delete(key);
+      } finally {
+        if (request === generation.current) trashInFlight.current = false;
+      }
+    }, success);
+  }
+  async function loadTrash(request) {
+    const list = await adapter.listTrash(identity);
+    if (request === generation.current) setTrashList(structuredClone(list));
+  }
+  async function openTrash() {
+    await run(async () => {
+      if (!canListTrash)
+        throw new Error("Trash is unavailable for this connection.");
+      const request = generation.current;
+      await loadTrash(request);
+      if (request === generation.current) {
+        setShowTrash(true);
+        setConfirmTrashEmpty(false);
+      }
+    }, "");
+  }
+  async function trashFile() {
+    const node = activeNode;
+    if (!canTrash || !node) return;
+    await runTrash(
+      JSON.stringify(["trash", node.path]),
+      async (operationId, request) => {
+        await adapter.trashFile({
+          ...identity,
+          path: node.path,
+          operationId
+        });
+        if (request === generation.current) await refreshTree();
+      },
+      `Moved ${node.name} to trash. Restore it from Trash.`
+    );
+  }
+  async function restoreTrash(entry) {
+    if (!canRestoreTrash) return;
+    await runTrash(
+      JSON.stringify(["restore", entry.trashId, entry.revision]),
+      async (operationId, request) => {
+        await adapter.restoreTrash({
+          ...identity,
+          trashId: entry.trashId,
+          expectedRevision: entry.revision,
+          expectedDestinationRevision: null,
+          operationId
+        });
+        if (request !== generation.current) return;
+        await loadTrash(request);
+        if (request !== generation.current) return;
+        await refreshTree(entry.path);
+        if (request === generation.current) await focusFile(entry.path);
+      },
+      `Restored ${entry.path}.`
+    );
+  }
+  async function emptyTrash() {
+    const list = trashList;
+    if (!canEmptyTrash || !list) return;
+    await runTrash(
+      JSON.stringify(["empty", list.revision]),
+      async (operationId, request) => {
+        await adapter.emptyTrash({
+          ...identity,
+          expectedRevision: list.revision,
+          operationId
+        });
+        if (request !== generation.current) return;
+        setConfirmTrashEmpty(false);
+        await loadTrash(request);
+      },
+      "Trash emptied permanently. Immutable artifacts and history are retained."
+    );
+  }
+  async function deleteFile() {
+    const node = activeNode;
+    await run(
+      async () => {
+        if (!canDelete || !node)
+          throw new Error("File deletion is unavailable for this connection.");
+        const request = generation.current;
+        await adapter.deleteFile({ ...identity, path: node.path });
+        if (request === generation.current) await refreshTree();
+      },
+      `Deleted ${node?.name ?? "file"}.`
+    );
+  }
+  async function moveFile(destination) {
+    const node = activeNode;
+    await run(
+      async () => {
+        if (!canMove || !node)
+          throw new Error("File moves are unavailable for this connection.");
+        const path = relativeWorkspacePath(
+          destination.trim(),
+          workspaceRootPath
+        );
+        if (!path || path === node.path)
+          throw new Error(
+            "Enter a new destination inside the workspace. Existing destinations cannot be replaced."
+          );
+        const request = generation.current;
+        await adapter.moveFile({
+          ...identity,
+          path: node.path,
+          destination: path
+        });
+        if (request === generation.current) await refreshTree(path);
+      },
+      `Moved ${node?.name ?? "file"}.`
+    );
   }
   async function openGarbage() {
-    if (!adapter?.emptyGarbage) {
-      return;
-    }
-    onError(null);
-    if (!adapter.listGarbage) {
-      setGarbageFiles([]);
-      setShowGarbageDialog(true);
-      return;
-    }
-    try {
+    if (!adapter?.emptyGarbage) return;
+    await run(async () => {
+      if (!adapter.listGarbage)
+        throw new Error(
+          "Cannot safely empty garbage without listing its contents."
+        );
+      const request = generation.current;
       const files = await adapter.listGarbage(identity);
+      if (request !== generation.current) return;
       setGarbageFiles(files.map((file) => `garbage/${file}`));
-    } catch (error) {
-      setGarbageFiles([]);
-      onError(
-        error instanceof Error ? error.message : "Failed to list garbage files"
-      );
-    } finally {
       setShowGarbageDialog(true);
-    }
+    }, "");
   }
   async function confirmEmptyGarbage() {
-    if (!adapter?.emptyGarbage) {
-      return;
-    }
+    if (!adapter?.emptyGarbage) return;
     setShowGarbageDialog(false);
-    onError(null);
-    try {
+    await run(async () => {
+      const request = generation.current;
       await adapter.emptyGarbage(identity);
-      await refreshTree(activeNode?.path ?? null);
-    } catch (error) {
-      onError(
-        error instanceof Error ? error.message : "Failed to empty garbage"
-      );
-    }
+      if (request === generation.current)
+        await refreshTree(activeNode?.path ?? null);
+    }, "Garbage emptied.");
   }
   return {
+    canDownload,
+    canDelete,
+    canMove,
+    canTrash,
+    canListTrash,
+    canRestoreTrash,
+    canEmptyTrash,
+    trashFile,
+    openTrash,
+    restoreTrash,
+    emptyTrash,
+    showTrash,
+    setShowTrash,
+    trashList,
+    confirmTrashEmpty,
+    setConfirmTrashEmpty,
+    importFormats,
+    downloadFormats,
+    resetTrashRetry: () => trashOperations.current.clear(),
+    deleteFile,
+    moveFile,
+    pending,
+    notice,
+    archiveInputRef,
+    handleArchiveImport,
     confirmEmptyGarbage,
     copyPath,
     downloadNode,
@@ -867,8 +1300,137 @@ function useWorkspaceExplorerActions({
   };
 }
 
+// src/components/graph-workspace/explorer/WorkspaceTrashDialog.tsx
+import * as Dialog from "@radix-ui/react-dialog";
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+function WorkspaceTrashDialog({
+  open,
+  list,
+  pending,
+  error,
+  notice,
+  canRestore,
+  canEmpty,
+  confirming,
+  onClose,
+  onRefresh,
+  onRestore,
+  onConfirmingChange,
+  onEmpty
+}) {
+  return /* @__PURE__ */ jsx(
+    Dialog.Root,
+    {
+      open,
+      onOpenChange: (value) => {
+        if (!value && !pending) onClose();
+      },
+      children: /* @__PURE__ */ jsxs(Dialog.Portal, { children: [
+        /* @__PURE__ */ jsx(Dialog.Overlay, { className: "fixed inset-0 z-50 bg-black/40" }),
+        /* @__PURE__ */ jsxs(
+          Dialog.Content,
+          {
+            className: "thread-graph-dialog fixed left-1/2 top-1/2 z-50 max-h-[85dvh] w-[calc(100%_-_2rem)] max-w-md -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl border bg-[var(--theme-panel)] p-5 shadow-xl",
+            onOpenAutoFocus: (event) => {
+              event.preventDefault();
+              document.querySelector('[aria-label="Close trash"]')?.focus();
+            },
+            children: [
+              /* @__PURE__ */ jsx(Dialog.Title, { className: "text-base font-semibold", children: confirming ? "Empty trash" : "Trash" }),
+              /* @__PURE__ */ jsxs(Dialog.Description, { className: "mt-2 text-sm", children: [
+                confirming ? "Permanently delete these recoverable workspace copies? This cannot be undone. " : "Trashed files can be restored to their original paths while those paths are empty. ",
+                "Immutable artifacts, artifact downloads and thread history are retained. Workspace file links can stop working when a file is in trash or permanently deleted."
+              ] }),
+              error ? /* @__PURE__ */ jsx(
+                "p",
+                {
+                  role: "alert",
+                  className: "my-2 text-sm text-rose-700 dark:text-rose-200",
+                  children: error
+                }
+              ) : null,
+              notice ? /* @__PURE__ */ jsx("p", { role: "status", className: "my-2 text-sm", children: notice }) : null,
+              /* @__PURE__ */ jsx("ul", { className: "my-3 max-h-48 overflow-y-auto text-sm", children: list?.entries.map((entry) => /* @__PURE__ */ jsxs(
+                "li",
+                {
+                  className: "flex flex-wrap items-center justify-between gap-2 border-b py-2",
+                  children: [
+                    /* @__PURE__ */ jsxs("span", { className: "min-w-0 break-all", children: [
+                      entry.path,
+                      " (",
+                      entry.size.toLocaleString(),
+                      " bytes)"
+                    ] }),
+                    !confirming ? /* @__PURE__ */ jsx(
+                      "button",
+                      {
+                        type: "button",
+                        "aria-label": `Restore ${entry.path}`,
+                        disabled: pending || !canRestore,
+                        onClick: () => onRestore(entry),
+                        className: "rounded border px-3 py-2 disabled:opacity-50",
+                        children: "Restore"
+                      }
+                    ) : null
+                  ]
+                },
+                entry.trashId
+              )) }),
+              !list?.entries.length ? /* @__PURE__ */ jsx("p", { className: "my-2 text-sm", children: "Trash is empty." }) : null,
+              /* @__PURE__ */ jsxs("div", { className: "flex flex-wrap justify-end gap-2", children: [
+                /* @__PURE__ */ jsx(
+                  "button",
+                  {
+                    type: "button",
+                    "aria-label": "Close trash",
+                    disabled: pending,
+                    onClick: () => confirming ? onConfirmingChange(false) : onClose(),
+                    className: "rounded border px-3 py-2",
+                    children: confirming ? "Cancel" : "Close"
+                  }
+                ),
+                confirming ? /* @__PURE__ */ jsx(
+                  "button",
+                  {
+                    type: "button",
+                    disabled: pending || !canEmpty || !list?.entries.length,
+                    onClick: onEmpty,
+                    className: "rounded border px-3 py-2 text-rose-700 disabled:opacity-50",
+                    children: "Empty trash permanently"
+                  }
+                ) : /* @__PURE__ */ jsxs(Fragment, { children: [
+                  /* @__PURE__ */ jsx(
+                    "button",
+                    {
+                      type: "button",
+                      disabled: pending,
+                      onClick: onRefresh,
+                      className: "rounded border px-3 py-2",
+                      children: "Refresh trash"
+                    }
+                  ),
+                  /* @__PURE__ */ jsx(
+                    "button",
+                    {
+                      type: "button",
+                      disabled: pending || !canEmpty || !list?.entries.length,
+                      onClick: () => onConfirmingChange(true),
+                      className: "rounded border px-3 py-2 text-rose-700 disabled:opacity-50",
+                      children: "Empty trash\u2026"
+                    }
+                  )
+                ] })
+              ] })
+            ]
+          }
+        )
+      ] })
+    }
+  );
+}
+
 // src/components/graph-workspace/explorer/useWorkspaceFilePreview.ts
-import { useLayoutEffect, useState as useState3 } from "react";
+import { useLayoutEffect, useRef as useRef3, useState as useState3 } from "react";
 
 // src/components/graph-workspace/explorer/filePreviewPolicy.ts
 var DOWNLOAD_EXTENSIONS = /* @__PURE__ */ new Set([
@@ -958,6 +1520,8 @@ function useWorkspaceFilePreview({
   onError,
   refreshTree
 }) {
+  const generation = useRef3(0);
+  const loadingMoreRef = useRef3(false);
   const [previewFile, setPreviewFile] = useState3(null);
   const [downloadOnly, setDownloadOnly] = useState3(false);
   const [imageUrl, setImageUrl] = useState3(null);
@@ -965,6 +1529,9 @@ function useWorkspaceFilePreview({
   const [previewLoading, setPreviewLoading] = useState3(false);
   const [loadingMore, setLoadingMore] = useState3(false);
   useLayoutEffect(() => {
+    ++generation.current;
+    loadingMoreRef.current = false;
+    setLoadingMore(false);
     const selectedPath = activeNode?.kind === "file" ? activeNode.path : null;
     if (!adapter || !selectedPath) {
       setDownloadOnly(false);
@@ -1014,7 +1581,7 @@ function useWorkspaceFilePreview({
         if (MOLECULAR_EXTENSIONS.has(extension)) {
           while (!cancelled) {
             if (file.size > MAX_MOLECULAR_PREVIEW_BYTES || file.truncated && file.nextOffset >= MAX_MOLECULAR_PREVIEW_BYTES) {
-              setDownloadOnly(true);
+              if (!cancelled) setDownloadOnly(true);
               return;
             }
             if (!file.truncated) break;
@@ -1022,10 +1589,15 @@ function useWorkspaceFilePreview({
               ...identity,
               path: currentPath,
               offset: file.nextOffset,
-              limit: Math.min(256 * 1024, MAX_MOLECULAR_PREVIEW_BYTES - file.nextOffset)
+              limit: Math.min(
+                256 * 1024,
+                MAX_MOLECULAR_PREVIEW_BYTES - file.nextOffset
+              )
             });
             if (chunk.nextOffset <= file.nextOffset) {
-              throw new Error("Unable to load the complete molecular file: the read made no progress.");
+              throw new Error(
+                "Unable to load the complete molecular file: the read made no progress."
+              );
             }
             file = { ...chunk, content: file.content + chunk.content };
           }
@@ -1049,6 +1621,7 @@ function useWorkspaceFilePreview({
     void loadPreview();
     return () => {
       cancelled = true;
+      ++generation.current;
     };
   }, [
     activeNode?.id,
@@ -1059,44 +1632,72 @@ function useWorkspaceFilePreview({
     onError
   ]);
   async function loadMore() {
-    if (!adapter || !previewFile?.truncated) {
-      return;
-    }
-    const requestedPath = previewFile.path;
+    if (!adapter || !previewFile?.truncated || loadingMoreRef.current) return;
+    const request = generation.current;
+    const file = previewFile;
+    loadingMoreRef.current = true;
     setLoadingMore(true);
+    onError(null);
     try {
       const chunk = await adapter.readFile({
         ...identity,
-        path: requestedPath,
-        offset: previewFile.nextOffset,
+        path: file.path,
+        offset: file.nextOffset,
         limit: PREVIEW_CHUNK_BYTES
       });
+      if (request !== generation.current) return;
+      if (chunk.nextOffset <= file.nextOffset && chunk.truncated)
+        throw new Error(
+          "Unable to load more: the read made no progress. Download the file or reopen it."
+        );
       setPreviewFile(
-        (current) => current?.path === requestedPath ? {
-          ...current,
-          content: current.content + chunk.content,
-          truncated: chunk.truncated,
-          nextOffset: chunk.nextOffset,
-          size: chunk.size
-        } : current
+        (current) => current?.path === file.path && current.nextOffset === file.nextOffset ? { ...chunk, content: current.content + chunk.content } : current
       );
+    } catch (error) {
+      if (request === generation.current)
+        onError(
+          error instanceof Error ? error.message : "Failed to load more. Reopen or download the file."
+        );
     } finally {
-      setLoadingMore(false);
+      if (request === generation.current) {
+        loadingMoreRef.current = false;
+        setLoadingMore(false);
+      }
     }
   }
   async function saveFile(input) {
-    if (!adapter?.writeFile) {
-      return;
-    }
+    if (!adapter?.writeFile)
+      throw new Error("Editing is unavailable for this connection.");
+    const request = generation.current;
     onError(null);
     await adapter.writeFile({ ...identity, ...input });
+    if (request !== generation.current) return;
     await refreshTree(input.path);
+    if (request !== generation.current) return;
     const file = await adapter.readFile({
       ...identity,
       path: input.path,
       limit: PREVIEW_CHUNK_BYTES
     });
-    setPreviewFile(file);
+    if (request === generation.current) setPreviewFile(file);
+  }
+  async function reloadFile() {
+    if (!adapter || activeNode?.kind !== "file") return;
+    const request = generation.current;
+    onError(null);
+    try {
+      const file = await adapter.readFile({
+        ...identity,
+        path: activeNode.path,
+        limit: PREVIEW_CHUNK_BYTES
+      });
+      if (request === generation.current) setPreviewFile(file);
+    } catch (error) {
+      if (request === generation.current)
+        onError(
+          error instanceof Error ? error.message : "Failed to reload file."
+        );
+    }
   }
   return {
     downloadOnly,
@@ -1106,7 +1707,8 @@ function useWorkspaceFilePreview({
     pdfUrl,
     previewFile,
     previewLoading,
-    saveFile
+    saveFile,
+    reloadFile
   };
 }
 
@@ -1125,9 +1727,9 @@ import {
 } from "lucide-react";
 import {
   useCallback as useCallback3,
-  useEffect as useEffect3,
+  useEffect as useEffect4,
   useMemo as useMemo4,
-  useRef as useRef4,
+  useRef as useRef5,
   useState as useState5
 } from "react";
 
@@ -1135,9 +1737,9 @@ import {
 import { useVirtualizer } from "@tanstack/react-virtual";
 import {
   useCallback as useCallback2,
-  useEffect as useEffect2,
+  useEffect as useEffect3,
   useMemo as useMemo3,
-  useRef as useRef3,
+  useRef as useRef4,
   useState as useState4
 } from "react";
 
@@ -1210,6 +1812,14 @@ function projectWorkspaceExplorerRows(model, expandedPaths, options = {}) {
   const matches = /* @__PURE__ */ new Map();
   const includedIds = /* @__PURE__ */ new Set();
   const query = options.filterQuery?.trim() ?? "";
+  const includeExpandedChildren = (nodeId) => {
+    const node = model.nodes.get(nodeId);
+    if (!node || !expandedPaths.has(node.path)) return;
+    for (const childId of node.childIds) {
+      includedIds.add(childId);
+      includeExpandedChildren(childId);
+    }
+  };
   if (query) {
     for (const node of model.nodes.values()) {
       const match = matchWorkspaceExplorerNode(node, query);
@@ -1217,6 +1827,7 @@ function projectWorkspaceExplorerRows(model, expandedPaths, options = {}) {
         continue;
       }
       matches.set(node.id, match);
+      if (node.kind === "directory") includeExpandedChildren(node.id);
       let current = node;
       while (current) {
         includedIds.add(current.id);
@@ -1245,7 +1856,7 @@ function projectWorkspaceExplorerRows(model, expandedPaths, options = {}) {
         projectedNode = child;
       }
     }
-    const expanded = projectedNode.kind === "directory" ? filtering || projectedNode.path === "" || expandedPaths.has(projectedNode.path) : void 0;
+    const expanded = projectedNode.kind === "directory" ? projectedNode.path === "" || expandedPaths.has(projectedNode.path) || filtering && projectedNode.childIds.some((id) => includedIds.has(id)) : void 0;
     indexById.set(projectedNode.id, rows.length);
     const match = matches.get(projectedNode.id);
     rows.push({
@@ -1341,17 +1952,17 @@ import {
   FolderOpen,
   LoaderCircle
 } from "lucide-react";
-import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+import { Fragment as Fragment2, jsx as jsx2, jsxs as jsxs2 } from "react/jsx-runtime";
 function iconForNode(node, expanded) {
   if (node.kind === "directory") {
-    return expanded ? /* @__PURE__ */ jsx(FolderOpen, { className: "h-4 w-4 text-slate-500 dark:text-slate-400" }) : /* @__PURE__ */ jsx(Folder, { className: "h-4 w-4 text-slate-500 dark:text-slate-400" });
+    return expanded ? /* @__PURE__ */ jsx2(FolderOpen, { className: "h-4 w-4 text-slate-500 dark:text-slate-400" }) : /* @__PURE__ */ jsx2(Folder, { className: "h-4 w-4 text-slate-500 dark:text-slate-400" });
   }
   const extension = extensionOf(node.name);
   if (extension === "zip") {
-    return /* @__PURE__ */ jsx(FileArchive, { className: "h-4 w-4 text-amber-600" });
+    return /* @__PURE__ */ jsx2(FileArchive, { className: "h-4 w-4 text-amber-600" });
   }
   if (node.kind === "file" && ["png", "jpg", "jpeg", "gif", "webp", "svg"].includes(extension)) {
-    return /* @__PURE__ */ jsx(FileImage, { className: "h-4 w-4 text-sky-500" });
+    return /* @__PURE__ */ jsx2(FileImage, { className: "h-4 w-4 text-sky-500" });
   }
   if (node.kind === "artifact" || [
     "xyz",
@@ -1368,9 +1979,9 @@ function iconForNode(node, expanded) {
     "yml",
     "py"
   ].includes(extension)) {
-    return /* @__PURE__ */ jsx(FileCode2, { className: "h-4 w-4 text-emerald-600" });
+    return /* @__PURE__ */ jsx2(FileCode2, { className: "h-4 w-4 text-emerald-600" });
   }
-  return /* @__PURE__ */ jsx(File, { className: "h-4 w-4 text-slate-400 dark:text-slate-500" });
+  return /* @__PURE__ */ jsx2(File, { className: "h-4 w-4 text-slate-400 dark:text-slate-500" });
 }
 function WorkspaceExplorerRow({
   row,
@@ -1387,6 +1998,8 @@ function WorkspaceExplorerRow({
   onPin,
   onRetry,
   onDownload,
+  onDownloadZip,
+  canDownload,
   onCopyPath
 }) {
   const node = {
@@ -1398,13 +2011,13 @@ function WorkspaceExplorerRow({
   const expanded = Boolean(row.expanded);
   const paddingLeft = `${row.depth * 0.5 + 0.5}rem`;
   const displayName = row.compactPathSegments?.join("/") ?? node.name;
-  const label = row.matchRanges?.length ? /* @__PURE__ */ jsx(Fragment, { children: row.matchRanges.reduce((parts, range, index) => {
+  const label = row.matchRanges?.length ? /* @__PURE__ */ jsx2(Fragment2, { children: row.matchRanges.reduce((parts, range, index) => {
     const previousEnd = row.matchRanges?.[index - 1]?.end ?? 0;
     if (range.start > previousEnd) {
       parts.push(displayName.slice(previousEnd, range.start));
     }
     parts.push(
-      /* @__PURE__ */ jsx(
+      /* @__PURE__ */ jsx2(
         "span",
         {
           className: "font-semibold text-[var(--theme-fg)]",
@@ -1418,7 +2031,7 @@ function WorkspaceExplorerRow({
     }
     return parts;
   }, []) }) : displayName;
-  return /* @__PURE__ */ jsxs(
+  return /* @__PURE__ */ jsxs2(
     "div",
     {
       ref: rowRef,
@@ -1444,12 +2057,12 @@ function WorkspaceExplorerRow({
         }
       },
       children: [
-        row.depth > 0 ? /* @__PURE__ */ jsx(
+        row.depth > 0 ? /* @__PURE__ */ jsx2(
           "span",
           {
             className: "thread-graph-tree-indent-guides pointer-events-none absolute inset-y-0 left-0",
             "aria-hidden": "true",
-            children: Array.from({ length: row.depth }, (_, index) => /* @__PURE__ */ jsx(
+            children: Array.from({ length: row.depth }, (_, index) => /* @__PURE__ */ jsx2(
               "span",
               {
                 className: "absolute inset-y-0 border-l",
@@ -1459,7 +2072,7 @@ function WorkspaceExplorerRow({
             ))
           }
         ) : null,
-        canToggleDirectory ? /* @__PURE__ */ jsx(
+        canToggleDirectory ? /* @__PURE__ */ jsx2(
           "button",
           {
             type: "button",
@@ -1471,10 +2084,10 @@ function WorkspaceExplorerRow({
                 onToggle(node.path);
               }
             },
-            children: loading ? /* @__PURE__ */ jsx(LoaderCircle, { className: "h-3.5 w-3.5 animate-spin text-slate-400 motion-reduce:animate-none" }) : expanded ? /* @__PURE__ */ jsx(ChevronDown, { className: "h-3.5 w-3.5 text-slate-400" }) : /* @__PURE__ */ jsx(ChevronRight, { className: "h-3.5 w-3.5 text-slate-400" })
+            children: loading ? /* @__PURE__ */ jsx2(LoaderCircle, { className: "h-3.5 w-3.5 animate-spin text-slate-400 motion-reduce:animate-none" }) : expanded ? /* @__PURE__ */ jsx2(ChevronDown, { className: "h-3.5 w-3.5 text-slate-400" }) : /* @__PURE__ */ jsx2(ChevronRight, { className: "h-3.5 w-3.5 text-slate-400" })
           }
-        ) : /* @__PURE__ */ jsx("span", { className: "h-7 w-7 shrink-0 sm:h-6 sm:w-6", "aria-hidden": "true" }),
-        /* @__PURE__ */ jsxs(
+        ) : /* @__PURE__ */ jsx2("span", { className: "h-7 w-7 shrink-0 sm:h-6 sm:w-6", "aria-hidden": "true" }),
+        /* @__PURE__ */ jsxs2(
           "button",
           {
             type: "button",
@@ -1483,11 +2096,11 @@ function WorkspaceExplorerRow({
             onClick: () => onSelect(node),
             children: [
               iconForNode(node, expanded),
-              /* @__PURE__ */ jsx("span", { className: "min-w-0 flex-1 truncate", title: displayName, children: label })
+              /* @__PURE__ */ jsx2("span", { className: "min-w-0 flex-1 truncate", title: displayName, children: label })
             ]
           }
         ),
-        isDirectory && error && onRetry ? /* @__PURE__ */ jsx(
+        isDirectory && error && onRetry ? /* @__PURE__ */ jsx2(
           "button",
           {
             type: "button",
@@ -1496,11 +2109,11 @@ function WorkspaceExplorerRow({
             className: "mr-1 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded text-rose-600 hover:bg-rose-500/10 dark:text-rose-300",
             title: `${error}. Retry ${node.name}`,
             "aria-label": `Retry loading ${node.name}`,
-            children: /* @__PURE__ */ jsx(CircleAlert, { className: "h-3.5 w-3.5" })
+            children: /* @__PURE__ */ jsx2(CircleAlert, { className: "h-3.5 w-3.5" })
           }
         ) : null,
-        node.id !== "linked-files" && (onDownload || onCopyPath && node.path || !isDirectory && onPreview) ? /* @__PURE__ */ jsxs("div", { className: "thread-graph-tree-actions absolute inset-y-0 right-1 flex items-center gap-0.5 pl-1", children: [
-          !isDirectory && onPreview ? /* @__PURE__ */ jsx(
+        node.id !== "linked-files" && (onDownload || onCopyPath && node.path || !isDirectory && onPreview) ? /* @__PURE__ */ jsxs2("div", { className: "thread-graph-tree-actions absolute inset-y-0 right-1 flex items-center gap-0.5 pl-1", children: [
+          !isDirectory && onPreview ? /* @__PURE__ */ jsx2(
             "button",
             {
               type: "button",
@@ -1509,22 +2122,24 @@ function WorkspaceExplorerRow({
               className: "thread-graph-tree-action flex h-9 w-9 shrink-0 items-center justify-center rounded-md transition sm:h-7 sm:w-7",
               title: `Preview ${node.name}`,
               "aria-label": `Preview ${node.name}`,
-              children: /* @__PURE__ */ jsx(Eye, { className: "h-3.5 w-3.5" })
+              children: /* @__PURE__ */ jsx2(Eye, { className: "h-3.5 w-3.5" })
             }
           ) : null,
-          onDownload ? /* @__PURE__ */ jsx(
+          onDownload ? /* @__PURE__ */ jsx2(
             "button",
             {
               type: "button",
               tabIndex: -1,
+              disabled: canDownload ? !canDownload(node) : false,
               onClick: () => onDownload(node),
               className: "thread-graph-tree-action flex h-9 w-9 shrink-0 items-center justify-center rounded-md transition sm:h-7 sm:w-7",
-              title: `Download ${node.name}`,
+              title: canDownload && !canDownload(node) ? `Downloads are unavailable for this ${isDirectory ? "folder" : "file"} connection.` : `Download ${node.name}`,
               "aria-label": `Download ${node.name}`,
-              children: /* @__PURE__ */ jsx(Download, { className: "h-3.5 w-3.5" })
+              children: /* @__PURE__ */ jsx2(Download, { className: "h-3.5 w-3.5" })
             }
           ) : null,
-          onCopyPath ? /* @__PURE__ */ jsx(
+          isDirectory && row.depth > 0 && onDownloadZip ? /* @__PURE__ */ jsx2("button", { type: "button", tabIndex: -1, disabled: canDownload ? !canDownload(node) : false, onClick: () => onDownloadZip(node), className: "thread-graph-tree-action flex h-9 w-9 shrink-0 items-center justify-center rounded-md transition sm:h-7 sm:w-7", title: `Download ${node.name} (ZIP)`, "aria-label": `Download ${node.name} (ZIP)`, children: /* @__PURE__ */ jsx2(FileArchive, { className: "h-3.5 w-3.5" }) }) : null,
+          onCopyPath ? /* @__PURE__ */ jsx2(
             "button",
             {
               type: "button",
@@ -1533,7 +2148,7 @@ function WorkspaceExplorerRow({
               className: "thread-graph-tree-action flex h-9 w-9 shrink-0 items-center justify-center rounded-md transition sm:h-7 sm:w-7",
               title: `Copy path for ${node.name}`,
               "aria-label": `Copy path for ${node.name}`,
-              children: /* @__PURE__ */ jsx(Copy, { className: "h-3.5 w-3.5" })
+              children: /* @__PURE__ */ jsx2(Copy, { className: "h-3.5 w-3.5" })
             }
           ) : null
         ] }) : null
@@ -1543,7 +2158,7 @@ function WorkspaceExplorerRow({
 }
 
 // src/components/graph-workspace/explorer/WorkspaceExplorerTree.tsx
-import { jsx as jsx2 } from "react/jsx-runtime";
+import { jsx as jsx3 } from "react/jsx-runtime";
 function WorkspaceExplorerTree({
   tree,
   expandedPaths,
@@ -1558,6 +2173,8 @@ function WorkspaceExplorerTree({
   scrollTopRef,
   onCopyPath,
   onDownload,
+  onDownloadZip,
+  canDownload,
   onOpenFilter,
   onFilterResultsChange,
   onPreview,
@@ -1580,7 +2197,7 @@ function WorkspaceExplorerTree({
   const [focusedId, setFocusedId] = useState4(
     () => selectedNodeId ?? rows[0]?.id ?? null
   );
-  const rowElementsRef = useRef3(/* @__PURE__ */ new Map());
+  const rowElementsRef = useRef4(/* @__PURE__ */ new Map());
   const canVirtualize = virtualize && typeof window !== "undefined" && "ResizeObserver" in window;
   const virtualizer = useVirtualizer({
     count: rows.length,
@@ -1591,7 +2208,7 @@ function WorkspaceExplorerTree({
     enabled: canVirtualize,
     useFlushSync: false
   });
-  useEffect2(() => {
+  useEffect3(() => {
     onFilterResultsChange?.({
       matchCount: projection.matchCount,
       hasUnresolvedDirectories: projection.hasUnresolvedDirectories
@@ -1601,7 +2218,7 @@ function WorkspaceExplorerTree({
     projection.hasUnresolvedDirectories,
     projection.matchCount
   ]);
-  useEffect2(() => {
+  useEffect3(() => {
     if (focusedId && projection.indexById.has(focusedId)) {
       return;
     }
@@ -1622,8 +2239,8 @@ function WorkspaceExplorerTree({
     },
     [canVirtualize, projection.indexById, virtualizer]
   );
-  const revealedSelectionRef = useRef3(null);
-  useEffect2(() => {
+  const revealedSelectionRef = useRef4(null);
+  useEffect3(() => {
     const key = `${selectedNodeId}:${revealRequestKey ?? 0}`;
     if (!selectedNodeId || revealedSelectionRef.current === key) return;
     const index = projection.indexById.get(selectedNodeId);
@@ -1631,8 +2248,15 @@ function WorkspaceExplorerTree({
     revealedSelectionRef.current = key;
     setFocusedId(selectedNodeId);
     if (canVirtualize) virtualizer.scrollToIndex(index, { align: "auto" });
-    else rowElementsRef.current.get(selectedNodeId)?.scrollIntoView?.({ block: "nearest" });
-  }, [selectedNodeId, revealRequestKey, projection.indexById, canVirtualize, virtualizer]);
+    else
+      rowElementsRef.current.get(selectedNodeId)?.scrollIntoView?.({ block: "nearest" });
+  }, [
+    selectedNodeId,
+    revealRequestKey,
+    projection.indexById,
+    canVirtualize,
+    virtualizer
+  ]);
   const handleKeyDown = useCallback2(
     (event) => {
       const command = workspaceExplorerCommandForKey({
@@ -1686,7 +2310,7 @@ function WorkspaceExplorerTree({
     key: item.key,
     start: item.start
   })) : rows.map((row, index) => ({ index, key: row.id, start: 0 }));
-  return /* @__PURE__ */ jsx2(
+  return /* @__PURE__ */ jsx3(
     "div",
     {
       ref: scrollerRef,
@@ -1698,7 +2322,7 @@ function WorkspaceExplorerTree({
           scrollTopRef.current = event.currentTarget.scrollTop;
         }
       },
-      children: /* @__PURE__ */ jsx2(
+      children: /* @__PURE__ */ jsx3(
         "div",
         {
           style: canVirtualize ? {
@@ -1711,7 +2335,7 @@ function WorkspaceExplorerTree({
             if (!row) {
               return null;
             }
-            return /* @__PURE__ */ jsx2(
+            return /* @__PURE__ */ jsx3(
               "div",
               {
                 role: "none",
@@ -1724,7 +2348,7 @@ function WorkspaceExplorerTree({
                   transform: `translateY(${rendered.start}px)`,
                   width: "100%"
                 } : void 0,
-                children: /* @__PURE__ */ jsx2(
+                children: /* @__PURE__ */ jsx3(
                   WorkspaceExplorerRow,
                   {
                     row,
@@ -1747,6 +2371,8 @@ function WorkspaceExplorerTree({
                     ...onPin ? { onPin } : {},
                     ...onRetryDirectory ? { onRetry: onRetryDirectory } : {},
                     ...onDownload ? { onDownload } : {},
+                    ...onDownloadZip ? { onDownloadZip } : {},
+                    ...canDownload ? { canDownload } : {},
                     ...onCopyPath ? { onCopyPath } : {}
                   }
                 )
@@ -1761,12 +2387,27 @@ function WorkspaceExplorerTree({
 }
 
 // src/components/graph-workspace/explorer/WorkspaceExplorerPanel.tsx
-import { jsx as jsx3, jsxs as jsxs2 } from "react/jsx-runtime";
+import { Fragment as Fragment3, jsx as jsx4, jsxs as jsxs3 } from "react/jsx-runtime";
 var iconButtonClassName = "thread-graph-explorer-icon-button flex h-6 w-6 items-center justify-center rounded transition disabled:cursor-not-allowed disabled:opacity-40";
 var collapseButtonClassName = "thread-graph-explorer-collapse-button flex h-6 w-6 items-center justify-center rounded text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-[#222733] dark:hover:text-slate-100";
 function WorkspaceExplorerPanel({
   canEmptyGarbage,
   canUpload,
+  pending,
+  canImportArchive,
+  archiveLimits,
+  onImportArchive,
+  onDownloadWorkspace,
+  onDownloadWorkspaceZip,
+  importFormats = ["tar"],
+  downloadFormats = ["tar"],
+  canTrash,
+  onTrashFile,
+  onOpenTrash,
+  canDelete,
+  canMove,
+  onDeleteFile,
+  onMoveFile,
   compactFolders,
   directoryErrors,
   expandedPaths,
@@ -1780,6 +2421,8 @@ function WorkspaceExplorerPanel({
   onCollapseAll,
   onCopyPath,
   onDownload,
+  onDownloadZip,
+  canDownload,
   onEmptyGarbage,
   onExpandViewer,
   onFilterModeChange,
@@ -1802,7 +2445,7 @@ function WorkspaceExplorerPanel({
   const visibleTree = useMemo4(
     () => ({
       ...tree,
-      children: tree.children.filter((node) => node.path !== "live")
+      children: tree.children.filter((node) => node.id !== "live")
     }),
     [tree]
   );
@@ -1811,13 +2454,13 @@ function WorkspaceExplorerPanel({
     matchCount: 0,
     hasUnresolvedDirectories: false
   });
-  const filterInputRef = useRef4(null);
+  const filterInputRef = useRef5(null);
   const openFilter = useCallback3(() => setFilterOpen(true), []);
   const handleFilterResultsChange = useCallback3(
     (result) => setFilterResult(result),
     []
   );
-  useEffect3(() => {
+  useEffect4(() => {
     if (filterOpen) {
       window.requestAnimationFrame(() => filterInputRef.current?.focus());
     }
@@ -1826,11 +2469,11 @@ function WorkspaceExplorerPanel({
     onFilterQueryChange("");
     setFilterOpen(false);
   }
-  return /* @__PURE__ */ jsxs2("aside", { className: "thread-graph-explorer flex h-full min-h-0 flex-col overflow-hidden rounded-md", children: [
-    /* @__PURE__ */ jsxs2("div", { className: "thread-graph-explorer-header flex h-9 shrink-0 items-center justify-between border-b px-2", children: [
-      /* @__PURE__ */ jsx3("h2", { className: "text-[11px] font-semibold uppercase text-slate-600 dark:text-slate-300", children: "Explorer" }),
-      /* @__PURE__ */ jsxs2("div", { className: "thread-graph-explorer-toolbar flex items-center gap-1", children: [
-        /* @__PURE__ */ jsx3(
+  return /* @__PURE__ */ jsxs3("aside", { className: "thread-graph-explorer flex h-full min-h-0 flex-col overflow-hidden rounded-md", children: [
+    /* @__PURE__ */ jsxs3("div", { className: "thread-graph-explorer-header flex h-9 shrink-0 items-center justify-between border-b px-2", children: [
+      /* @__PURE__ */ jsx4("h2", { className: "text-[11px] font-semibold uppercase text-slate-600 dark:text-slate-300", children: "Explorer" }),
+      /* @__PURE__ */ jsxs3("div", { className: "thread-graph-explorer-toolbar flex items-center gap-1", children: [
+        /* @__PURE__ */ jsx4(
           "button",
           {
             type: "button",
@@ -1839,10 +2482,10 @@ function WorkspaceExplorerPanel({
             title: "Filter workspace",
             "aria-label": "Filter workspace",
             "aria-pressed": filterOpen,
-            children: /* @__PURE__ */ jsx3(Search, { className: "h-4 w-4" })
+            children: /* @__PURE__ */ jsx4(Search, { className: "h-4 w-4" })
           }
         ),
-        /* @__PURE__ */ jsx3(
+        /* @__PURE__ */ jsx4(
           "button",
           {
             type: "button",
@@ -1850,19 +2493,19 @@ function WorkspaceExplorerPanel({
             className: iconButtonClassName,
             title: "Collapse folders",
             "aria-label": "Collapse folders",
-            children: /* @__PURE__ */ jsx3(ListCollapse, { className: "h-4 w-4" })
+            children: /* @__PURE__ */ jsx4(ListCollapse, { className: "h-4 w-4" })
           }
         ),
-        /* @__PURE__ */ jsx3(
+        /* @__PURE__ */ jsx4(
           "button",
           {
             type: "button",
             onClick: onRefresh,
-            disabled: !onRefresh,
+            disabled: !onRefresh || pending,
             className: iconButtonClassName,
             title: "Refresh workspace",
             "aria-label": "Refresh workspace",
-            children: /* @__PURE__ */ jsx3(
+            children: /* @__PURE__ */ jsx4(
               RefreshCw,
               {
                 className: `h-4 w-4 motion-reduce:animate-none ${loading ? "animate-spin" : ""}`
@@ -1870,45 +2513,103 @@ function WorkspaceExplorerPanel({
             )
           }
         ),
-        canUpload || onEmptyGarbage ? /* @__PURE__ */ jsxs2("details", { className: "thread-graph-explorer-more relative", children: [
-          /* @__PURE__ */ jsx3(
+        canUpload || onDownloadWorkspace || onEmptyGarbage || onOpenTrash ? /* @__PURE__ */ jsxs3("details", { className: "thread-graph-explorer-more relative", children: [
+          /* @__PURE__ */ jsx4(
             "summary",
             {
               className: `${iconButtonClassName} list-none cursor-pointer`,
               title: "More Explorer actions",
               "aria-label": "More Explorer actions",
-              children: /* @__PURE__ */ jsx3(MoreHorizontal, { className: "h-4 w-4" })
+              children: /* @__PURE__ */ jsx4(MoreHorizontal, { className: "h-4 w-4" })
             }
           ),
-          /* @__PURE__ */ jsxs2("div", { className: "absolute right-0 top-7 z-40 min-w-44 rounded-md border border-[var(--theme-border)] bg-[var(--theme-panel)] p-1 shadow-lg", children: [
-            canUpload ? /* @__PURE__ */ jsxs2(
+          /* @__PURE__ */ jsxs3("div", { className: "absolute right-0 top-7 z-40 max-h-[min(50dvh,14rem)] min-w-44 overflow-y-auto rounded-md border border-[var(--theme-border)] bg-[var(--theme-panel)] p-1 shadow-lg", children: [
+            canUpload ? /* @__PURE__ */ jsxs3(
               "button",
               {
                 type: "button",
                 onClick: onUpload,
+                disabled: pending,
                 className: "flex h-9 w-full items-center gap-2 rounded px-2 text-left text-sm hover:bg-[var(--theme-hover)]",
                 children: [
-                  /* @__PURE__ */ jsx3(Upload, { className: "h-4 w-4" }),
+                  /* @__PURE__ */ jsx4(Upload, { className: "h-4 w-4" }),
                   "Upload file"
                 ]
               }
             ) : null,
-            onEmptyGarbage ? /* @__PURE__ */ jsxs2(
+            onDownloadWorkspace && (downloadFormats.includes("tar") || downloadFormats.length === 0) ? /* @__PURE__ */ jsx4(
+              "button",
+              {
+                type: "button",
+                onClick: onDownloadWorkspace,
+                disabled: pending || !canDownload?.(tree),
+                title: canDownload?.(tree) ? "Download the workspace as a TAR archive" : "Folder downloads are unavailable for this connection.",
+                className: "flex h-9 w-full items-center rounded px-2 text-left text-sm disabled:opacity-50",
+                children: "Download Workspace (TAR)"
+              }
+            ) : null,
+            onDownloadWorkspaceZip && downloadFormats.includes("zip") ? /* @__PURE__ */ jsx4("button", { type: "button", onClick: onDownloadWorkspaceZip, disabled: pending || !canDownload?.(tree), className: "flex h-9 w-full items-center rounded px-2 text-left text-sm disabled:opacity-50", children: "Download Workspace (ZIP)" }) : null,
+            onImportArchive ? /* @__PURE__ */ jsxs3(Fragment3, { children: [
+              /* @__PURE__ */ jsx4(
+                "button",
+                {
+                  type: "button",
+                  onClick: onImportArchive,
+                  disabled: pending || !canImportArchive,
+                  title: canImportArchive ? `Extract ${importFormats.map((format) => format.toUpperCase()).join(" or ")} into the workspace root` : "Archive extraction is unavailable for this connection.",
+                  className: "flex h-9 w-full items-center rounded px-2 text-left text-sm disabled:opacity-50",
+                  children: importFormats.includes("zip") ? "Import archive" : "Import TAR archive"
+                }
+              ),
+              /* @__PURE__ */ jsxs3("p", { className: "max-w-64 px-2 py-1 text-xs", children: [
+                canImportArchive ? `${importFormats.map((format) => format.toUpperCase()).join(" / ")}. ${archiveLimits ?? "Extraction limits are enforced by the server."}` : "Archive extraction is unsupported.",
+                " ",
+                "Regular uploads store archive bytes without extraction."
+              ] })
+            ] }) : null,
+            onTrashFile ? /* @__PURE__ */ jsx4("button", { type: "button", onClick: onTrashFile, disabled: pending || !canTrash, className: "flex h-9 w-full items-center rounded px-2 text-left text-sm disabled:opacity-50", children: "Trash selected file" }) : null,
+            onOpenTrash ? /* @__PURE__ */ jsx4("button", { type: "button", onClick: onOpenTrash, disabled: pending, className: "flex h-9 w-full items-center rounded px-2 text-left text-sm disabled:opacity-50", children: "Trash" }) : null,
+            onMoveFile ? /* @__PURE__ */ jsx4(
+              "button",
+              {
+                type: "button",
+                onClick: onMoveFile,
+                disabled: pending || !canMove,
+                title: canMove ? "Move selected file to a new path" : "Select a workspace file; this connection must support file moves.",
+                className: "flex h-9 w-full items-center rounded px-2 text-left text-sm disabled:opacity-50",
+                children: "Move selected file"
+              }
+            ) : null,
+            onDeleteFile ? /* @__PURE__ */ jsxs3(Fragment3, { children: [
+              /* @__PURE__ */ jsx4(
+                "button",
+                {
+                  type: "button",
+                  onClick: onDeleteFile,
+                  disabled: pending || !canDelete,
+                  title: canDelete ? "Confirm permanent deletion of selected file" : "Select a workspace file; this connection must support file deletion.",
+                  className: "flex h-9 w-full items-center rounded px-2 text-left text-sm disabled:opacity-50",
+                  children: "Delete selected file\u2026"
+                }
+              ),
+              !onEmptyGarbage ? /* @__PURE__ */ jsx4("p", { className: "max-w-64 px-2 py-1 text-xs", children: "Reversible trash and empty-trash are unsupported for this connection." }) : null
+            ] }) : null,
+            onEmptyGarbage ? /* @__PURE__ */ jsxs3(
               "button",
               {
                 type: "button",
                 onClick: onEmptyGarbage,
-                disabled: !canEmptyGarbage,
+                disabled: pending || !canEmptyGarbage,
                 className: "flex h-9 w-full items-center gap-2 rounded px-2 text-left text-sm text-rose-600 hover:bg-rose-500/10 disabled:opacity-50 dark:text-rose-300",
                 children: [
-                  /* @__PURE__ */ jsx3(Trash2, { className: "h-4 w-4" }),
+                  /* @__PURE__ */ jsx4(Trash2, { className: "h-4 w-4" }),
                   "Empty garbage"
                 ]
               }
             ) : null
           ] })
         ] }) : null,
-        onExpandViewer ? /* @__PURE__ */ jsx3(
+        onExpandViewer ? /* @__PURE__ */ jsx4(
           "button",
           {
             type: "button",
@@ -1917,9 +2618,9 @@ function WorkspaceExplorerPanel({
             className: collapseButtonClassName,
             title: "Show Editor",
             "aria-label": "Show Editor",
-            children: /* @__PURE__ */ jsx3(PanelRightOpen, { className: "h-4 w-4" })
+            children: /* @__PURE__ */ jsx4(PanelRightOpen, { className: "h-4 w-4" })
           }
-        ) : onCollapse ? /* @__PURE__ */ jsx3(
+        ) : onCollapse ? /* @__PURE__ */ jsx4(
           "button",
           {
             type: "button",
@@ -1928,16 +2629,16 @@ function WorkspaceExplorerPanel({
             className: collapseButtonClassName,
             title: "Hide Explorer",
             "aria-label": "Hide Explorer",
-            children: /* @__PURE__ */ jsx3(PanelLeftClose, { className: "h-4 w-4" })
+            children: /* @__PURE__ */ jsx4(PanelLeftClose, { className: "h-4 w-4" })
           }
         ) : null
       ] })
     ] }),
-    filterOpen ? /* @__PURE__ */ jsxs2("div", { className: "thread-graph-explorer-filter shrink-0 border-b border-[var(--theme-border)] px-3 py-2", children: [
-      /* @__PURE__ */ jsxs2("div", { className: "flex flex-col gap-1.5", children: [
-        /* @__PURE__ */ jsxs2("div", { className: "flex w-full min-w-0 items-center gap-2 rounded-md border border-[var(--theme-border)] bg-[var(--theme-surface-strong)] px-2", children: [
-          /* @__PURE__ */ jsx3(Search, { className: "h-3.5 w-3.5 shrink-0 text-[var(--theme-fg-muted)]" }),
-          /* @__PURE__ */ jsx3(
+    filterOpen ? /* @__PURE__ */ jsxs3("div", { className: "thread-graph-explorer-filter shrink-0 border-b border-[var(--theme-border)] px-3 py-2", children: [
+      /* @__PURE__ */ jsxs3("div", { className: "flex flex-col gap-1.5", children: [
+        /* @__PURE__ */ jsxs3("div", { className: "flex w-full min-w-0 items-center gap-2 rounded-md border border-[var(--theme-border)] bg-[var(--theme-surface-strong)] px-2", children: [
+          /* @__PURE__ */ jsx4(Search, { className: "h-3.5 w-3.5 shrink-0 text-[var(--theme-fg-muted)]" }),
+          /* @__PURE__ */ jsx4(
             "input",
             {
               ref: filterInputRef,
@@ -1958,7 +2659,7 @@ function WorkspaceExplorerPanel({
               "aria-label": "Filter workspace files"
             }
           ),
-          /* @__PURE__ */ jsx3(
+          /* @__PURE__ */ jsx4(
             "button",
             {
               type: "button",
@@ -1966,17 +2667,17 @@ function WorkspaceExplorerPanel({
               className: "inline-flex h-7 w-7 items-center justify-center rounded text-[var(--theme-fg-muted)] hover:bg-[var(--theme-hover)] hover:text-[var(--theme-fg)]",
               title: "Close filter",
               "aria-label": "Close filter",
-              children: /* @__PURE__ */ jsx3(X, { className: "h-3.5 w-3.5" })
+              children: /* @__PURE__ */ jsx4(X, { className: "h-3.5 w-3.5" })
             }
           )
         ] }),
-        /* @__PURE__ */ jsx3(
+        /* @__PURE__ */ jsx4(
           "div",
           {
             className: "thread-graph-explorer-filter-mode inline-flex shrink-0 self-end rounded-md border border-[var(--theme-border)] p-0.5",
             role: "group",
             "aria-label": "Explorer filter mode",
-            children: ["filter", "highlight"].map((mode) => /* @__PURE__ */ jsx3(
+            children: ["filter", "highlight"].map((mode) => /* @__PURE__ */ jsx4(
               "button",
               {
                 type: "button",
@@ -1991,7 +2692,7 @@ function WorkspaceExplorerPanel({
           }
         )
       ] }),
-      filterQuery ? /* @__PURE__ */ jsxs2(
+      filterQuery ? /* @__PURE__ */ jsxs3(
         "div",
         {
           className: "mt-1.5 text-xs text-[var(--theme-fg-muted)]",
@@ -2005,9 +2706,9 @@ function WorkspaceExplorerPanel({
         }
       ) : null
     ] }) : null,
-    liveNodes.length > 0 ? /* @__PURE__ */ jsxs2("div", { className: "shrink-0 border-b border-slate-200 py-2 dark:border-[#2a2f3a]", children: [
-      /* @__PURE__ */ jsx3("div", { className: "thread-graph-workspace-label px-3 pb-1 text-[11px] font-semibold text-slate-500 dark:text-slate-400", children: "Live" }),
-      liveNodes.map((node) => /* @__PURE__ */ jsxs2(
+    liveNodes.length > 0 ? /* @__PURE__ */ jsxs3("div", { className: "shrink-0 border-b border-slate-200 py-2 dark:border-[#2a2f3a]", children: [
+      /* @__PURE__ */ jsx4("div", { className: "thread-graph-workspace-label px-3 pb-1 text-[11px] font-semibold text-slate-500 dark:text-slate-400", children: "Live" }),
+      liveNodes.map((node) => /* @__PURE__ */ jsxs3(
         "button",
         {
           type: "button",
@@ -2016,20 +2717,20 @@ function WorkspaceExplorerPanel({
           onClick: () => onSelect(node.id),
           className: `thread-graph-tree-row flex min-h-11 w-full items-center gap-2 px-3 py-2 text-left text-sm transition sm:min-h-7 sm:py-1 ${selectedNodeId === node.id ? "is-selected" : ""}`,
           children: [
-            /* @__PURE__ */ jsx3(FileCode22, { className: "h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-300" }),
-            /* @__PURE__ */ jsx3("span", { className: "min-w-0 flex-1 truncate", children: node.name })
+            /* @__PURE__ */ jsx4(FileCode22, { className: "h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-300" }),
+            /* @__PURE__ */ jsx4("span", { className: "min-w-0 flex-1 truncate", children: node.name })
           ]
         },
         node.id
       ))
     ] }) : null,
-    initialLoading ? /* @__PURE__ */ jsx3(
+    initialLoading ? /* @__PURE__ */ jsx4(
       "div",
       {
         className: "flex-1 space-y-1 px-3 py-2",
         role: "status",
         "aria-label": "Loading workspace files",
-        children: [0, 1, 2, 3, 4].map((index) => /* @__PURE__ */ jsx3(
+        children: [0, 1, 2, 3, 4].map((index) => /* @__PURE__ */ jsx4(
           "div",
           {
             className: "h-7 animate-pulse rounded bg-[var(--theme-surface-strong)] motion-reduce:animate-none",
@@ -2038,9 +2739,9 @@ function WorkspaceExplorerPanel({
           index
         ))
       }
-    ) : rootError ? /* @__PURE__ */ jsxs2("div", { className: "mx-3 mt-2 rounded-md border border-rose-500/25 bg-rose-500/10 px-3 py-3 text-sm text-rose-700 dark:text-rose-200", children: [
-      /* @__PURE__ */ jsx3("p", { children: rootError }),
-      /* @__PURE__ */ jsx3(
+    ) : rootError ? /* @__PURE__ */ jsxs3("div", { className: "mx-3 mt-2 rounded-md border border-rose-500/25 bg-rose-500/10 px-3 py-3 text-sm text-rose-700 dark:text-rose-200", children: [
+      /* @__PURE__ */ jsx4("p", { children: rootError }),
+      /* @__PURE__ */ jsx4(
         "button",
         {
           type: "button",
@@ -2049,7 +2750,7 @@ function WorkspaceExplorerPanel({
           children: "Retry"
         }
       )
-    ] }) : /* @__PURE__ */ jsx3(
+    ] }) : /* @__PURE__ */ jsx4(
       WorkspaceExplorerTree,
       {
         tree: visibleTree,
@@ -2065,6 +2766,8 @@ function WorkspaceExplorerPanel({
         scrollTopRef: explorerScrollTopRef,
         ...onCopyPath ? { onCopyPath } : {},
         ...onDownload ? { onDownload } : {},
+        ...onDownloadZip ? { onDownloadZip } : {},
+        ...canDownload ? { canDownload } : {},
         onOpenFilter: openFilter,
         onFilterResultsChange: handleFilterResultsChange,
         ...onPreview ? { onPreview } : {},
@@ -2077,7 +2780,7 @@ function WorkspaceExplorerPanel({
         onToggle
       }
     ),
-    !initialLoading && !rootError && filterQuery && filterMode === "filter" && filterResult.matchCount === 0 ? /* @__PURE__ */ jsx3("p", { className: "thread-graph-workspace-empty mx-4 mb-4 rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-4 text-sm text-slate-500 dark:border-[#303642] dark:bg-[#1b1f29] dark:text-slate-400", children: "No matches in loaded folders." }) : visibleTree.children.length === 0 ? /* @__PURE__ */ jsx3("p", { className: "thread-graph-workspace-empty mx-4 mb-4 rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-4 text-sm text-slate-500 dark:border-[#303642] dark:bg-[#1b1f29] dark:text-slate-400", children: "This workspace is empty. Agent tool runs execute inside the thread workspace, so files should appear here as the session works." }) : null
+    !initialLoading && !rootError && filterQuery && filterMode === "filter" && filterResult.matchCount === 0 ? /* @__PURE__ */ jsx4("p", { className: "thread-graph-workspace-empty mx-4 mb-4 rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-4 text-sm text-slate-500 dark:border-[#303642] dark:bg-[#1b1f29] dark:text-slate-400", children: "No matches in loaded folders." }) : visibleTree.children.length === 0 ? /* @__PURE__ */ jsx4("p", { className: "thread-graph-workspace-empty mx-4 mb-4 rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-4 text-sm text-slate-500 dark:border-[#303642] dark:bg-[#1b1f29] dark:text-slate-400", children: "This workspace is empty. Agent tool runs execute inside the thread workspace, so files should appear here as the session works." }) : null
   ] });
 }
 
@@ -2086,9 +2789,9 @@ import {
   lazy,
   memo,
   Suspense,
-  useEffect as useEffect4,
+  useEffect as useEffect5,
   useMemo as useMemo5,
-  useRef as useRef5,
+  useRef as useRef6,
   useState as useState7
 } from "react";
 import {
@@ -2106,21 +2809,21 @@ import ReactMarkdown, { defaultUrlTransform } from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 // src/components/graph-workspace/GraphWorkspaceCards.tsx
-import { jsx as jsx4, jsxs as jsxs3 } from "react/jsx-runtime";
+import { jsx as jsx5, jsxs as jsxs4 } from "react/jsx-runtime";
 function WorkspaceInfoCard({
   label,
   children
 }) {
-  return /* @__PURE__ */ jsxs3("section", { className: "thread-workspace-card rounded-lg border p-3", children: [
-    /* @__PURE__ */ jsx4("p", { className: "text-xs font-medium uppercase tracking-[0.14em] text-[var(--theme-fg-muted)]", children: label }),
-    /* @__PURE__ */ jsx4("div", { className: "mt-2 text-sm text-[var(--theme-fg)]", children })
+  return /* @__PURE__ */ jsxs4("section", { className: "thread-workspace-card rounded-lg border p-3", children: [
+    /* @__PURE__ */ jsx5("p", { className: "text-xs font-medium uppercase tracking-[0.14em] text-[var(--theme-fg-muted)]", children: label }),
+    /* @__PURE__ */ jsx5("div", { className: "mt-2 text-sm text-[var(--theme-fg)]", children })
   ] });
 }
 
 // src/components/graph-workspace/WorkspaceFileTabs.tsx
 import { Circle, FileCode2 as FileCode23, X as X2 } from "lucide-react";
 import { useState as useState6 } from "react";
-import { jsx as jsx5, jsxs as jsxs4 } from "react/jsx-runtime";
+import { jsx as jsx6, jsxs as jsxs5 } from "react/jsx-runtime";
 function WorkspaceFileTabs({
   activePath,
   dirtyPaths,
@@ -2141,9 +2844,9 @@ function WorkspaceFileTabs({
     }
     onClose(path);
   }
-  return /* @__PURE__ */ jsxs4("div", { className: "thread-graph-editor-tabs-shell shrink-0", children: [
-    /* @__PURE__ */ jsxs4("div", { className: "flex min-w-0 border-b border-[var(--theme-border)]", children: [
-      /* @__PURE__ */ jsx5(
+  return /* @__PURE__ */ jsxs5("div", { className: "thread-graph-editor-tabs-shell shrink-0", children: [
+    /* @__PURE__ */ jsxs5("div", { className: "flex min-w-0 border-b border-[var(--theme-border)]", children: [
+      /* @__PURE__ */ jsx6(
         "div",
         {
           className: "thread-graph-editor-tabs flex min-w-0 flex-1 overflow-x-auto",
@@ -2152,13 +2855,13 @@ function WorkspaceFileTabs({
           children: tabs.map((tab) => {
             const active = tab.path === activePath;
             const dirty = dirtyPaths.has(tab.path);
-            return /* @__PURE__ */ jsxs4(
+            return /* @__PURE__ */ jsxs5(
               "div",
               {
                 className: `thread-graph-editor-tab group/tab flex h-8 min-w-0 max-w-52 shrink-0 items-center border-r ${active ? "is-active" : ""} ${tab.pinned ? "is-pinned" : "is-preview"}`,
                 role: "presentation",
                 children: [
-                  /* @__PURE__ */ jsxs4(
+                  /* @__PURE__ */ jsxs5(
                     "button",
                     {
                       type: "button",
@@ -2168,12 +2871,12 @@ function WorkspaceFileTabs({
                       onClick: () => onSelect(tab.path),
                       className: `flex h-full min-w-0 flex-1 items-center gap-1.5 px-2.5 text-left text-xs ${tab.pinned ? "" : "italic"}`,
                       children: [
-                        /* @__PURE__ */ jsx5(FileCode23, { className: "h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" }),
-                        /* @__PURE__ */ jsx5("span", { className: "truncate", children: tab.name })
+                        /* @__PURE__ */ jsx6(FileCode23, { className: "h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" }),
+                        /* @__PURE__ */ jsx6("span", { className: "truncate", children: tab.name })
                       ]
                     }
                   ),
-                  /* @__PURE__ */ jsx5(
+                  /* @__PURE__ */ jsx6(
                     "button",
                     {
                       type: "button",
@@ -2181,7 +2884,7 @@ function WorkspaceFileTabs({
                       className: "thread-graph-editor-tab-close mr-1 flex h-5 w-5 shrink-0 items-center justify-center rounded",
                       title: `Close ${tab.name}`,
                       "aria-label": `Close ${tab.name}`,
-                      children: dirty ? /* @__PURE__ */ jsx5(Circle, { className: "h-2.5 w-2.5 fill-current" }) : /* @__PURE__ */ jsx5(X2, { className: "h-3.5 w-3.5" })
+                      children: dirty ? /* @__PURE__ */ jsx6(Circle, { className: "h-2.5 w-2.5 fill-current" }) : /* @__PURE__ */ jsx6(X2, { className: "h-3.5 w-3.5" })
                     }
                   )
                 ]
@@ -2191,21 +2894,21 @@ function WorkspaceFileTabs({
           })
         }
       ),
-      trailingAction ? /* @__PURE__ */ jsx5("div", { className: "thread-graph-editor-tabs-action flex h-8 shrink-0 items-center px-1", children: trailingAction }) : null
+      trailingAction ? /* @__PURE__ */ jsx6("div", { className: "thread-graph-editor-tabs-action flex h-8 shrink-0 items-center px-1", children: trailingAction }) : null
     ] }),
-    pendingTab ? /* @__PURE__ */ jsxs4(
+    pendingTab ? /* @__PURE__ */ jsxs5(
       "div",
       {
         className: "thread-graph-editor-close-confirm flex min-h-10 items-center justify-between gap-3 border-b px-3 py-1.5 text-xs",
         role: "alert",
         children: [
-          /* @__PURE__ */ jsxs4("span", { className: "min-w-0 truncate", children: [
+          /* @__PURE__ */ jsxs5("span", { className: "min-w-0 truncate", children: [
             "Discard unsaved changes in ",
             pendingTab.name,
             "?"
           ] }),
-          /* @__PURE__ */ jsxs4("div", { className: "flex shrink-0 items-center gap-1", children: [
-            /* @__PURE__ */ jsx5(
+          /* @__PURE__ */ jsxs5("div", { className: "flex shrink-0 items-center gap-1", children: [
+            /* @__PURE__ */ jsx6(
               "button",
               {
                 type: "button",
@@ -2214,7 +2917,7 @@ function WorkspaceFileTabs({
                 children: "Keep editing"
               }
             ),
-            /* @__PURE__ */ jsx5(
+            /* @__PURE__ */ jsx6(
               "button",
               {
                 type: "button",
@@ -2234,21 +2937,30 @@ function WorkspaceFileTabs({
 }
 
 // src/components/graph-workspace/GraphWorkspacePreviewPane.tsx
-import { Fragment as Fragment2, jsx as jsx6, jsxs as jsxs5 } from "react/jsx-runtime";
+import { Fragment as Fragment4, jsx as jsx7, jsxs as jsxs6 } from "react/jsx-runtime";
 var GraphWorkspaceMonacoEditor = lazy(
   () => import("./GraphWorkspaceMonacoEditor-THUABSPG.js")
 );
-function DownloadFilePreview({ node, onDownload }) {
+function DownloadFilePreview({
+  node,
+  onDownload
+}) {
   const [pending, setPending] = useState7(false);
   const [error, setError] = useState7(null);
   const size = node.size;
   const sizeLabel = size === void 0 ? null : size < 1024 ? `${size} B` : size < 1024 * 1024 ? `${(size / 1024).toFixed(1)} KB` : `${(size / (1024 * 1024)).toFixed(1)} MB`;
-  return /* @__PURE__ */ jsxs5("div", { className: "thread-graph-download-preview", children: [
-    /* @__PURE__ */ jsx6(Download2, { "aria-hidden": "true", className: "thread-graph-download-preview-icon" }),
-    /* @__PURE__ */ jsx6("strong", { children: node.name }),
-    sizeLabel ? /* @__PURE__ */ jsx6("span", { children: sizeLabel }) : null,
-    /* @__PURE__ */ jsx6("p", { children: "This file is available to download." }),
-    onDownload ? /* @__PURE__ */ jsxs5(
+  return /* @__PURE__ */ jsxs6("div", { className: "thread-graph-download-preview", children: [
+    /* @__PURE__ */ jsx7(
+      Download2,
+      {
+        "aria-hidden": "true",
+        className: "thread-graph-download-preview-icon"
+      }
+    ),
+    /* @__PURE__ */ jsx7("strong", { children: node.name }),
+    sizeLabel ? /* @__PURE__ */ jsx7("span", { children: sizeLabel }) : null,
+    /* @__PURE__ */ jsx7("p", { children: "This file is available to download." }),
+    onDownload ? /* @__PURE__ */ jsxs6(
       "button",
       {
         type: "button",
@@ -2260,18 +2972,20 @@ function DownloadFilePreview({ node, onDownload }) {
           try {
             await onDownload();
           } catch (caught) {
-            setError(caught instanceof Error ? caught.message : "Download failed. Please try again.");
+            setError(
+              caught instanceof Error ? caught.message : "Download failed. Please try again."
+            );
           } finally {
             setPending(false);
           }
         },
         children: [
-          /* @__PURE__ */ jsx6(Download2, { "aria-hidden": "true", size: 16 }),
+          /* @__PURE__ */ jsx7(Download2, { "aria-hidden": "true", size: 16 }),
           pending ? "Downloading\u2026" : "Download file"
         ]
       }
-    ) : /* @__PURE__ */ jsx6("span", { children: "Downloads are unavailable for this connection." }),
-    error ? /* @__PURE__ */ jsx6("p", { role: "alert", children: error }) : null
+    ) : /* @__PURE__ */ jsx7("span", { children: "Downloads are unavailable for this connection." }),
+    error ? /* @__PURE__ */ jsx7("p", { role: "alert", children: error }) : null
   ] });
 }
 var SMALL_TEXT_FILE_MAX_BYTES = 50 * 1024;
@@ -2289,8 +3003,15 @@ var CODE_LANGUAGE_ALIASES = {
 function transparentHighlightBackground(html) {
   return html.replace(/background-color:[^;"]+;?/g, "background-color: transparent;").replace(/background:[^;"]+;?/g, "background: transparent;");
 }
-function resolveWorkspaceMarkdownPath({ markdownPath, resourceUrl, workspaceRootPath = "" }) {
-  const raw = localFileHref(resourceUrl, typeof window === "undefined" ? void 0 : window.location.origin);
+function resolveWorkspaceMarkdownPath({
+  markdownPath,
+  resourceUrl,
+  workspaceRootPath = ""
+}) {
+  const raw = localFileHref(
+    resourceUrl,
+    typeof window === "undefined" ? void 0 : window.location.origin
+  );
   if (!raw) return null;
   const path = raw.split("#")[0] ?? "";
   if (path.startsWith("/") || /^[a-z]:\//i.test(path)) {
@@ -2299,7 +3020,10 @@ function resolveWorkspaceMarkdownPath({ markdownPath, resourceUrl, workspaceRoot
   const base = workspaceRootPath ? relativeWorkspacePath(markdownPath, workspaceRootPath) : normalizeFileSystemPath(markdownPath);
   if (base === null) return null;
   const directory = base.slice(0, Math.max(0, base.lastIndexOf("/")));
-  return relativeWorkspacePath(directory ? `${directory}/${path}` : path, workspaceRootPath);
+  return relativeWorkspacePath(
+    directory ? `${directory}/${path}` : path,
+    workspaceRootPath
+  );
 }
 function isSmallEditableTextFile(file) {
   return !file.truncated && file.size <= SMALL_TEXT_FILE_MAX_BYTES && file.content.split("\n").length <= SMALL_TEXT_FILE_MAX_LINES;
@@ -2334,10 +3058,10 @@ var GraphWorkspaceCodePreview = memo(function GraphWorkspaceCodePreview2({
   focusLine,
   language = "text"
 }) {
-  const rootRef = useRef5(null);
+  const rootRef = useRef6(null);
   const [highlighter, setHighlighter] = useState7(null);
   const [dark, setDark] = useState7(false);
-  useEffect4(() => {
+  useEffect5(() => {
     let alive = true;
     getGraphChatHighlighter().then((loadedHighlighter) => {
       if (alive) {
@@ -2348,7 +3072,7 @@ var GraphWorkspaceCodePreview = memo(function GraphWorkspaceCodePreview2({
       alive = false;
     };
   }, []);
-  useEffect4(() => {
+  useEffect5(() => {
     const shell = rootRef.current?.closest(".thread-ui-shell");
     const readDark = () => shell ? shell.getAttribute("data-theme-effective") === "dark" || shell.classList.contains("dark") || shell.classList.contains("thread-ui-theme-dark") : document.documentElement.classList.contains("dark");
     setDark(readDark());
@@ -2385,7 +3109,7 @@ var GraphWorkspaceCodePreview = memo(function GraphWorkspaceCodePreview2({
       );
     }
   }, [content, dark, highlighter, language]);
-  useEffect4(() => {
+  useEffect5(() => {
     const root = rootRef.current;
     root?.querySelectorAll(".is-focused-line").forEach((element) => element.classList.remove("is-focused-line"));
     if (!root || !focusLine || focusLine < 1) {
@@ -2396,26 +3120,26 @@ var GraphWorkspaceCodePreview = memo(function GraphWorkspaceCodePreview2({
     target?.scrollIntoView?.({ block: "center" });
   }, [focusLine, highlightedHtml]);
   const lines = content.split("\n");
-  return /* @__PURE__ */ jsx6(
+  return /* @__PURE__ */ jsx7(
     "div",
     {
       ref: rootRef,
       className: "thread-graph-code-preview min-h-0 flex-1 overflow-auto",
       role: "region",
       "aria-label": "Source code",
-      children: highlightedHtml ? /* @__PURE__ */ jsx6(
+      children: highlightedHtml ? /* @__PURE__ */ jsx7(
         "div",
         {
           className: "thread-graph-highlighted-code-preview",
           dangerouslySetInnerHTML: { __html: highlightedHtml }
         }
-      ) : /* @__PURE__ */ jsx6("pre", { className: "thread-graph-plain-code-preview", children: /* @__PURE__ */ jsx6("code", { children: lines.map((line, index) => /* @__PURE__ */ jsxs5(
+      ) : /* @__PURE__ */ jsx7("pre", { className: "thread-graph-plain-code-preview", children: /* @__PURE__ */ jsx7("code", { children: lines.map((line, index) => /* @__PURE__ */ jsxs6(
         "span",
         {
           className: `thread-graph-code-line ${focusLine === index + 1 ? "is-focused-line" : ""}`,
           "data-line": index + 1,
           children: [
-            /* @__PURE__ */ jsx6(
+            /* @__PURE__ */ jsx7(
               "span",
               {
                 className: "thread-graph-code-line-number",
@@ -2423,7 +3147,7 @@ var GraphWorkspaceCodePreview = memo(function GraphWorkspaceCodePreview2({
                 children: index + 1
               }
             ),
-            /* @__PURE__ */ jsx6("span", { children: line || " " })
+            /* @__PURE__ */ jsx7("span", { children: line || " " })
           ]
         },
         index
@@ -2444,26 +3168,45 @@ var GraphWorkspaceMarkdownPreview = memo(
       resourceUrl,
       workspaceRootPath: workspaceRootPath ?? ""
     }) : null;
-    return /* @__PURE__ */ jsx6("div", { className: "thread-graph-markdown thread-graph-markdown-preview min-h-0 flex-1 overflow-auto px-5 py-4 sm:px-7 sm:py-6", children: /* @__PURE__ */ jsx6(
+    return /* @__PURE__ */ jsx7("div", { className: "thread-graph-markdown thread-graph-markdown-preview min-h-0 flex-1 overflow-auto px-5 py-4 sm:px-7 sm:py-6", children: /* @__PURE__ */ jsx7(
       ReactMarkdown,
       {
-        urlTransform: (url) => localFileHref(url, typeof window === "undefined" ? void 0 : window.location.origin) ? url : defaultUrlTransform(url),
+        urlTransform: (url) => localFileHref(
+          url,
+          typeof window === "undefined" ? void 0 : window.location.origin
+        ) ? url : defaultUrlTransform(url),
         remarkPlugins: [remarkGfm],
         components: {
           a({ href, children, ...props }) {
             const workspacePath = resolvePath(href);
             if (workspacePath && onOpenWorkspaceFile) {
-              return /* @__PURE__ */ jsx6(WorkspaceFileLink, { path: workspacePath, onOpen: ({ path }) => onOpenWorkspaceFile(path), children });
+              return /* @__PURE__ */ jsx7(
+                WorkspaceFileLink,
+                {
+                  path: workspacePath,
+                  onOpen: ({ path }) => onOpenWorkspaceFile(path),
+                  children
+                }
+              );
             }
-            return /* @__PURE__ */ jsx6("a", { ...props, ...externalLinkProps(href), href, children });
+            if (href && localFileHref(
+              href,
+              typeof window === "undefined" ? void 0 : window.location.origin
+            ))
+              return /* @__PURE__ */ jsx7("span", { children });
+            return /* @__PURE__ */ jsx7("a", { ...props, ...externalLinkProps(href), href, children });
           },
           img({ src, alt, ...props }) {
             const workspacePath = resolvePath(src);
-            const resolvedSrc = workspacePath ? resolveWorkspaceFileUrl?.(workspacePath) ?? src : src;
+            const local = src && localFileHref(
+              src,
+              typeof window === "undefined" ? void 0 : window.location.origin
+            );
+            const resolvedSrc = local ? workspacePath ? resolveWorkspaceFileUrl?.(workspacePath) : null : src;
             if (!resolvedSrc) {
               return null;
             }
-            return /* @__PURE__ */ jsx6(
+            return /* @__PURE__ */ jsx7(
               ZoomableImage,
               {
                 src: resolvedSrc,
@@ -2495,6 +3238,7 @@ function GraphWorkspacePreviewPane({
   onExpandExplorer,
   onOpenWorkspaceFile,
   onLoadMore,
+  onReloadFile,
   onSelectFileTab,
   onCollapse,
   pdfUrl,
@@ -2505,9 +3249,15 @@ function GraphWorkspacePreviewPane({
   selectedTarget,
   workspaceRootPath
 }) {
-  const surfaceRef = useRef5(null);
+  const surfaceRef = useRef6(null);
+  const drafts = useRef6(/* @__PURE__ */ new Map());
+  const previousTabs = useRef6(fileTabs);
+  const currentPath = useRef6(previewFile?.path);
+  currentPath.current = previewFile?.path;
   const [editing, setEditing] = useState7(false);
   const [draftContent, setDraftContent] = useState7("");
+  const [saveNotice, setSaveNotice] = useState7(null);
+  const [downloadError, setDownloadError] = useState7(null);
   const [saveError, setSaveError] = useState7(null);
   const [saving, setSaving] = useState7(false);
   const [markdownView, setMarkdownView] = useState7(
@@ -2533,7 +3283,7 @@ function GraphWorkspacePreviewPane({
   const isLiveArtifactPreview = selectedTarget?.kind === "live-molecule";
   const isArtifactPreview = Boolean(activeNode?.artifact && renderedArtifact);
   const isMoleculePreview = Boolean(moleculeSnapshot) || isArtifactPreview;
-  useEffect4(() => {
+  useEffect5(() => {
     if (typeof window.matchMedia !== "function") {
       return;
     }
@@ -2543,7 +3293,7 @@ function GraphWorkspacePreviewPane({
     mediaQuery.addEventListener?.("change", update);
     return () => mediaQuery.removeEventListener?.("change", update);
   }, []);
-  useEffect4(() => {
+  useEffect5(() => {
     const shell = surfaceRef.current?.closest(".thread-ui-shell");
     const update = () => setDark(
       shell?.getAttribute("data-theme-effective") === "dark" || shell?.classList.contains("dark") || shell?.classList.contains("thread-ui-theme-dark") || false
@@ -2559,13 +3309,30 @@ function GraphWorkspacePreviewPane({
     });
     return () => observer.disconnect();
   }, []);
-  useEffect4(() => {
-    setEditing(false);
-    setDraftContent(previewFile?.content ?? "");
+  useEffect5(() => {
+    setSaveNotice(null);
+  }, [previewFile?.path]);
+  useEffect5(() => {
+    setSaving(false);
+    setDownloadError(null);
+    const draft = previewFile ? drafts.current.get(previewFile.path) : void 0;
+    setEditing(draft !== void 0);
+    setDraftContent(draft ?? previewFile?.content ?? "");
     setSaveError(null);
     setMarkdownView("preview");
   }, [previewFile?.path, previewFile?.content]);
-  useEffect4(() => {
+  useEffect5(() => {
+    for (const tab of previousTabs.current) {
+      if (!fileTabs.some((current) => current.path === tab.path))
+        drafts.current.delete(tab.path);
+    }
+    previousTabs.current = fileTabs;
+  }, [fileTabs]);
+  function updateDraft(content) {
+    setDraftContent(content);
+    if (previewFile) drafts.current.set(previewFile.path, content);
+  }
+  useEffect5(() => {
     if (!previewFile) {
       return;
     }
@@ -2578,6 +3345,8 @@ function GraphWorkspacePreviewPane({
     if (!previewFile || !onSaveFile) {
       return;
     }
+    const path = previewFile.path;
+    setSaveNotice(null);
     setSaving(true);
     setSaveError(null);
     try {
@@ -2585,25 +3354,30 @@ function GraphWorkspacePreviewPane({
         path: previewFile.path,
         content: draftContent
       });
-      setEditing(false);
+      drafts.current.delete(path);
+      if (currentPath.current === path) {
+        setEditing(false);
+        setSaveNotice(`Saved ${previewFile.name}.`);
+      }
     } catch (error2) {
+      if (currentPath.current !== path) return;
       setSaveError(
         error2 instanceof Error ? error2.message : "Failed to save file."
       );
     } finally {
-      setSaving(false);
+      if (currentPath.current === path) setSaving(false);
     }
   }
   const breadcrumbSegments = previewFile ? previewFile.path.replace(workspaceRootPath ?? "", "").split("/").filter(Boolean) : [];
-  const fileToolbar = previewFile && (isMarkdownFile || canEditFile) ? /* @__PURE__ */ jsxs5("div", { className: "flex shrink-0 items-center gap-1", children: [
-    isMarkdownFile && !editing ? /* @__PURE__ */ jsxs5(
+  const fileToolbar = previewFile && (isMarkdownFile || canEditFile) ? /* @__PURE__ */ jsxs6("div", { className: "flex shrink-0 items-center gap-1", children: [
+    isMarkdownFile && !editing ? /* @__PURE__ */ jsxs6(
       "div",
       {
         className: "thread-graph-markdown-view-switch inline-flex items-center rounded border p-px",
         role: "group",
         "aria-label": "Markdown view",
         children: [
-          /* @__PURE__ */ jsx6(
+          /* @__PURE__ */ jsx7(
             "button",
             {
               type: "button",
@@ -2612,10 +3386,10 @@ function GraphWorkspacePreviewPane({
               "aria-pressed": markdownView === "preview",
               title: "Markdown preview",
               "aria-label": "Markdown preview",
-              children: /* @__PURE__ */ jsx6(BookOpen, { className: "h-3 w-3" })
+              children: /* @__PURE__ */ jsx7(BookOpen, { className: "h-3 w-3" })
             }
           ),
-          /* @__PURE__ */ jsx6(
+          /* @__PURE__ */ jsx7(
             "button",
             {
               type: "button",
@@ -2624,18 +3398,19 @@ function GraphWorkspacePreviewPane({
               "aria-pressed": markdownView === "source",
               title: "Markdown source",
               "aria-label": "Markdown source",
-              children: /* @__PURE__ */ jsx6(Code2, { className: "h-3 w-3" })
+              children: /* @__PURE__ */ jsx7(Code2, { className: "h-3 w-3" })
             }
           )
         ]
       }
     ) : null,
-    canEditFile ? /* @__PURE__ */ jsx6("div", { className: "flex shrink-0 items-center gap-0.5", children: editing ? /* @__PURE__ */ jsxs5(Fragment2, { children: [
-      /* @__PURE__ */ jsx6(
+    canEditFile ? /* @__PURE__ */ jsx7("div", { className: "flex shrink-0 items-center gap-0.5", children: editing ? /* @__PURE__ */ jsxs6(Fragment4, { children: [
+      /* @__PURE__ */ jsx7(
         "button",
         {
           type: "button",
           onClick: () => {
+            drafts.current.delete(previewFile.path);
             setDraftContent(previewFile.content);
             setEditing(false);
             setSaveError(null);
@@ -2644,10 +3419,10 @@ function GraphWorkspacePreviewPane({
           className: "thread-graph-editor-toolbar-button flex h-6 w-6 items-center justify-center rounded transition disabled:cursor-not-allowed disabled:opacity-40",
           title: "Cancel edits",
           "aria-label": "Cancel edits",
-          children: /* @__PURE__ */ jsx6(X3, { className: "h-3.5 w-3.5" })
+          children: /* @__PURE__ */ jsx7(X3, { className: "h-3.5 w-3.5" })
         }
       ),
-      /* @__PURE__ */ jsx6(
+      /* @__PURE__ */ jsx7(
         "button",
         {
           type: "button",
@@ -2656,10 +3431,10 @@ function GraphWorkspacePreviewPane({
           className: "thread-graph-editor-toolbar-button flex h-6 w-6 items-center justify-center rounded transition disabled:cursor-not-allowed disabled:opacity-40",
           title: "Save file",
           "aria-label": "Save file",
-          children: /* @__PURE__ */ jsx6(Save, { className: "h-3.5 w-3.5" })
+          children: /* @__PURE__ */ jsx7(Save, { className: "h-3.5 w-3.5" })
         }
       )
-    ] }) : /* @__PURE__ */ jsx6(
+    ] }) : /* @__PURE__ */ jsx7(
       "button",
       {
         type: "button",
@@ -2672,11 +3447,11 @@ function GraphWorkspacePreviewPane({
         className: "thread-graph-editor-toolbar-button flex h-6 w-6 items-center justify-center rounded transition",
         title: "Edit file",
         "aria-label": "Edit file",
-        children: /* @__PURE__ */ jsx6(Pencil, { className: "h-3.5 w-3.5" })
+        children: /* @__PURE__ */ jsx7(Pencil, { className: "h-3.5 w-3.5" })
       }
     ) }) : null
   ] }) : null;
-  const viewerPaneToggle = onExpandExplorer ? /* @__PURE__ */ jsx6(
+  const viewerPaneToggle = onExpandExplorer ? /* @__PURE__ */ jsx7(
     "button",
     {
       type: "button",
@@ -2685,9 +3460,9 @@ function GraphWorkspacePreviewPane({
       className: "flex h-6 w-6 shrink-0 items-center justify-center rounded text-[var(--theme-fg-muted)] transition hover:bg-[var(--theme-hover)] hover:text-[var(--theme-fg)]",
       title: "Show Explorer",
       "aria-label": "Show Explorer",
-      children: /* @__PURE__ */ jsx6(PanelLeftOpen, { className: "h-3.5 w-3.5" })
+      children: /* @__PURE__ */ jsx7(PanelLeftOpen, { className: "h-3.5 w-3.5" })
     }
-  ) : onCollapse ? /* @__PURE__ */ jsx6(
+  ) : onCollapse ? /* @__PURE__ */ jsx7(
     "button",
     {
       type: "button",
@@ -2696,21 +3471,21 @@ function GraphWorkspacePreviewPane({
       className: "flex h-6 w-6 shrink-0 items-center justify-center rounded text-[var(--theme-fg-muted)] transition hover:bg-[var(--theme-hover)] hover:text-[var(--theme-fg)]",
       title: "Hide Editor",
       "aria-label": "Hide Editor",
-      children: /* @__PURE__ */ jsx6(PanelRightClose, { className: "h-3.5 w-3.5" })
+      children: /* @__PURE__ */ jsx7(PanelRightClose, { className: "h-3.5 w-3.5" })
     }
   ) : null;
-  return /* @__PURE__ */ jsxs5(
+  return /* @__PURE__ */ jsxs6(
     "section",
     {
       ref: surfaceRef,
       className: "thread-graph-viewer flex h-full min-h-0 flex-col overflow-hidden rounded-md",
       "data-preview-target-kind": selectedTarget?.kind ?? "none",
       children: [
-        selectedTarget?.kind !== "workspace-file" ? /* @__PURE__ */ jsxs5("div", { className: "thread-graph-viewer-header flex h-9 shrink-0 items-center justify-between gap-2 border-b px-2.5", children: [
-          /* @__PURE__ */ jsx6("span", { className: "min-w-0 truncate text-xs font-medium text-[var(--theme-fg)]", children: title ?? "Preview" }),
+        selectedTarget?.kind !== "workspace-file" ? /* @__PURE__ */ jsxs6("div", { className: "thread-graph-viewer-header flex h-9 shrink-0 items-center justify-between gap-2 border-b px-2.5", children: [
+          /* @__PURE__ */ jsx7("span", { className: "min-w-0 truncate text-xs font-medium text-[var(--theme-fg)]", children: title ?? "Preview" }),
           viewerPaneToggle
         ] }) : null,
-        fileTabs.length > 0 && onCloseFileTab && onSelectFileTab ? /* @__PURE__ */ jsx6(
+        fileTabs.length > 0 && onCloseFileTab && onSelectFileTab ? /* @__PURE__ */ jsx7(
           WorkspaceFileTabs,
           {
             activePath: activeFilePath ?? null,
@@ -2718,50 +3493,67 @@ function GraphWorkspacePreviewPane({
             onClose: onCloseFileTab,
             onSelect: onSelectFileTab,
             tabs: fileTabs,
-            trailingAction: fileToolbar || viewerPaneToggle ? /* @__PURE__ */ jsxs5(Fragment2, { children: [
+            trailingAction: fileToolbar || viewerPaneToggle ? /* @__PURE__ */ jsxs6(Fragment4, { children: [
               fileToolbar,
               viewerPaneToggle
             ] }) : null
           }
         ) : null,
-        /* @__PURE__ */ jsxs5("div", { className: "flex min-h-0 flex-1 flex-col overflow-hidden", children: [
-          error ? /* @__PURE__ */ jsx6("div", { className: "border-b border-rose-200 bg-rose-50 px-5 py-3 text-sm text-rose-700 dark:border-rose-400/25 dark:bg-rose-400/10 dark:text-rose-200", children: error }) : null,
-          !selectedTarget ? /* @__PURE__ */ jsx6("div", { className: "flex min-h-0 flex-1 items-center justify-center px-5 text-center text-sm text-slate-400 dark:text-slate-500", children: "Pick a live molecule, workspace file, artifact, or thread event to preview it." }) : selectedTarget.kind === "workspace-file" && previewLoading ? /* @__PURE__ */ jsx6("div", { className: "flex min-h-0 flex-1 items-center justify-center px-5 text-center text-sm text-slate-400 dark:text-slate-500", children: "Loading file preview..." }) : selectedTarget.kind === "workspace-file" && downloadOnly ? /* @__PURE__ */ jsx6(DownloadFilePreview, { node: selectedTarget.node, onDownload: onDownloadFile }, selectedTarget.node.path) : selectedTarget.kind === "workspace-file" && moleculeSnapshot ? /* @__PURE__ */ jsx6("div", { className: "thread-graph-molecule-preview min-h-0 flex-1 overflow-hidden", children: /* @__PURE__ */ jsx6(
+        /* @__PURE__ */ jsxs6("div", { className: "flex min-h-0 flex-1 flex-col overflow-hidden", children: [
+          error ? /* @__PURE__ */ jsx7(
+            "div",
+            {
+              role: "alert",
+              className: "border-b border-rose-200 bg-rose-50 px-5 py-3 text-sm text-rose-700 dark:border-rose-400/25 dark:bg-rose-400/10 dark:text-rose-200",
+              children: error
+            }
+          ) : null,
+          saveNotice ? /* @__PURE__ */ jsx7("p", { role: "status", children: saveNotice }) : null,
+          downloadError ? /* @__PURE__ */ jsx7("p", { role: "alert", children: downloadError }) : null,
+          !selectedTarget ? /* @__PURE__ */ jsx7("div", { className: "flex min-h-0 flex-1 items-center justify-center px-5 text-center text-sm text-slate-400 dark:text-slate-500", children: "Pick a live molecule, workspace file, artifact, or thread event to preview it." }) : selectedTarget.kind === "workspace-file" && previewLoading ? /* @__PURE__ */ jsx7("div", { className: "flex min-h-0 flex-1 items-center justify-center px-5 text-center text-sm text-slate-400 dark:text-slate-500", children: "Loading file preview..." }) : selectedTarget.kind === "workspace-file" && downloadOnly ? /* @__PURE__ */ jsx7(
+            DownloadFilePreview,
+            {
+              node: selectedTarget.node,
+              onDownload: onDownloadFile
+            },
+            selectedTarget.node.path
+          ) : selectedTarget.kind === "workspace-file" && moleculeSnapshot ? /* @__PURE__ */ jsx7("div", { className: "thread-graph-molecule-preview min-h-0 flex-1 overflow-hidden", children: /* @__PURE__ */ jsx7(
             GraphMoleculeViewer,
             {
               source: moleculeSnapshot,
               moleculeId: moleculeSnapshot.uuid ?? selectedTarget.node.path,
               title: selectedTarget.node.name
             }
-          ) }) : selectedTarget.kind === "workspace-file" && imageUrl ? /* @__PURE__ */ jsx6("div", { className: "flex min-h-0 flex-1 items-center justify-center overflow-auto p-5", children: /* @__PURE__ */ jsx6(
+          ) }) : selectedTarget.kind === "workspace-file" && imageUrl ? /* @__PURE__ */ jsx7("div", { className: "flex min-h-0 flex-1 items-center justify-center overflow-auto p-5", children: /* @__PURE__ */ jsx7(
             ZoomableImage,
             {
               src: imageUrl,
               alt: selectedTarget.node.path || selectedTarget.node.name,
               className: "max-h-full max-w-full object-contain"
             }
-          ) }) : selectedTarget.kind === "workspace-file" && pdfUrl ? /* @__PURE__ */ jsx6("div", { className: "thread-graph-file-preview-frame min-h-0 flex-1 overflow-hidden", children: /* @__PURE__ */ jsx6(
+          ) }) : selectedTarget.kind === "workspace-file" && pdfUrl ? /* @__PURE__ */ jsx7("div", { className: "thread-graph-file-preview-frame min-h-0 flex-1 overflow-hidden", children: /* @__PURE__ */ jsx7(
             "iframe",
             {
               src: pdfUrl,
+              referrerPolicy: "no-referrer",
               title: `PDF preview: ${selectedTarget.node.path || selectedTarget.node.name}`,
               className: "h-full w-full border-0"
             }
-          ) }) : selectedTarget.kind === "workspace-file" && previewFile ? /* @__PURE__ */ jsxs5("div", { className: "flex min-h-0 flex-1 flex-col", children: [
-            breadcrumbSegments.length > 1 || fileTabs.length === 0 && fileToolbar ? /* @__PURE__ */ jsxs5("div", { className: "thread-graph-editor-breadcrumbs flex h-7 shrink-0 items-center border-b px-2 text-[11px]", children: [
-              /* @__PURE__ */ jsx6("div", { className: "flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto", children: breadcrumbSegments.map((segment, index, segments) => /* @__PURE__ */ jsxs5(
+          ) }) : selectedTarget.kind === "workspace-file" && previewFile ? /* @__PURE__ */ jsxs6("div", { className: "flex min-h-0 flex-1 flex-col", children: [
+            breadcrumbSegments.length > 1 || fileTabs.length === 0 && fileToolbar ? /* @__PURE__ */ jsxs6("div", { className: "thread-graph-editor-breadcrumbs flex h-7 shrink-0 items-center border-b px-2 text-[11px]", children: [
+              /* @__PURE__ */ jsx7("div", { className: "flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto", children: breadcrumbSegments.map((segment, index, segments) => /* @__PURE__ */ jsxs6(
                 "span",
                 {
                   className: "flex shrink-0 items-center gap-0.5",
                   children: [
-                    /* @__PURE__ */ jsx6(
+                    /* @__PURE__ */ jsx7(
                       "span",
                       {
                         className: index === segments.length - 1 ? "text-[var(--theme-fg)]" : "",
                         children: segment
                       }
                     ),
-                    index < segments.length - 1 ? /* @__PURE__ */ jsx6(
+                    index < segments.length - 1 ? /* @__PURE__ */ jsx7(
                       ChevronRight2,
                       {
                         "aria-hidden": "true",
@@ -2774,17 +3566,45 @@ function GraphWorkspacePreviewPane({
               )) }),
               fileTabs.length === 0 ? fileToolbar : null
             ] }) : null,
-            saveError ? /* @__PURE__ */ jsx6("div", { className: "border-b border-rose-200 bg-rose-50 px-4 py-2 text-sm text-rose-700 dark:border-rose-400/25 dark:bg-rose-400/10 dark:text-rose-200", children: saveError }) : null,
-            editing && compactViewer ? /* @__PURE__ */ jsx6(
+            saveError ? /* @__PURE__ */ jsxs6(
+              "div",
+              {
+                role: "alert",
+                className: "border-b border-rose-200 bg-rose-50 px-4 py-2 text-sm text-rose-700 dark:border-rose-400/25 dark:bg-rose-400/10 dark:text-rose-200",
+                children: [
+                  saveError,
+                  /* @__PURE__ */ jsx7("p", { children: "Your unsaved text is still in the editor. Copy it before reloading the latest file if the revision changed." }),
+                  onReloadFile ? /* @__PURE__ */ jsx7(
+                    "button",
+                    {
+                      type: "button",
+                      disabled: saving,
+                      onClick: () => {
+                        if (!window.confirm(
+                          "Discard unsaved edits and reload the latest file? Copy your changes first."
+                        ))
+                          return;
+                        drafts.current.delete(previewFile.path);
+                        setEditing(false);
+                        setSaveError(null);
+                        onReloadFile();
+                      },
+                      children: "Reload latest file"
+                    }
+                  ) : null
+                ]
+              }
+            ) : null,
+            editing && compactViewer ? /* @__PURE__ */ jsx7(
               "textarea",
               {
                 value: draftContent,
-                onChange: (event) => setDraftContent(event.currentTarget.value),
+                onChange: (event) => updateDraft(event.currentTarget.value),
                 spellCheck: false,
                 "aria-label": "Workspace file editor",
                 className: "thread-graph-file-editor min-h-0 flex-1 resize-none border-0 bg-transparent p-4 font-mono text-[12px] leading-5 text-slate-900 outline-none dark:text-slate-100"
               }
-            ) : isMarkdownFile && markdownView === "preview" && !editing ? /* @__PURE__ */ jsx6(
+            ) : isMarkdownFile && markdownView === "preview" && !editing ? /* @__PURE__ */ jsx7(
               GraphWorkspaceMarkdownPreview,
               {
                 content: previewFile.content,
@@ -2793,25 +3613,25 @@ function GraphWorkspacePreviewPane({
                 ...resolveWorkspaceFileUrl ? { resolveWorkspaceFileUrl } : {},
                 ...workspaceRootPath ? { workspaceRootPath } : {}
               }
-            ) : compactViewer ? /* @__PURE__ */ jsx6(
+            ) : compactViewer ? /* @__PURE__ */ jsx7(
               GraphWorkspaceCodePreview,
               {
                 content: previewFile.content,
                 focusLine,
                 language: fileLanguage
               }
-            ) : /* @__PURE__ */ jsx6(
+            ) : /* @__PURE__ */ jsx7(
               Suspense,
               {
-                fallback: /* @__PURE__ */ jsx6("div", { className: "flex min-h-0 flex-1 items-center justify-center text-sm text-[var(--theme-fg-muted)]", children: "Loading editor..." }),
-                children: /* @__PURE__ */ jsx6(
+                fallback: /* @__PURE__ */ jsx7("div", { className: "flex min-h-0 flex-1 items-center justify-center text-sm text-[var(--theme-fg-muted)]", children: "Loading editor..." }),
+                children: /* @__PURE__ */ jsx7(
                   GraphWorkspaceMonacoEditor,
                   {
                     content: editing ? draftContent : previewFile.content,
                     dark,
                     focusLine,
                     language: fileLanguage,
-                    onChange: setDraftContent,
+                    onChange: updateDraft,
                     onSave: () => void handleSaveFile(),
                     path: previewFile.path,
                     readOnly: !editing
@@ -2820,7 +3640,27 @@ function GraphWorkspacePreviewPane({
                 )
               }
             ),
-            previewFile.truncated && onLoadMore ? /* @__PURE__ */ jsx6("div", { className: "thread-graph-file-preview-footer flex justify-center border-t px-4 py-3", children: /* @__PURE__ */ jsx6(
+            onSaveFile && !canEditFile && !MOLECULAR_EXTENSIONS.has(extension) ? /* @__PURE__ */ jsx7("p", { className: "px-4 py-2 text-xs", children: "Editing requires the complete text file, at most 50 KiB and 1,000 lines." }) : null,
+            previewFile.truncated ? /* @__PURE__ */ jsx7("p", { className: "px-4 py-2 text-xs", children: "Text previews load in 24,000-byte chunks. Load more to continue, or download the complete file." }) : null,
+            onDownloadFile ? /* @__PURE__ */ jsx7(
+              "button",
+              {
+                type: "button",
+                onClick: async () => {
+                  try {
+                    setDownloadError(null);
+                    await onDownloadFile();
+                  } catch (error2) {
+                    setDownloadError(
+                      error2 instanceof Error ? error2.message : "Download failed."
+                    );
+                  }
+                },
+                "aria-label": `Download ${previewFile.name}`,
+                children: "Download complete file"
+              }
+            ) : null,
+            previewFile.truncated && onLoadMore ? /* @__PURE__ */ jsx7("div", { className: "thread-graph-file-preview-footer flex justify-center border-t px-4 py-3", children: /* @__PURE__ */ jsx7(
               "button",
               {
                 type: "button",
@@ -2832,20 +3672,20 @@ function GraphWorkspacePreviewPane({
                 children: loadingMore ? "Loading..." : `Load more (${(previewFile.size - previewFile.nextOffset).toLocaleString()} bytes remaining)`
               }
             ) }) : null
-          ] }) : (selectedTarget.kind === "live-molecule" || selectedTarget.kind === "artifact") && selectedTarget.node.artifact ? /* @__PURE__ */ jsx6(
+          ] }) : (selectedTarget.kind === "live-molecule" || selectedTarget.kind === "artifact") && selectedTarget.node.artifact ? /* @__PURE__ */ jsx7(
             "div",
             {
               className: isMoleculePreview || isLiveArtifactPreview ? "min-h-0 flex-1 overflow-hidden" : "min-h-0 flex-1 overflow-auto p-3",
               children: renderedArtifact
             }
-          ) : selectedTarget.kind === "meta" ? /* @__PURE__ */ jsx6("div", { className: "min-h-0 flex-1 overflow-auto p-3", children: /* @__PURE__ */ jsx6("div", { className: "grid gap-3", children: /* @__PURE__ */ jsx6(WorkspaceInfoCard, { label: "Workspace Data", children: /* @__PURE__ */ jsx6(
+          ) : selectedTarget.kind === "meta" ? /* @__PURE__ */ jsx7("div", { className: "min-h-0 flex-1 overflow-auto p-3", children: /* @__PURE__ */ jsx7("div", { className: "grid gap-3", children: /* @__PURE__ */ jsx7(WorkspaceInfoCard, { label: "Workspace Data", children: /* @__PURE__ */ jsx7(
             GraphWorkspaceCodePreview,
             {
               content: selectedTarget.node.detail ?? ""
             }
-          ) }) }) }) : /* @__PURE__ */ jsxs5("div", { className: "flex min-h-0 flex-1 flex-col", children: [
-            /* @__PURE__ */ jsx6("div", { className: "thread-graph-file-preview-header border-b px-4 py-3 text-xs uppercase tracking-[0.12em]", children: selectedTarget.node.kind }),
-            /* @__PURE__ */ jsx6(
+          ) }) }) }) : /* @__PURE__ */ jsxs6("div", { className: "flex min-h-0 flex-1 flex-col", children: [
+            /* @__PURE__ */ jsx7("div", { className: "thread-graph-file-preview-header border-b px-4 py-3 text-xs uppercase tracking-[0.12em]", children: selectedTarget.node.kind }),
+            /* @__PURE__ */ jsx7(
               GraphWorkspaceCodePreview,
               {
                 content: selectedTarget.node.detail ?? selectedTarget.node.preview ?? selectedTarget.node.name
@@ -2859,24 +3699,24 @@ function GraphWorkspacePreviewPane({
 }
 
 // src/components/graph-workspace/GraphEmptyGarbageDialog.tsx
-import { jsx as jsx7, jsxs as jsxs6 } from "react/jsx-runtime";
+import { jsx as jsx8, jsxs as jsxs7 } from "react/jsx-runtime";
 function GraphEmptyGarbageDialog({
   files,
   onCancel,
   onConfirm
 }) {
-  return /* @__PURE__ */ jsx7("div", { className: "thread-graph-dialog-backdrop fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4", children: /* @__PURE__ */ jsxs6("div", { className: "thread-graph-dialog w-full max-w-sm rounded-xl border bg-[var(--theme-panel)] p-6 shadow-xl", children: [
-    /* @__PURE__ */ jsx7("h3", { className: "text-base font-semibold text-[var(--theme-fg)]", children: "Empty garbage?" }),
-    /* @__PURE__ */ jsxs6("p", { className: "mt-1 text-sm leading-5 text-[var(--theme-fg-muted)]", children: [
+  return /* @__PURE__ */ jsx8("div", { className: "thread-graph-dialog-backdrop fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4", children: /* @__PURE__ */ jsxs7("div", { className: "thread-graph-dialog w-full max-w-sm rounded-xl border bg-[var(--theme-panel)] p-6 shadow-xl", children: [
+    /* @__PURE__ */ jsx8("h3", { className: "text-base font-semibold text-[var(--theme-fg)]", children: "Empty garbage?" }),
+    /* @__PURE__ */ jsxs7("p", { className: "mt-1 text-sm leading-5 text-[var(--theme-fg-muted)]", children: [
       "Permanently delete all files in the",
       " ",
-      /* @__PURE__ */ jsx7("code", { className: "rounded bg-[var(--theme-muted)] px-1 text-xs text-[var(--theme-fg-soft)]", children: "garbage/" }),
+      /* @__PURE__ */ jsx8("code", { className: "rounded bg-[var(--theme-muted)] px-1 text-xs text-[var(--theme-fg-soft)]", children: "garbage/" }),
       " ",
       "folder."
     ] }),
-    files.length === 0 ? /* @__PURE__ */ jsx7("p", { className: "mt-3 text-sm text-[var(--theme-fg-muted)]", children: "Garbage is empty." }) : /* @__PURE__ */ jsx7("ul", { className: "mt-3 max-h-40 overflow-y-auto rounded-md border border-[var(--theme-border)] bg-[var(--theme-surface)] p-2 text-xs text-[var(--theme-fg-soft)]", children: files.map((file) => /* @__PURE__ */ jsx7("li", { className: "truncate py-0.5", title: file, children: file }, file)) }),
-    /* @__PURE__ */ jsxs6("div", { className: "mt-4 flex justify-end gap-2", children: [
-      /* @__PURE__ */ jsx7(
+    files.length === 0 ? /* @__PURE__ */ jsx8("p", { className: "mt-3 text-sm text-[var(--theme-fg-muted)]", children: "Garbage is empty." }) : /* @__PURE__ */ jsx8("ul", { className: "mt-3 max-h-40 overflow-y-auto rounded-md border border-[var(--theme-border)] bg-[var(--theme-surface)] p-2 text-xs text-[var(--theme-fg-soft)]", children: files.map((file) => /* @__PURE__ */ jsx8("li", { className: "truncate py-0.5", title: file, children: file }, file)) }),
+    /* @__PURE__ */ jsxs7("div", { className: "mt-4 flex justify-end gap-2", children: [
+      /* @__PURE__ */ jsx8(
         "button",
         {
           type: "button",
@@ -2885,7 +3725,7 @@ function GraphEmptyGarbageDialog({
           children: "Cancel"
         }
       ),
-      files.length > 0 ? /* @__PURE__ */ jsx7(
+      files.length > 0 ? /* @__PURE__ */ jsx8(
         "button",
         {
           type: "button",
@@ -2899,7 +3739,7 @@ function GraphEmptyGarbageDialog({
 }
 
 // src/components/graph-workspace/GraphWorkspaceExplorer.tsx
-import { jsx as jsx8, jsxs as jsxs7 } from "react/jsx-runtime";
+import { jsx as jsx9, jsxs as jsxs8 } from "react/jsx-runtime";
 function GraphWorkspaceExplorer({
   activeView,
   detail,
@@ -2911,6 +3751,9 @@ function GraphWorkspaceExplorer({
 }) {
   const {
     activeNode,
+    capabilities,
+    capabilityError,
+    refreshCapabilities,
     adapterModel,
     collapseAll,
     directoryErrors,
@@ -2949,17 +3792,17 @@ function GraphWorkspaceExplorer({
     () => /* @__PURE__ */ new Set()
   );
   const [isMobileViewport, setIsMobileViewport] = useState8(false);
-  const explorerScrollerRef = useRef6(null);
-  const explorerScrollTopRef = useRef6(0);
-  const restoredRevealRef = useRef6(null);
-  const scrollRestoreGenerationRef = useRef6(0);
+  const explorerScrollerRef = useRef7(null);
+  const explorerScrollTopRef = useRef7(0);
+  const restoredRevealRef = useRef7(null);
+  const scrollRestoreGenerationRef = useRef7(0);
   useLayoutEffect2(() => {
     ++scrollRestoreGenerationRef.current;
     return () => {
       ++scrollRestoreGenerationRef.current;
     };
   }, [focusPathRequest]);
-  const pendingExplorerScrollRestoreRef = useRef6(null);
+  const pendingExplorerScrollRestoreRef = useRef7(null);
   const {
     downloadOnly,
     imageUrl,
@@ -2968,7 +3811,8 @@ function GraphWorkspaceExplorer({
     pdfUrl,
     previewFile,
     previewLoading,
-    saveFile: handleSaveFile
+    saveFile: handleSaveFile,
+    reloadFile
   } = useWorkspaceFilePreview({
     activeNode,
     adapter: workspaceAdapter,
@@ -2976,7 +3820,36 @@ function GraphWorkspaceExplorer({
     onError: setWorkspaceError,
     refreshTree: refreshWorkspaceTree
   });
+  const [fileOperation, setFileOperation] = useState8(
+    null
+  );
+  const [destination, setDestination] = useState8("");
   const {
+    canDownload,
+    canDelete,
+    canMove,
+    canTrash,
+    canListTrash,
+    canRestoreTrash,
+    canEmptyTrash,
+    trashFile,
+    openTrash,
+    restoreTrash,
+    emptyTrash,
+    showTrash,
+    setShowTrash,
+    trashList,
+    confirmTrashEmpty,
+    setConfirmTrashEmpty,
+    importFormats,
+    downloadFormats,
+    resetTrashRetry,
+    deleteFile,
+    moveFile,
+    notice,
+    pending,
+    archiveInputRef,
+    handleArchiveImport,
     confirmEmptyGarbage: handleConfirmEmptyGarbage,
     copyPath: handleCopyPath,
     downloadNode: handleDownload,
@@ -2990,19 +3863,31 @@ function GraphWorkspaceExplorer({
   } = useWorkspaceExplorerActions({
     activeNode,
     adapter: workspaceAdapter,
+    capabilities,
     identity: workspaceIdentity,
     onError: setWorkspaceError,
     onLoadingChange: setLoadingTree,
     refreshTree: refreshWorkspaceTree,
+    focusFile: (path) => {
+      setCollapsedPanel(null);
+      return focusWorkspacePath(path);
+    },
     workspaceRootPath: detail.workspace.absPath
   });
-  useEffect5(() => {
+  useEffect6(() => {
+    setFileOperation(null);
+  }, [activeNode?.path]);
+  useEffect6(() => {
     explorerScrollTopRef.current = 0;
     pendingExplorerScrollRestoreRef.current = null;
+    setFileOperation(null);
+    setDestination("");
+    setFocusedLine(null);
+    ++scrollRestoreGenerationRef.current;
     setFileTabs([]);
     setDirtyFilePaths(/* @__PURE__ */ new Set());
   }, [workspaceIdentity.threadId, workspaceIdentity.workspaceId]);
-  useEffect5(() => {
+  useEffect6(() => {
     if (activeNode?.kind !== "file" || !activeNode.path) {
       return;
     }
@@ -3024,7 +3909,7 @@ function GraphWorkspaceExplorer({
       );
     });
   }, [activeNode]);
-  useEffect5(() => {
+  useEffect6(() => {
     if (focusPathRequest) {
       setFocusedLine(focusPathRequest.line ?? null);
       setCollapsedPanel(null);
@@ -3073,7 +3958,7 @@ function GraphWorkspaceExplorer({
       restoredRevealRef.current = focusPathRequest.requestId;
     }
   }, [focusPathRequest, loadingTree, activeNode]);
-  useEffect5(() => {
+  useEffect6(() => {
     if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
       return;
     }
@@ -3135,16 +4020,43 @@ function GraphWorkspaceExplorer({
   }
   const explorerActions = {
     onCopyPath: handleCopyPath,
-    ...workspaceAdapter?.downloadNode ? { onDownload: handleDownload } : {},
+    ...workspaceAdapter?.downloadNode ? { onDownload: (node, format) => void handleDownload(node, format) } : {},
+    canDownload: (node) => !pending && canDownload(node),
+    ...workspaceAdapter?.downloadNode && downloadFormats.includes("zip") ? { onDownloadZip: (node) => void handleDownload(node, "zip") } : {},
     ...workspaceAdapter?.emptyGarbage ? { onEmptyGarbage: handleOpenGarbage } : {},
-    ...workspaceAdapter ? { onRefresh: () => void refreshWorkspaceTree(activeNode?.path ?? null) } : {},
+    ...workspaceAdapter ? {
+      onRefresh: () => {
+        if (pending) return;
+        resetTrashRetry();
+        refreshCapabilities();
+        void refreshWorkspaceTree(activeNode?.path ?? null);
+      }
+    } : {},
     ...workspaceAdapter?.uploadFile ? { onUpload: pickUploadFile } : {}
   };
-  const explorerPanel = /* @__PURE__ */ jsx8(
+  const explorerPanel = /* @__PURE__ */ jsx9(
     WorkspaceExplorerPanel,
     {
       canEmptyGarbage: Boolean(workspaceAdapter?.emptyGarbage),
       canUpload: Boolean(workspaceAdapter?.uploadFile),
+      pending,
+      canImportArchive: importFormats.length > 0 && Boolean(workspaceAdapter?.importArchive),
+      importFormats,
+      downloadFormats,
+      archiveLimits: capabilities ? `${capabilities.maxArchiveBytes?.toLocaleString() ?? "bounded"} bytes expanded, ${capabilities.maxArchiveEntries?.toLocaleString() ?? "bounded"} entries; no symlinks or paths outside the workspace.` : void 0,
+      onImportArchive: () => archiveInputRef.current?.click(),
+      onDownloadWorkspace: () => void handleDownload(tree),
+      onDownloadWorkspaceZip: () => void handleDownload(tree, "zip"),
+      canTrash,
+      onTrashFile: canListTrash ? () => void trashFile() : void 0,
+      onOpenTrash: canListTrash ? () => void openTrash() : void 0,
+      canDelete,
+      canMove,
+      onDeleteFile: capabilities?.trash ? void 0 : () => setFileOperation("delete"),
+      onMoveFile: () => {
+        setDestination(activeNode?.path ?? "");
+        setFileOperation("move");
+      },
       compactFolders: !isMobileViewport,
       directoryErrors,
       filterMode,
@@ -3186,15 +4098,15 @@ function GraphWorkspaceExplorer({
       liveNodes
     }
   );
-  const viewerPanel = /* @__PURE__ */ jsx8(
+  const viewerPanel = /* @__PURE__ */ jsx9(
     GraphWorkspacePreviewPane,
     {
       activeFilePath: activeNode?.kind === "file" ? activeNode.path : null,
       dirtyFilePaths,
-      error: workspaceError,
+      error: null,
       fileTabs,
       downloadOnly,
-      ...workspaceAdapter?.downloadNode && activeNode?.kind === "file" ? { onDownloadFile: () => workspaceAdapter.downloadNode({ ...workspaceIdentity, path: activeNode.path, kind: "file" }) } : {},
+      ...activeNode?.kind === "file" && canDownload(activeNode) ? { onDownloadFile: () => handleDownload(activeNode) } : {},
       imageUrl,
       loadingMore,
       focusLine: focusedLine,
@@ -3203,7 +4115,7 @@ function GraphWorkspaceExplorer({
         setCollapsedPanel(null);
         void focusWorkspacePath(path);
       },
-      onLoadMore: handleLoadMore,
+      onLoadMore: () => void handleLoadMore(),
       onCloseFileTab: handleCloseTab,
       onDirtyChange: (path, dirty) => {
         if (dirty) {
@@ -3237,6 +4149,7 @@ function GraphWorkspaceExplorer({
       pdfUrl,
       previewFile,
       previewLoading,
+      onReloadFile: () => void reloadFile(),
       plugins,
       ...workspaceAdapter?.getRawFileUrl ? {
         resolveWorkspaceFileUrl: (path) => workspaceAdapter.getRawFileUrl?.({
@@ -3246,83 +4159,199 @@ function GraphWorkspaceExplorer({
       } : {},
       selectedTarget: graphWorkspacePreviewTargetFromNode(activeNode),
       workspaceRootPath: detail.workspace.absPath
-    }
+    },
+    `${workspaceIdentity.threadId}:${workspaceIdentity.workspaceId}`
   );
+  function renderWorkspace(content) {
+    return /* @__PURE__ */ jsxs8("div", { className: "flex h-full min-h-0 flex-col", children: [
+      workspaceError || capabilityError ? /* @__PURE__ */ jsx9(
+        "div",
+        {
+          role: "alert",
+          className: "px-3 py-2 text-sm text-rose-700 dark:text-rose-200",
+          children: workspaceError || capabilityError
+        }
+      ) : null,
+      notice && !showTrash ? /* @__PURE__ */ jsx9("div", { role: "status", className: "max-h-28 shrink-0 overflow-auto break-words px-3 py-2 text-sm", children: notice }) : null,
+      showGarbageDialog ? /* @__PURE__ */ jsx9(
+        GraphEmptyGarbageDialog,
+        {
+          files: garbageFiles,
+          onCancel: () => setShowGarbageDialog(false),
+          onConfirm: () => void handleConfirmEmptyGarbage()
+        }
+      ) : null,
+      /* @__PURE__ */ jsx9(
+        WorkspaceTrashDialog,
+        {
+          open: showTrash,
+          list: trashList,
+          pending,
+          error: workspaceError,
+          notice,
+          canRestore: canRestoreTrash,
+          canEmpty: canEmptyTrash,
+          confirming: confirmTrashEmpty,
+          onClose: () => {
+            setShowTrash(false);
+            setConfirmTrashEmpty(false);
+          },
+          onRefresh: () => void openTrash(),
+          onRestore: (entry) => void restoreTrash(entry),
+          onConfirmingChange: setConfirmTrashEmpty,
+          onEmpty: () => void emptyTrash()
+        }
+      ),
+      /* @__PURE__ */ jsxs8(
+        Dialog2.Root,
+        {
+          open: fileOperation !== null,
+          onOpenChange: (open) => {
+            if (!open) setFileOperation(null);
+          },
+          children: [
+            /* @__PURE__ */ jsx9(Dialog2.Overlay, { className: "fixed inset-0 z-50 bg-black/40" }),
+            /* @__PURE__ */ jsxs8(
+              Dialog2.Content,
+              {
+                className: "fixed left-1/2 top-1/2 z-50 w-full max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-xl border bg-[var(--theme-panel)] p-6 shadow-xl",
+                onOpenAutoFocus: (event) => {
+                  if (fileOperation === "delete") {
+                    event.preventDefault();
+                    document.querySelector(
+                      '[aria-label="Cancel file operation"]'
+                    )?.focus();
+                  }
+                },
+                children: [
+                  /* @__PURE__ */ jsx9(Dialog2.Title, { children: fileOperation === "delete" ? "Permanently delete file" : "Move file" }),
+                  /* @__PURE__ */ jsx9(Dialog2.Description, { children: fileOperation === "delete" ? `Permanently delete ${activeNode?.name}? This connection has no reversible trash. Immutable artifacts are retained, but workspace file links can stop working.` : "Move the selected file to a new workspace path. Existing files cannot be replaced." }),
+                  fileOperation === "move" ? /* @__PURE__ */ jsx9(
+                    "input",
+                    {
+                      "aria-label": "New file path",
+                      value: destination,
+                      onChange: (event) => setDestination(event.currentTarget.value)
+                    }
+                  ) : null,
+                  /* @__PURE__ */ jsx9(
+                    "button",
+                    {
+                      type: "button",
+                      "aria-label": "Cancel file operation",
+                      disabled: pending,
+                      onClick: () => setFileOperation(null),
+                      children: "Cancel"
+                    }
+                  ),
+                  /* @__PURE__ */ jsx9(
+                    "button",
+                    {
+                      type: "button",
+                      disabled: pending || (fileOperation === "delete" ? !canDelete : !canMove),
+                      onClick: () => {
+                        const operation = fileOperation;
+                        setFileOperation(null);
+                        if (operation === "delete") void deleteFile();
+                        else void moveFile(destination);
+                      },
+                      children: fileOperation === "delete" ? "Delete permanently" : "Move file"
+                    }
+                  )
+                ]
+              }
+            )
+          ]
+        }
+      ),
+      /* @__PURE__ */ jsx9("div", { className: "min-h-0 flex-1", children: content }),
+      /* @__PURE__ */ jsx9(
+        "input",
+        {
+          ref: fileInputRef,
+          type: "file",
+          "aria-label": "Workspace upload file input",
+          "data-testid": "workspace-upload-file-input",
+          className: "hidden",
+          onChange: (event) => void handleUpload(event)
+        }
+      ),
+      /* @__PURE__ */ jsx9(
+        "input",
+        {
+          ref: archiveInputRef,
+          type: "file",
+          accept: importFormats.map((format) => `.${format}`).join(","),
+          "aria-label": "Workspace archive import input",
+          "data-testid": "workspace-archive-import-input",
+          className: "hidden",
+          onChange: (event) => void handleArchiveImport(event)
+        }
+      )
+    ] });
+  }
   if (collapsedPanel === "explorer") {
-    return /* @__PURE__ */ jsx8(
-      "div",
-      {
-        "data-testid": "workspace-panel",
-        className: "relative h-full min-h-0 w-full overflow-hidden p-1",
-        children: viewerPanel
-      }
+    return renderWorkspace(
+      /* @__PURE__ */ jsx9(
+        "div",
+        {
+          "data-testid": "workspace-panel",
+          className: "relative h-full min-h-0 w-full overflow-hidden p-1",
+          children: viewerPanel
+        }
+      )
     );
   }
   if (collapsedPanel === "viewer") {
-    return /* @__PURE__ */ jsx8(
+    return renderWorkspace(
+      /* @__PURE__ */ jsx9(
+        "div",
+        {
+          "data-testid": "workspace-panel",
+          className: "relative h-full min-h-0 w-full overflow-hidden p-1",
+          children: explorerPanel
+        }
+      )
+    );
+  }
+  return renderWorkspace(
+    /* @__PURE__ */ jsx9(
       "div",
       {
         "data-testid": "workspace-panel",
-        className: "relative h-full min-h-0 w-full overflow-hidden p-1",
-        children: explorerPanel
-      }
-    );
-  }
-  return /* @__PURE__ */ jsxs7(
-    "div",
-    {
-      "data-testid": "workspace-panel",
-      className: "flex h-full min-h-0 w-full overflow-hidden bg-transparent p-1",
-      children: [
-        showGarbageDialog ? /* @__PURE__ */ jsx8(
-          GraphEmptyGarbageDialog,
-          {
-            files: garbageFiles,
-            onCancel: () => setShowGarbageDialog(false),
-            onConfirm: () => void handleConfirmEmptyGarbage()
-          }
-        ) : null,
-        isMobileViewport ? /* @__PURE__ */ jsxs7(
+        className: "flex h-full min-h-0 w-full overflow-hidden bg-transparent p-1",
+        children: isMobileViewport ? /* @__PURE__ */ jsxs8(
           ResizablePanelGroup,
           {
             direction: "vertical",
+            autoSaveId: `workspace-explorer-mobile:${workspaceIdentity.threadId}`,
             className: "thread-graph-workspace-mobile-stack",
             children: [
-              /* @__PURE__ */ jsx8(ResizablePanel, { defaultSize: 42, minSize: 18, children: /* @__PURE__ */ jsx8("div", { className: "thread-graph-workspace-mobile-explorer h-full min-h-0 overflow-hidden", children: explorerPanel }) }),
-              /* @__PURE__ */ jsx8(ResizableHandle, { className: "thread-graph-workspace-resize-handle h-1 bg-transparent after:h-px after:bg-slate-200/80 after:transition-colors hover:after:bg-slate-300 dark:after:bg-[#303642] dark:hover:after:bg-[#475063]" }),
-              /* @__PURE__ */ jsx8(ResizablePanel, { defaultSize: 58, minSize: 18, children: /* @__PURE__ */ jsx8("div", { className: "thread-graph-workspace-mobile-viewer h-full min-h-0 overflow-hidden", children: viewerPanel }) })
+              /* @__PURE__ */ jsx9(ResizablePanel, { defaultSize: 42, minSize: 18, children: /* @__PURE__ */ jsx9("div", { className: "thread-graph-workspace-mobile-explorer h-full min-h-0 overflow-hidden", children: explorerPanel }) }),
+              /* @__PURE__ */ jsx9(ResizableHandle, { className: "thread-graph-workspace-resize-handle h-1 bg-transparent after:h-px after:bg-slate-200/80 after:transition-colors hover:after:bg-slate-300 dark:after:bg-[#303642] dark:hover:after:bg-[#475063]" }),
+              /* @__PURE__ */ jsx9(ResizablePanel, { defaultSize: 58, minSize: 18, children: /* @__PURE__ */ jsx9("div", { className: "thread-graph-workspace-mobile-viewer h-full min-h-0 overflow-hidden", children: viewerPanel }) })
             ]
           }
-        ) : /* @__PURE__ */ jsxs7(
+        ) : /* @__PURE__ */ jsxs8(
           ResizablePanelGroup,
           {
             direction: "horizontal",
+            autoSaveId: `workspace-explorer-desktop:${workspaceIdentity.threadId}`,
             className: "thread-graph-workspace-resizable",
             children: [
-              /* @__PURE__ */ jsx8(ResizablePanel, { defaultSize: 28, minSize: 18, children: /* @__PURE__ */ jsx8("div", { className: "thread-graph-workspace-explorer-pane h-full min-h-0 overflow-hidden", children: explorerPanel }) }),
-              /* @__PURE__ */ jsx8(ResizableHandle, { className: "thread-graph-workspace-resize-handle w-1 bg-transparent after:w-px after:bg-slate-200/80 after:transition-colors hover:after:bg-slate-300 dark:after:bg-[#303642] dark:hover:after:bg-[#475063]" }),
-              /* @__PURE__ */ jsx8(ResizablePanel, { defaultSize: 72, minSize: 40, children: /* @__PURE__ */ jsx8("div", { className: "thread-graph-workspace-viewer-pane h-full min-h-0 overflow-hidden", children: viewerPanel }) })
+              /* @__PURE__ */ jsx9(ResizablePanel, { defaultSize: 28, minSize: 18, children: /* @__PURE__ */ jsx9("div", { className: "thread-graph-workspace-explorer-pane h-full min-h-0 overflow-hidden", children: explorerPanel }) }),
+              /* @__PURE__ */ jsx9(ResizableHandle, { className: "thread-graph-workspace-resize-handle w-1 bg-transparent after:w-px after:bg-slate-200/80 after:transition-colors hover:after:bg-slate-300 dark:after:bg-[#303642] dark:hover:after:bg-[#475063]" }),
+              /* @__PURE__ */ jsx9(ResizablePanel, { defaultSize: 72, minSize: 40, children: /* @__PURE__ */ jsx9("div", { className: "thread-graph-workspace-viewer-pane h-full min-h-0 overflow-hidden", children: viewerPanel }) })
             ]
           }
-        ),
-        /* @__PURE__ */ jsx8(
-          "input",
-          {
-            ref: fileInputRef,
-            type: "file",
-            "aria-label": "Workspace upload file input",
-            "data-testid": "workspace-upload-file-input",
-            className: "hidden",
-            onChange: (event) => void handleUpload(event)
-          }
         )
-      ]
-    }
+      }
+    )
   );
 }
 
 // src/components/graph-chat/GraphVisualization.tsx
-import { useCallback as useCallback4, useEffect as useEffect6, useMemo as useMemo6 } from "react";
+import { useCallback as useCallback4, useEffect as useEffect7, useMemo as useMemo6 } from "react";
 import {
   addEdge,
   Background,
@@ -3342,7 +4371,7 @@ import { getBezierPath } from "@xyflow/react";
 
 // src/components/graph-chat/FloatingHelper.tsx
 import { MarkerType, Position } from "@xyflow/react";
-import { jsx as jsx9, jsxs as jsxs8 } from "react/jsx-runtime";
+import { jsx as jsx10, jsxs as jsxs9 } from "react/jsx-runtime";
 function getNodeIntersection(intersectionNode, targetNode) {
   const intersectionNodeWidth = Math.max(intersectionNode.measured.width ?? 1, 1);
   const intersectionNodeHeight = Math.max(
@@ -3504,9 +4533,9 @@ function buildGraph(inputNodes, width = 900, height = 620) {
     type: "styledNode",
     position: positions.get(node.id) ?? { x: 100, y: 100 },
     data: {
-      label: /* @__PURE__ */ jsxs8("div", { className: "text-center", children: [
-        /* @__PURE__ */ jsx9("div", { className: "text-sm font-semibold", children: node.name }),
-        node.description ? /* @__PURE__ */ jsx9("div", { className: "mt-1 max-w-32 overflow-hidden text-ellipsis text-xs text-slate-500 dark:text-slate-400", children: node.description }) : null
+      label: /* @__PURE__ */ jsxs9("div", { className: "text-center", children: [
+        /* @__PURE__ */ jsx10("div", { className: "text-sm font-semibold", children: node.name }),
+        node.description ? /* @__PURE__ */ jsx10("div", { className: "mt-1 max-w-32 overflow-hidden text-ellipsis text-xs text-slate-500 dark:text-slate-400", children: node.description }) : null
       ] })
     }
   }));
@@ -3514,7 +4543,7 @@ function buildGraph(inputNodes, width = 900, height = 620) {
 }
 
 // src/components/graph-chat/FloatingConnectionLine.tsx
-import { jsx as jsx10, jsxs as jsxs9 } from "react/jsx-runtime";
+import { jsx as jsx11, jsxs as jsxs10 } from "react/jsx-runtime";
 function FloatingConnectionLine({
   toX,
   toY,
@@ -3547,8 +4576,8 @@ function FloatingConnectionLine({
     targetX: tx || toX,
     targetY: ty || toY
   });
-  return /* @__PURE__ */ jsxs9("g", { children: [
-    /* @__PURE__ */ jsx10(
+  return /* @__PURE__ */ jsxs10("g", { children: [
+    /* @__PURE__ */ jsx11(
       "path",
       {
         fill: "none",
@@ -3558,7 +4587,7 @@ function FloatingConnectionLine({
         d: edgePath
       }
     ),
-    /* @__PURE__ */ jsx10(
+    /* @__PURE__ */ jsx11(
       "circle",
       {
         cx: tx || toX,
@@ -3574,7 +4603,7 @@ function FloatingConnectionLine({
 
 // src/components/graph-chat/FloatingEdge.tsx
 import { getBezierPath as getBezierPath2, useInternalNode } from "@xyflow/react";
-import { jsx as jsx11 } from "react/jsx-runtime";
+import { jsx as jsx12 } from "react/jsx-runtime";
 function FloatingEdge({
   id,
   source,
@@ -3599,7 +4628,7 @@ function FloatingEdge({
     targetX: tx,
     targetY: ty
   });
-  return /* @__PURE__ */ jsx11(
+  return /* @__PURE__ */ jsx12(
     "path",
     {
       id,
@@ -3612,7 +4641,7 @@ function FloatingEdge({
 }
 
 // src/components/graph-chat/GraphVisualization.tsx
-import { jsx as jsx12, jsxs as jsxs10 } from "react/jsx-runtime";
+import { jsx as jsx13, jsxs as jsxs11 } from "react/jsx-runtime";
 function GraphVisualization({ nodes: inputNodes }) {
   const [flowNodes, setFlowNodes, onNodesChange] = useNodesState([]);
   const [flowEdges, setFlowEdges, onEdgesChange] = useEdgesState([]);
@@ -3620,9 +4649,9 @@ function GraphVisualization({ nodes: inputNodes }) {
   const edgeTypes = useMemo6(() => ({ floating: FloatingEdge }), []);
   const nodeTypes = useMemo6(
     () => ({
-      styledNode: ({ data, isConnectable }) => /* @__PURE__ */ jsxs10("div", { className: "thread-graph-flow-node", children: [
+      styledNode: ({ data, isConnectable }) => /* @__PURE__ */ jsxs11("div", { className: "thread-graph-flow-node", children: [
         data.label,
-        /* @__PURE__ */ jsx12(
+        /* @__PURE__ */ jsx13(
           Handle,
           {
             type: "target",
@@ -3631,7 +4660,7 @@ function GraphVisualization({ nodes: inputNodes }) {
             style: { opacity: 0, pointerEvents: "none" }
           }
         ),
-        /* @__PURE__ */ jsx12(
+        /* @__PURE__ */ jsx13(
           Handle,
           {
             type: "source",
@@ -3644,7 +4673,7 @@ function GraphVisualization({ nodes: inputNodes }) {
     }),
     []
   );
-  useEffect6(() => {
+  useEffect7(() => {
     setFlowNodes(graph.nodes);
     setFlowEdges(graph.edges);
   }, [graph.edges, graph.nodes, setFlowEdges, setFlowNodes]);
@@ -3663,7 +4692,7 @@ function GraphVisualization({ nodes: inputNodes }) {
     ),
     [setFlowEdges]
   );
-  return /* @__PURE__ */ jsx12("div", { className: "thread-graph-flow h-full min-h-0", children: /* @__PURE__ */ jsx12(ReactFlowProvider, { children: /* @__PURE__ */ jsxs10(
+  return /* @__PURE__ */ jsx13("div", { className: "thread-graph-flow h-full min-h-0", children: /* @__PURE__ */ jsx13(ReactFlowProvider, { children: /* @__PURE__ */ jsxs11(
     ReactFlow,
     {
       nodes: flowNodes,
@@ -3676,15 +4705,15 @@ function GraphVisualization({ nodes: inputNodes }) {
       edgeTypes,
       connectionLineComponent: FloatingConnectionLine,
       children: [
-        /* @__PURE__ */ jsx12(Controls, {}),
-        /* @__PURE__ */ jsx12(Background, { gap: 16 })
+        /* @__PURE__ */ jsx13(Controls, {}),
+        /* @__PURE__ */ jsx13(Background, { gap: 16 })
       ]
     }
   ) }) });
 }
 
 // src/components/ThreadGraphWorkspacePanel.tsx
-import { jsx as jsx13, jsxs as jsxs11 } from "react/jsx-runtime";
+import { jsx as jsx14, jsxs as jsxs12 } from "react/jsx-runtime";
 var DEFAULT_WORKSPACE_FEATURES = {
   workspace: true,
   toolUsage: false,
@@ -3925,12 +4954,12 @@ function ThreadGraphWorkspacePanel({
     }
     return tabs;
   }, [features.extensions, features.threadGraph]);
-  useEffect7(() => {
+  useEffect8(() => {
     if (!activeTab || !isWorkspaceTabEnabled(features, activeTab)) {
       setActiveTab(firstEnabledWorkspaceTab(features, featureConfig?.defaultTab));
     }
   }, [activeTab, featureConfig?.defaultTab, features]);
-  useEffect7(() => {
+  useEffect8(() => {
     if (focusPathRequest && features.workspace) {
       setActiveTab("workspace");
     }
@@ -3938,32 +4967,32 @@ function ThreadGraphWorkspacePanel({
   if (!activeTab) {
     return null;
   }
-  return /* @__PURE__ */ jsxs11("div", { className: "thread-graph-right-panel flex h-full min-h-0 flex-col overflow-hidden", children: [
-    /* @__PURE__ */ jsxs11("div", { className: "thread-graph-right-tabs flex h-9 shrink-0 items-center gap-0 overflow-hidden border-b px-1", children: [
+  return /* @__PURE__ */ jsxs12("div", { className: "thread-graph-right-panel flex h-full min-h-0 flex-col overflow-hidden", children: [
+    /* @__PURE__ */ jsxs12("div", { className: "thread-graph-right-tabs flex h-9 shrink-0 items-center gap-0 overflow-hidden border-b px-1", children: [
       primaryTabs.map((tab) => {
         const Icon = tab.icon;
-        return /* @__PURE__ */ jsxs11(
+        return /* @__PURE__ */ jsxs12(
           "button",
           {
             type: "button",
             onClick: () => setActiveTab(tab.id),
             className: `thread-graph-right-tab inline-flex h-9 shrink-0 items-center gap-1.5 px-2.5 text-xs font-medium transition ${activeTab === tab.id ? "is-active" : ""}`,
             children: [
-              Icon ? /* @__PURE__ */ jsx13(Icon, { className: "h-3.5 w-3.5" }) : null,
+              Icon ? /* @__PURE__ */ jsx14(Icon, { className: "h-3.5 w-3.5" }) : null,
               tab.label
             ]
           },
           tab.id
         );
       }),
-      secondaryTabs.length ? /* @__PURE__ */ jsx13(
+      secondaryTabs.length ? /* @__PURE__ */ jsx14(
         "div",
         {
           className: "thread-graph-right-tab-secondary ml-auto flex h-6 min-w-0 shrink items-center gap-0.5 border-l pl-1",
           "aria-label": "Remote Codex workspace extensions",
           children: secondaryTabs.map((tab) => {
             const Icon = tab.icon;
-            return /* @__PURE__ */ jsx13(
+            return /* @__PURE__ */ jsx14(
               "button",
               {
                 type: "button",
@@ -3971,7 +5000,7 @@ function ThreadGraphWorkspacePanel({
                 className: `thread-graph-right-tab inline-flex h-8 w-8 shrink-0 items-center justify-center text-xs font-medium transition ${activeTab === tab.id ? "is-active" : ""}`,
                 title: tab.label,
                 "aria-label": tab.label,
-                children: /* @__PURE__ */ jsx13(Icon, { className: "h-3.5 w-3.5" })
+                children: /* @__PURE__ */ jsx14(Icon, { className: "h-3.5 w-3.5" })
               },
               tab.id
             );
@@ -3979,8 +5008,8 @@ function ThreadGraphWorkspacePanel({
         }
       ) : null
     ] }),
-    /* @__PURE__ */ jsxs11("div", { className: "min-h-0 flex-1 overflow-hidden", children: [
-      activeTab === "workspace" ? /* @__PURE__ */ jsx13(
+    /* @__PURE__ */ jsxs12("div", { className: "min-h-0 flex-1 overflow-hidden", children: [
+      activeTab === "workspace" ? /* @__PURE__ */ jsx14(
         GraphWorkspaceExplorer,
         {
           activeView,
@@ -3992,17 +5021,17 @@ function ThreadGraphWorkspacePanel({
           workspaceAdapter: workspaceAdapter ?? null
         }
       ) : null,
-      activeTab === "graph" ? /* @__PURE__ */ jsx13("div", { className: "thread-graph-visualization-panel h-full min-h-0 p-3", children: /* @__PURE__ */ jsx13(GraphVisualization, { nodes: graphNodes }) }) : null,
-      activeTab === "extensions" ? /* @__PURE__ */ jsx13("div", { className: "h-full min-h-0 overflow-y-auto p-3", children: /* @__PURE__ */ jsxs11("div", { className: "grid gap-3", children: [
-        /* @__PURE__ */ jsx13(WorkspaceInfoCard, { label: "Plugin Panels", children: threadPanels.length ? /* @__PURE__ */ jsx13("div", { className: "flex flex-wrap gap-2", children: threadPanels.map((panel) => /* @__PURE__ */ jsx13(
+      activeTab === "graph" ? /* @__PURE__ */ jsx14("div", { className: "thread-graph-visualization-panel h-full min-h-0 p-3", children: /* @__PURE__ */ jsx14(GraphVisualization, { nodes: graphNodes }) }) : null,
+      activeTab === "extensions" ? /* @__PURE__ */ jsx14("div", { className: "h-full min-h-0 overflow-y-auto p-3", children: /* @__PURE__ */ jsxs12("div", { className: "grid gap-3", children: [
+        /* @__PURE__ */ jsx14(WorkspaceInfoCard, { label: "Plugin Panels", children: threadPanels.length ? /* @__PURE__ */ jsx14("div", { className: "flex flex-wrap gap-2", children: threadPanels.map((panel) => /* @__PURE__ */ jsx14(
           "span",
           {
             className: "rounded-full border border-[var(--theme-border)] px-2 py-1 text-xs text-[var(--theme-fg-soft)]",
             children: panel.label
           },
           panel.id
-        )) }) : /* @__PURE__ */ jsx13("p", { className: "text-[var(--theme-fg-muted)]", children: "No thread panels are enabled." }) }),
-        /* @__PURE__ */ jsx13(WorkspaceInfoCard, { label: "Enabled Renderers", children: /* @__PURE__ */ jsx13("div", { className: "flex flex-wrap gap-2", children: plugins.plugins.filter((plugin) => plugin.enabled).map((plugin) => /* @__PURE__ */ jsx13(
+        )) }) : /* @__PURE__ */ jsx14("p", { className: "text-[var(--theme-fg-muted)]", children: "No thread panels are enabled." }) }),
+        /* @__PURE__ */ jsx14(WorkspaceInfoCard, { label: "Enabled Renderers", children: /* @__PURE__ */ jsx14("div", { className: "flex flex-wrap gap-2", children: plugins.plugins.filter((plugin) => plugin.enabled).map((plugin) => /* @__PURE__ */ jsx14(
           "span",
           {
             className: "rounded-full border border-[var(--theme-border)] px-2 py-1 text-xs text-[var(--theme-fg-soft)]",
@@ -4010,22 +5039,22 @@ function ThreadGraphWorkspacePanel({
           },
           plugin.id
         )) }) }),
-        /* @__PURE__ */ jsx13(WorkspaceInfoCard, { label: "Remote Codex Tools", children: /* @__PURE__ */ jsxs11("div", { className: "grid gap-2 text-[var(--theme-fg-muted)]", children: [
-          /* @__PURE__ */ jsxs11("div", { className: "flex items-start gap-2", children: [
-            /* @__PURE__ */ jsx13(Terminal, { className: "mt-0.5 h-4 w-4 shrink-0" }),
-            /* @__PURE__ */ jsx13("p", { children: "Terminal stays available when the Terminal plugin and shell adapter are attached." })
+        /* @__PURE__ */ jsx14(WorkspaceInfoCard, { label: "Remote Codex Tools", children: /* @__PURE__ */ jsxs12("div", { className: "grid gap-2 text-[var(--theme-fg-muted)]", children: [
+          /* @__PURE__ */ jsxs12("div", { className: "flex items-start gap-2", children: [
+            /* @__PURE__ */ jsx14(Terminal, { className: "mt-0.5 h-4 w-4 shrink-0" }),
+            /* @__PURE__ */ jsx14("p", { children: "Terminal stays available when the Terminal plugin and shell adapter are attached." })
           ] }),
-          /* @__PURE__ */ jsxs11("div", { className: "flex items-start gap-2", children: [
-            /* @__PURE__ */ jsx13(Paperclip, { className: "mt-0.5 h-4 w-4 shrink-0" }),
-            /* @__PURE__ */ jsx13("p", { children: "Composer attachments, slash panels, hooks, MCP, goals, and fork controls remain part of the chat surface." })
+          /* @__PURE__ */ jsxs12("div", { className: "flex items-start gap-2", children: [
+            /* @__PURE__ */ jsx14(Paperclip, { className: "mt-0.5 h-4 w-4 shrink-0" }),
+            /* @__PURE__ */ jsx14("p", { children: "Composer attachments, slash panels, hooks, MCP, goals, and fork controls remain part of the chat surface." })
           ] }),
-          /* @__PURE__ */ jsxs11("div", { className: "flex items-start gap-2", children: [
-            /* @__PURE__ */ jsx13(Trash22, { className: "mt-0.5 h-4 w-4 shrink-0" }),
-            /* @__PURE__ */ jsx13("p", { children: "Destructive actions stay explicit: delete thread, interrupt, compact, and hook trust controls remain host governed." })
+          /* @__PURE__ */ jsxs12("div", { className: "flex items-start gap-2", children: [
+            /* @__PURE__ */ jsx14(Trash22, { className: "mt-0.5 h-4 w-4 shrink-0" }),
+            /* @__PURE__ */ jsx14("p", { children: "Destructive actions stay explicit: delete thread, interrupt, compact, and hook trust controls remain host governed." })
           ] })
         ] }) }),
-        metaContent ? /* @__PURE__ */ jsx13(WorkspaceInfoCard, { label: "Thread Meta", children: metaContent }) : null,
-        settingsContent ? /* @__PURE__ */ jsx13(WorkspaceInfoCard, { label: "Settings", children: settingsContent }) : null
+        metaContent ? /* @__PURE__ */ jsx14(WorkspaceInfoCard, { label: "Thread Meta", children: metaContent }) : null,
+        settingsContent ? /* @__PURE__ */ jsx14(WorkspaceInfoCard, { label: "Settings", children: settingsContent }) : null
       ] }) }) : null
     ] })
   ] });
